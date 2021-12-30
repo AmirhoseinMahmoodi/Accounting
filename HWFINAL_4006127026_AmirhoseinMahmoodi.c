@@ -6,14 +6,18 @@
 #include<windows.h>
 
 void intro();
-void mainmenu();
+int mainmenu();
+void user_choice(int user_decision);
+void log_ing();
+void sign_up();
 
 
 void main()
 {
+    int user_decision;
     intro();
-    mainmenu();
-
+    user_decision = mainmenu();
+    user_choice(user_decision);
 
 
 
@@ -37,7 +41,7 @@ void intro()
     printf("%c",0xBC);
 }
 
-void mainmenu()
+int mainmenu()
 {
     Sleep(5000);
     system("cls");
@@ -62,4 +66,12 @@ void mainmenu()
         }
     }
     system("cls");
+    return main_menu_value ;
+}
+
+void user_choice(int user_decision)
+{
+    if(user_decision == 3)
+    {
+    }
 }
