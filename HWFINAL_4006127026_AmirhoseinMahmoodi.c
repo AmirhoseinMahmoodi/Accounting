@@ -8,17 +8,28 @@
 void intro();
 int mainmenu();
 void user_choice(int user_decision);
-void log_ing();
+void access_limitation();
+void log_in();
 void sign_up();
-
+int Hold;
+void Hold_func();
 
 void main()
 {
     int user_decision;
     intro();
+    Hold_func();
     user_decision = mainmenu();
-    user_choice(user_decision);
-
+    printf("%d",user_decision);
+//    user_choice(user_decision);
+    if(user_decision == 1)
+    {
+        void log_in();
+    }
+    if (user_decision == 2)
+    {
+        sign_up();
+    }
 
 
 }
@@ -28,13 +39,13 @@ void intro()
 
     printf("\t\t\t\tWELCOME\n%c",0xC9);
 
-    for(desing_count=0 ; desing_count < 73 ; desing_count++)
+    for(desing_count=0 ; desing_count < 75 ; desing_count++)
     {
         printf("%c",0xCD);
     }
-    printf("%c\n%cThis is an accounting program made by Amirhosein Mahmoodi student at IKIU%c\n%c",0xBB,0xBA,0xBA,0xC8);
+    printf("%c\n%cThis is an accounting program made by Amirhosein Mahmoodi , student at IKIU%c\n%c",0xBB,0xBA,0xBA,0xC8);
 
-    for(desing_count=0 ; desing_count < 73 ; desing_count++)
+    for(desing_count=0 ; desing_count < 75 ; desing_count++)
     {
         printf("%c",0xCD);
     }
@@ -43,7 +54,10 @@ void intro()
 
 int mainmenu()
 {
-    Sleep(5000);
+    if(Hold == 0)
+    {
+        Sleep(5000);
+    }
     system("cls");
 
     int main_menu_value ;
@@ -69,9 +83,34 @@ int mainmenu()
     return main_menu_value ;
 }
 
-void user_choice(int user_decision)
+void Hold_func()
 {
-    if(user_decision == 3)
+    if(Hold == 1)
     {
+        printf("\nDo not restart the program!!\nOtherwise the hold timer will reset");
+        sleep(300000);
+        Hold = 0;
     }
+}
+
+void sign_up()
+{
+    char username[40] , password[40] ;
+    FILE *password_opener , *username_opener;
+    puts("Please enter your username up to 40 characters");
+    scanf("%s",username);
+    puts("Well done.\nNow enter your password up to 40 characters");
+    scanf("%s",password);
+    username_opener = fopen("username.txt", "a");
+    password_opener = fopen("Password.txt", "a");
+    fputs(username,username_opener);
+    fputs(password,password_opener);
+    fclose(username_opener);
+    fclose(password_opener);
+
+}
+
+void log_in()
+{
+
 }
