@@ -11,6 +11,7 @@ void user_choice(int user_decision);
 void log_in();
 void sign_up();
 int Hold;
+int user_count;
 void Hold_func();
 
 void main()
@@ -108,7 +109,7 @@ void sign_up()
         struct user *Link ;
     } TempUser ;
     int loopcounter1 ;
-    FILE *user_opener ;
+    FILE *user_opener , *user_counter ;
     printf("Please enter your username up to 40 characters:");
     scanf("%40s",TempUser.username);
     printf("please enter your name:\n");
@@ -140,62 +141,114 @@ void sign_up()
     }
     user_opener = fopen("Users.txt", "a");
     fprintf(user_opener, "%s\n%s\n%s\n%s\n09%s\n%s\n%s\n",TempUser.username,TempUser.Name,TempUser.surname,TempUser.NID,TempUser.PhoneNumber,TempUser.Email,TempUser.password);
+    user_counter = fopen("usercount.txt", "r");
+    fscanf(user_counter, "%d",&user_count);
+    fclose(user_counter);
+    user_counter = fopen("usercount.txt", "w");
+    fprintf(user_counter,"%d",user_count+1);
+    fclose(user_counter);
     fclose(user_opener);
 
 }
 
 void log_in()
 {
-    char username[41] , password[41] , username_user[41] , password_user[41] ;
-    int loop_counter1 , loop_counter2 , wrong = 0 ;
-    FILE *password_opener , *username_opener , *Holder;
-    password_opener = fopen("password.txt", "r");
-    username_opener = fopen("username.txt", "r");
-    fgets(username,40,username_opener);
-    fgets(password,40,password_opener);
+    struct user{
+        char username[41] ;
+        char password[41] ;
+        struct user *Link ;
+    }user_identifier;
+
+    struct user *start , *end , *temp ;
+    int loop_counter1 , loop_counter2 , loop_counter3 , wrong = 0 , users_number , loop_counter4 ;
+    FILE *user_opener , *Holder , *user_counter ;
+    start = malloc(sizeof(struct user));
+    end = malloc(sizeof(struct user));
+    user_opener = fopen("users.txt", "r");
+    user_counter = fopen("usercount.txt", "r");
+    fscanf(user_counter, "%d", &users_number);
+    fclose(user_counter);
+    fscanf(user_opener, "%s",start->username);
+    start->Link = end ;
+    fscanf(user_opener, "%*s%*s%*s%*s%*s%*s%s",end->username);
+    end->Link = NULL;
+    for(loop_counter3 = 0 ; loop_counter3 < users_number - 2 ; loop_counter3++)
+    {
+        temp = malloc(sizeof(struct user));
+        fscanf(user_opener , "%*s%*s%*s%*s%*s%*s%s",temp->username);
+        end->Link = temp;
+        end = temp;
+        end->Link = NULL;
+    }
     printf("Please enter your username:");
-    for(loop_counter1 = 0;loop_counter1 <= 1; loop_counter1++)
+    int wrong_username_input = 0 ;
+    for(loop_counter4 = 0 ; loop_counter4 < 1 ; loop_counter4++)
     {
-        scanf("%40s",username_user);
-        if(strcmp(username_user,username) != 0)
+        temp = start;
+        scanf("%s",user_identifier.username);
+        do
         {
-            printf("There is not anyone with this username\nTry again:");
-            loop_counter1-=1;
-        }
-        else
-        {
-            break;
-        }
-    }
-    printf("Please enter your password:");
-    for(loop_counter2 = 0;loop_counter2 <= 1; loop_counter2++)
-    {
-        scanf("%40s",password_user);
-        if(strcmp(password_user,password) != 0)
-        {
-            printf("Incorrect password\n");
-            if(wrong == 4)
+            if(strcmp(user_identifier.username,temp->username) == 0)
             {
-                Holder = fopen("Hold.txt", "w");
-                Hold = 1;
-                fprintf(Holder, "%d",Hold);
-                printf("you have entered wrong password 5 times so the program will be banned for 5 minutes\nATTENTION - Do not restart the program otherwise the timer will be reset.");
-                fclose(Holder);
-                Sleep(300000);
-                Hold = 0;
-                Holder = fopen("Hold.txt", "w");
-                fprintf(Holder, "%d",Hold);
-                fclose(Holder);
-                wrong = 0;
+                printf("correct");
+                break;
             }
-            printf("\nTry again:");
-            loop_counter2-=1;
-            wrong+=1;
-        }
-        else
+            else
+            {
+                wrong_username_input++ ;
+            }
+            temp=temp->Link;
+        }while(temp != NULL);
+        if(wrong_username_input == users_number )
         {
-            break;
+            printf("There is not such username.\nTry reentering your username:");
+            loop_counter4-- ;
+            wrong_username_input = 0 ;
         }
     }
-    printf("you have entered successfully");
+//    printf("Please enter your username:");
+//    for(loop_counter1 = 0;loop_counter1 <= 1; loop_counter1++)
+//    {
+//        scanf("%40s",username_user);
+//        if(strcmp(username_user,username) != 0)
+//        {
+//            printf("There is not anyone with this username\nTry again:");
+//            loop_counter1-=1;
+//        }
+//        else
+//        {
+//            break;
+//        }
+//    }
+//    printf("Please enter your password:");
+//    for(loop_counter2 = 0;loop_counter2 <= 1; loop_counter2++)
+//    {
+//        scanf("%40s",password_user);
+//        if(strcmp(password_user,password) != 0)
+//        {
+//            printf("Incorrect password\n");
+//            if(wrong == 4)
+//            {
+//                Holder = fopen("Hold.txt", "w");
+//                Hold = 1;
+//                fprintf(Holder, "%d",Hold);
+//                printf("you have entered wrong password 5 times so the program will be banned for 5 minutes\nATTENTION - Do not restart the program otherwise the timer will be reset.");
+//                fclose(Holder);
+//                Sleep(300000);
+//                Hold = 0;
+//                Holder = fopen("Hold.txt", "w");
+//                fprintf(Holder, "%d",Hold);
+//                fclose(Holder);
+//                wrong = 0;
+//            }
+//            printf("\nTry again:");
+//            loop_counter2-=1;
+//            wrong+=1;
+//        }
+//        else
+//        {
+//            break;
+//        }
+//    }
+//    printf("you have entered successfully");
 }
