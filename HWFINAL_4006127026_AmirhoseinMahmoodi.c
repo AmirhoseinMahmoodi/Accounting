@@ -21,7 +21,7 @@ int PhoneNumber_check(char phoneNumber[10]);
 int User_Profile();
 void Income(char User[41]);
 void Expense(char User[41]);
-void user_settings(char User[41] , char password[41]);
+int user_settings(char User[41] , char password[41]);
 int statistics(char User[41]);
 
 void main()
@@ -73,7 +73,10 @@ void intro()
     {
         printf("%c",0xCD);
     }
-    printf("%c",0xBC);
+    printf("%c\n\n",0xBC);
+
+    printf("ATTENTION                                              ATTENTION\n");
+    printf("         **For better experience maximize the window**");
 }
 
 int mainmenu()
@@ -183,13 +186,36 @@ void sign_up()
     printf("Please enter your Email:\n");                                           //
     gets(NewUser.Email);
     fflush(stdin);
-    printf("Well done.\nNow enter your password up to 40 characters\nTry to set a ");//
-    printf("complicated password using capital and small letters and special characters:");//                                   user//
+    system("cls");
+    printf("Well done.\nNow enter your password up to 40 characters\nTry to set a ");
+    printf("complicated password using capital and small letters and special characters:");
+//    char pass_Char ;
+//    loop_counter = 0 ;
+//    while ((pass_Char = _getch()) != 13)
+//    {
+//        NewUser.password[loop_counter] = pass_Char;
+//        if(pass_Char != 8)
+//        {
+//            printf("*");
+//        }
+//    }
+//    NewUser.password[loop_counter] = '\0';
     gets(NewUser.password);
     fflush(stdin);
-    printf("enter your password again:");
+
+    printf("\nEnter your password again:");
+//    while ((pass_Char = _getch()) != 13)
+//    {
+//        NewUser.pass_check[loop_counter] = pass_Char;
+//        if(pass_Char != 8)
+//        {
+//            printf("*");
+//        }
+//        loop_counter++;
+//    }
+//    NewUser.pass_check[loop_counter] = '\0' ;
+//    fflush(stdin);
     gets(NewUser.pass_check);
-    fflush(stdin);
     password_equallity_check(NewUser.password,NewUser.pass_check);
     user_opener = fopen("Users.txt", "a");
     fprintf(user_opener, "%s\n%s\n%s\n%s\n09%s\n%s\n%s\n",NewUser.username,NewUser.Name,NewUser.surname,NewUser.NID,NewUser.PhoneNumber,NewUser.Email,NewUser.password);
@@ -228,6 +254,7 @@ int log_in()
     if(user_opener == NULL)
     {
         printf("No users yet.");
+        return 5 ;
     }
     fscanf(user_opener, "%s",start->username);
     fscanf(user_opener, "%*s%*s%*s%*s%*s%s",start->password);
@@ -327,13 +354,23 @@ int log_in()
 
 void password_equallity_check(char defined_password[41], char password_cheker[41])
 {
-    int loop_counter ;
+    int loop_counter , loop_counter2 = 0;
+    char pass_Char ;
     for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
     {
         if(strcmp(defined_password,password_cheker) != 0)
         {
-            printf("Passwords didnt match\n Try again:");
-            scanf("%40s",password_cheker);
+            printf("Passwords did not match\n Try again:");
+            while((pass_Char =_getch()) != 13)
+            {
+                password_cheker[loop_counter2] = pass_Char ;
+                if(pass_Char != 8)
+                {
+                    printf("*");
+                }
+                loop_counter2++ ;
+            }
+            password_cheker[loop_counter2] = '\0' ;
             loop_counter--;
         }
     }
@@ -342,7 +379,7 @@ void password_equallity_check(char defined_password[41], char password_cheker[41
 
 int User_menu(char username[41] , char password[41])
 {
-    int User_choice , loop_counter ;
+    int User_choice , loop_counter ,stat_Value;
     for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
     {
         User_choice = User_Profile();
@@ -358,12 +395,20 @@ int User_menu(char username[41] , char password[41])
         }
         else if(User_choice == 3)
         {
-            statistics(username);
+            stat_Value = statistics(username);
+            if(stat_Value == 1)
+            {
+                loop_counter--;
+            }
         }
         else if(User_choice == 4)
         {
-            user_settings(username,password);
-            loop_counter--;
+            int settings_Value  ;
+            settings_Value = user_settings(username,password);
+            if(settings_Value == 0)
+            {
+                return 5 ;
+            }
         }
         else if(User_choice == 5)
         {
@@ -377,7 +422,7 @@ int User_menu(char username[41] , char password[41])
 void Graphic_profile_initialize()
 {
     int loop_counter;
-    for(loop_counter = 0 ; loop_counter < 5 ; loop_counter++)
+    for(loop_counter = 0 ; loop_counter < 3 ; loop_counter++)
     {
         printf("Initializing your profile");
         Sleep(500);
@@ -472,7 +517,7 @@ void Income(char User[41])
     printf("Please enter a short description:");
     char description[71];
     gets(description);
-    fprintf(user_Data_File, "%d\n%f\n%d/%d/%d\n%s\n" ,income_type ,amount ,year ,month ,day ,description );
+    fprintf(user_Data_File, "%d\n%s\n%d/%d/%d\n%f\n" ,income_type ,description ,year ,month ,day ,amount );
     fclose(user_Data_File);
 }
 
@@ -485,7 +530,7 @@ void Expense(char User[41])
     user_Data_File = fopen(user_File_Name, "a");
     printf("You are entering your expense information\nPlease specify your expense type:");
     printf("Please specify your expense type\n");
-    printf("1.Wearings\n2.Transportasion\n3.Tuition fees\n4.Entertainment\n5.Mobile and Internet bill\n6.Medical expenses\n7.Charity donation");
+    printf("1.Wearings\n2.Transportation\n3.Tuition fees\n4.Entertainment\n5.Mobile and Internet bill\n6.Medical expenses\n7.Charity donation");
     printf("\n\n>>Please enter your choice:");
     int expense_type ;
     scanf("%d",&expense_type);
@@ -501,19 +546,21 @@ void Expense(char User[41])
     printf("Please enter a short description:");
     char description[71];
     gets(description);
-    fprintf(user_Data_File, "%d\n%f\n%d/%d/%d\n%s\n\n" ,-expense_type ,-amount ,year ,month ,day ,description );
+    fprintf(user_Data_File, "%d\n%s\n%d/%d/%d\n%f\n\n" ,-expense_type ,description ,year ,month ,day ,-amount );
     fclose(user_Data_File);
 }
 
-void user_settings(char User[41] , char password[41])
+int user_settings(char User[41] , char password[41])
 {
+
     system("cls");
     int user_desicion ;
     printf("Please choose what you want to change about your profile\n");
     printf("1.Username\n2.Name & Surname\n3.NID\n4.PhoneNumber\n5.Email\n6.Password\n7.All infos\n\n");
     printf("Please enter your choice>>");
     scanf("%d",&user_desicion);
-    struct user{
+    struct user
+    {
         char username[41] ;
         char password[41] ;
         char name[41] ;
@@ -529,28 +576,53 @@ void user_settings(char User[41] , char password[41])
     int loop_counter , wrong = 0 , users_number ;
     FILE *user_opener , *Holder , *user_counter ;
     start = malloc(sizeof(struct user));
-    end = malloc(sizeof(struct user));
-
 
     user_counter = fopen("usercount.txt", "r");
     fscanf(user_counter, "%d", &users_number);
     fclose(user_counter);
 
     user_opener = fopen("users.txt", "r");
-    fscanf(user_opener, "%s%s%s%s%*c%*c%s%s%s",start->username ,start->name ,start->surname ,start->NID ,start->phonenumber ,start->Email ,start->password);
-    start->Link = end ;
 
-    fscanf(user_opener, "%s%s%s%s%*c%*c%s%s%s",end->username ,end->name ,end->surname ,end->NID ,end->phonenumber ,end->Email ,end->password);
-    end->Link = NULL;
+    fflush(stdin);
 
-    for(loop_counter = 0 ; loop_counter < users_number - 2 ; loop_counter++)
+    fscanf(user_opener, "%40s" , start->username);
+    fscanf(user_opener, "%40s" , start->name);
+    fscanf(user_opener, "%40s" , start->surname);
+    fscanf(user_opener, "%10s" , start->NID);
+    fscanf(user_opener, "%9s" , start->phonenumber);
+    fscanf(user_opener, "%40s" , start->Email);
+    fscanf(user_opener, "%40s" , start->password);
+    start->Link = NULL ;
+
+    if(users_number > 1)
     {
-        temp = malloc(sizeof(struct user));
-        fscanf(user_opener, "%s%s%s%s%s%s%s",temp->username ,temp->name ,temp->surname ,temp->NID ,temp->phonenumber ,temp->Email ,temp->password);
-        end->Link = temp;
-        end = temp;
+        start->Link = end ;
+        end = malloc(sizeof(struct user));
+        fscanf(user_opener, "%40s" , end->username);
+        fscanf(user_opener, "%40s" , end->name);
+        fscanf(user_opener, "%40s" , end->surname);
+        fscanf(user_opener, "%10s" , end->NID);
+        fscanf(user_opener, "%9s" , end->phonenumber);
+        fscanf(user_opener, "%40s" , end->Email);
+        fscanf(user_opener, "%40s" , end->password);
         end->Link = NULL;
+
+        for(loop_counter = 0 ; loop_counter < users_number - 2 ; loop_counter++)
+        {
+            temp = malloc(sizeof(struct user));
+            fscanf(user_opener, "%40s" , temp->username);
+            fscanf(user_opener, "%40s" , temp->name);
+            fscanf(user_opener, "%40s" , temp->surname);
+            fscanf(user_opener, "%10s" , temp->NID);
+            fscanf(user_opener, "%9s" , temp->phonenumber);
+            fscanf(user_opener, "%40s" , temp->Email);
+            fscanf(user_opener, "%40s" , temp->password);
+            end->Link = temp;
+            end = temp;
+            end->Link = NULL ;
+        }
     }
+
     fclose(user_opener);
 
     if(user_desicion == 1)
@@ -562,7 +634,8 @@ void user_settings(char User[41] , char password[41])
             if(strcmp(temp->username,User) == 0)
             {
                 printf("Please enter your new Username:");
-                scanf("%40s",temp->username);
+                fflush(stdin);
+                gets(temp->username);
                 break ;
             }
             else
@@ -574,7 +647,6 @@ void user_settings(char User[41] , char password[41])
     else if(user_desicion == 2)
     {
         temp = start ;
-
         do
         {
             if(strcmp(temp->username,User) == 0)
@@ -588,33 +660,47 @@ void user_settings(char User[41] , char password[41])
         }while(temp != NULL);
 
         printf("Please enter your name:");
-        scanf("%40s",temp->name);
+        fflush(stdin);
+        gets(temp->name);
         printf("surname?");
-        scanf("%40s",temp->surname);
+        fflush(stdin);
+        gets(temp->surname);
+
     }
     else if(user_desicion == 3)
     {
+        char NID_Temp[11];
         temp = start ;
-
-        do
+        for(loop_counter =  0 ; loop_counter < 1 ; loop_counter++)
         {
-            if(strcmp(temp->username,User) == 0)
+            do
             {
-                break ;
+                if(strcmp(temp->username,User) == 0)
+                {
+                    break ;
+                }
+                else
+                {
+                    temp=temp->Link;
+                }
+            }while(temp != NULL);
+
+            printf("Please enter your new national ID:");
+            fflush(stdin);
+            gets(NID_Temp);
+            if(NID_check(NID_Temp) == 1)
+            {
+                loop_counter--;
             }
             else
             {
-                temp=temp->Link;
+                strcpy(temp->NID,NID_Temp);
             }
-        }while(temp != NULL);
-
-        printf("Please enter your new national ID:");
-        scanf("%10s",temp->NID);
+        }
     }
     else if(user_desicion == 4)
     {
         temp = start ;
-
         do
         {
             if(strcmp(temp->username,User) == 0)
@@ -629,6 +715,7 @@ void user_settings(char User[41] , char password[41])
 
         printf("Please enter your new PhoneNumber:\n09");
         scanf("%9s",temp->phonenumber);
+
     }
     else if(user_desicion == 5)
     {
@@ -647,7 +734,9 @@ void user_settings(char User[41] , char password[41])
         }while(temp != NULL);
 
         printf("Please enter your new Email:");
-        scanf("%40s",temp->Email);
+        fflush(stdin);
+        gets(temp->Email);
+
     }
     else if(user_desicion == 6)
     {
@@ -795,7 +884,7 @@ void user_settings(char User[41] , char password[41])
                 gets(temp->password);
                 fflush(stdin);
 
-                printf("Please enter your nwe password again:");
+                printf("Please enter your new password again:");
                 gets(user_New_Pass_Check);
                 fflush(stdin);
 
@@ -812,10 +901,13 @@ void user_settings(char User[41] , char password[41])
     temp = start ;
     do
     {
-        fprintf(user_opener , "%s\n%s\n%s\n%s\n09%s\n%s\n%s\n",temp->username ,temp->name ,temp->surname ,temp->NID ,temp->phonenumber ,temp->Email , temp->password);
+        printf("%s",temp->phonenumber);
+        Sleep(5000);
+        fprintf(user_opener , "%s\n%s\n%s\n%s\n%s\n%s\n%s\n",temp->username ,temp->name ,temp->surname ,temp->NID ,temp->phonenumber ,temp->Email , temp->password);
         temp=temp->Link ;
     }while(temp != NULL);
     fclose(user_opener);
+    return 0 ;
 }
 
 int statistics(char User[41])
@@ -823,14 +915,1091 @@ int statistics(char User[41])
     system("cls");
     FILE *user_Data_File ;
     char user_Data_File_Name[46];
-    int user_Choice;
+    int user_Choice , loop_counter ;
     sprintf(user_Data_File_Name, "%s.txt",User);
 
-    printf("Choose what statistics you want:\n\n");
-    printf("1.Current account balance\t\t\t2.Specific year incomes\n\n3.Specific year expenses\t\t\t4.Incomes in a time interval\n\n");
-    printf("5.Expenses in a time interval\t\t\t6.Specific income in a time interval\n\n7.Specific expense in a time interval\t\t8.Revenue share");
-    printf("9.Cost share\t\t\n\n10.Details of income in a time interval\t\t11.DEtails of expense in a time interval\t\n\n12.Largest revenue figure\t\t\t");
-    printf("13.Largest cost figure\n\n14.Search income descriptions for a word\t15.Search expense descriptions for a word\n\nPlease enter your choice:");
-    scanf("%d",&user_Choice);
-    fflush(stdin);
+    struct IE
+    {
+        int money_Type ;
+        float money_Amount ;
+        int year ;
+        int month ;
+        int day ;
+        char description[41] ;
+        struct IE *Link ;
+    };
+
+    struct IE *start , *end , *temp ;
+    start = malloc(sizeof(struct IE)) ;
+    end = malloc(sizeof(struct IE)) ;
+
+    user_Data_File = fopen(user_Data_File_Name , "r") ;
+
+    fscanf(user_Data_File, "%d",&start->money_Type);
+    fgets(start->description , 40 , user_Data_File);
+    fgets(start->description , 40 , user_Data_File);
+    fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&start->year ,&start->month ,&start->day ,&start->money_Amount);
+    start->Link = end ;
+
+    fscanf(user_Data_File, "%d",&end->money_Type);
+    fgets(end->description , 40 , user_Data_File);
+    fgets(end->description , 40 , user_Data_File);
+    fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&end->year ,&end->month ,&end->day ,&end->money_Amount);
+    end->Link = NULL;
+
+
+    do
+    {
+        temp = malloc(sizeof(struct IE));
+        fscanf(user_Data_File, "%d",&temp->money_Type);
+        if(temp->money_Type > 4 || temp->money_Type < -7)
+        {
+            break ;
+        }
+        else if(temp->money_Type < 1 && temp->money_Type > -1)
+        {
+            break ;
+        }
+        fgets(temp->description , 40 , user_Data_File);
+        fgets(temp->description , 40 , user_Data_File);
+        fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&temp->year ,&temp->month ,&temp->day ,&temp->money_Amount);
+        end->Link = temp;
+        end = temp;
+        end->Link = NULL;
+
+    }while(1);
+    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+    {
+        printf("Choose what statistics you want:\n\n");
+        printf("1.Current account balance\t\t\t2.Specific year incomes\n\n3.Specific year expenses\t\t\t4.Incomes in a time interval\n\n");
+        printf("5.Expenses in a time interval\t\t\t6.Specific income in a time interval\n\n7.Specific expense in a time interval\t\t8.Revenue share\n\n");
+        printf("9.Cost share\t\t\t\t\t10.Details of income in a time interval\t\t\n\n11.Details of expense in a time interval\t12.Largest revenue figure\t\t\t\n\n");
+        printf("13.Largest cost figure\t\t\t\t14.Search income descriptions for a word\n\n15.Search expense descriptions for a word\n\n16.EXIT\n\nPlease enter your choice:");
+        scanf("%d",&user_Choice);
+        fflush(stdin);
+
+        if(user_Choice == 1)
+        {
+            float account_balance = 0 ;
+            temp = start ;
+            while(temp != NULL)
+            {
+                account_balance = account_balance + temp->money_Amount ;
+                temp = temp->Link ;
+            }
+            system("cls");
+            printf("Your account balance is :%f\n",account_balance) ;
+            loop_counter--;
+        }
+        else if(user_Choice == 2)
+        {
+            int specific_Year ;
+            float Total ;
+            printf("Please enter the specific year:");
+            scanf("%d",&specific_Year);
+            fflush(stdin);
+            temp = start ;
+            while(temp != NULL)
+            {
+                if(temp->money_Type > 0)
+                {
+                    if(temp->year == specific_Year)
+                    {
+                        Total += temp->money_Amount ;
+                    }
+                }
+                temp = temp->Link ;
+            }
+            system("cls");
+            printf("Your total income of year %d is:%f\n",specific_Year ,Total); ;
+            loop_counter--;
+        }
+        else if(user_Choice == 3)
+        {
+            int specific_Year ;
+            float Total ;
+            printf("Please enter the specific year:");
+            scanf("%d",&specific_Year);
+            fflush(stdin);
+            temp = start ;
+            while(temp != NULL)
+            {
+                if(temp->money_Type < 0)
+                {
+                    if(temp->year == specific_Year)
+                    {
+                        Total += temp->money_Amount ;
+                    }
+                }
+                temp = temp->Link ;
+            }
+            system("cls");
+            printf("Your total expense of year %d is:%f\n",specific_Year ,Total); ;
+            loop_counter--;
+        }
+        else if(user_Choice == 4)
+        {
+            int B_year ,B_month ,B_day ;
+            printf("Please enter the beginning of the interval(YYYY/MM/DD):");
+            scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
+            fflush(stdin);
+
+            int E_year ,E_month ,E_day ;
+            printf("Please enter the end of the interval(YYYY/MM/DD):");
+            scanf("%d%*c%d%*c%d",&E_year ,&E_month ,&E_day);
+            fflush(stdin);
+
+            temp = start;
+            float Total = 0 ;
+            while(temp != NULL)
+            {
+                if(temp->money_Type > 0)
+                {
+                    if(temp->year == B_year)
+                    {
+                        if(temp->month > B_month)
+                        {
+                            Total += temp->money_Amount ;
+                        }
+                        else if(B_month == temp->month)
+                        {
+                            if(temp->day >= B_day)
+                            {
+                                Total += temp->money_Amount ;
+                            }
+                        }
+                    }
+                    else if(temp->year == E_year)
+                    {
+                        if(temp->month < E_month)
+                        {
+                            Total += temp->money_Amount ;
+                        }
+                        else if(temp->month == E_month)
+                        {
+                            if(temp->day <= E_day)
+                            {
+                                Total += temp->money_Amount ;
+                            }
+                        }
+                    }
+                    else if(temp->year > B_year && temp->year < E_year)
+                    {
+                        Total += temp->money_Amount ;
+                    }
+                }
+                temp = temp->Link ;
+            }
+            system("cls");
+            printf("The total income in the interval is:%f\n",Total);
+            loop_counter--;
+        }
+        else if(user_Choice == 5)
+        {
+            int B_year ,B_month ,B_day ;
+            printf("Please enter the beginning of the interval(YYYY/MM/DD):");
+            scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
+            fflush(stdin);
+
+            int E_year ,E_month ,E_day ;
+            printf("Please enter the end of the interval(YYYY/MM/DD):");
+            scanf("%d%*c%d%*c%d",&E_year ,&E_month ,&E_day);
+            fflush(stdin);
+
+            temp = start;
+            float Total = 0 ;
+            while(temp != NULL)
+            {
+                if(temp->money_Type < 0)
+                {
+                    if(temp->year == B_year)
+                    {
+                        if(temp->month > B_month)
+                        {
+                            Total += temp->money_Amount ;
+                        }
+                        else if(B_month == temp->month)
+                        {
+                            if(temp->day >= B_day)
+                            {
+                                Total += temp->money_Amount ;
+                            }
+                        }
+                    }
+                    else if(temp->year == E_year)
+                    {
+                        if(temp->month < E_month)
+                        {
+                            Total += temp->money_Amount ;
+                        }
+                        else if(temp->month == E_month)
+                        {
+                            if(temp->day <= E_day)
+                            {
+                                Total += temp->money_Amount ;
+                            }
+                        }
+                    }
+                    else if(temp->year > B_year && temp->year < E_year)
+                    {
+                        Total += temp->money_Amount ;
+                    }
+                }
+                temp = temp->Link ;
+            }
+            system("cls");
+            printf("The total expense in the interval is:%f\n",Total);
+            loop_counter--;
+        }
+        else if(user_Choice == 6)
+        {
+            int B_year ,B_month ,B_day ,income_Type ;
+            printf("Please enter the beginning of the interval(YYYY/MM/DD):");
+            scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
+            fflush(stdin);
+
+            int E_year ,E_month ,E_day ;
+            printf("Please enter the end of the interval(YYYY/MM/DD):");
+            scanf("%d%*c%d%*c%d",&E_year ,&E_month ,&E_day);
+            fflush(stdin);
+
+            system("cls");
+            printf("Please specify the income type:\n");
+            printf("1.Programming Salary\n2.YARANEH\n3.Pocket Money\n4.University grant\n>>Please enter your choice:");
+            scanf("%d",&income_Type);
+
+            temp = start;
+            float Total = 0 ;
+            while(temp != NULL)
+            {
+                if(temp->money_Type == income_Type)
+                {
+                    if(temp->year == B_year)
+                    {
+                        if(temp->month > B_month)
+                        {
+                            Total += temp->money_Amount ;
+                        }
+                        else if(B_month == temp->month)
+                        {
+                            if(temp->day >= B_day)
+                            {
+                                Total += temp->money_Amount ;
+                            }
+                        }
+                    }
+                    else if(temp->year == E_year)
+                    {
+                        if(temp->month < E_month)
+                        {
+                            Total += temp->money_Amount ;
+                        }
+                        else if(temp->month == E_month)
+                        {
+                            if(temp->day <= E_day)
+                            {
+                                Total += temp->money_Amount ;
+                            }
+                        }
+                    }
+                    else if(temp->year > B_year && temp->year < E_year)
+                    {
+                        Total += temp->money_Amount ;
+                    }
+                }
+                temp = temp->Link ;
+            }
+            system("cls");
+            printf("The total income in the interval of that type is:%f\n",Total);
+            loop_counter--;
+        }
+        else if(user_Choice == 7)
+        {
+            int B_year ,B_month ,B_day ,expense_Type ;
+            printf("Please enter the beginning of the interval(YYYY/MM/DD):");
+            scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
+            fflush(stdin);
+
+            int E_year ,E_month ,E_day ;
+            printf("Please enter the end of the interval(YYYY/MM/DD):");
+            scanf("%d%*c%d%*c%d",&E_year ,&E_month ,&E_day);
+            fflush(stdin);
+
+            system("cls");
+            printf("Please specify the expense type:\n");
+            printf("1.Wearings\n2.Transportation\n3.Tuition fees\n4.Entertainment\n5.Mobile and Internet bill\n6.Medical expenses\n7.Charity donation");
+            printf("\n\n>>Please enter your choice:");
+            scanf("%d",&expense_Type);
+
+            temp = start;
+            float Total = 0 ;
+            while(temp != NULL)
+            {
+                if(temp->money_Type == -expense_Type)
+                {
+                    if(temp->year == B_year)
+                    {
+                        if(temp->month > B_month)
+                        {
+                            Total += temp->money_Amount ;
+                        }
+                        else if(B_month == temp->month)
+                        {
+                            if(temp->day >= B_day)
+                            {
+                                Total += temp->money_Amount ;
+                            }
+                        }
+                    }
+                    else if(temp->year == E_year)
+                    {
+                        if(temp->month < E_month)
+                        {
+                            Total += temp->money_Amount ;
+                        }
+                        else if(temp->month == E_month)
+                        {
+                            if(temp->day <= E_day)
+                            {
+                                Total += temp->money_Amount ;
+                            }
+                        }
+                    }
+                    else if(temp->year > B_year && temp->year < E_year)
+                    {
+                        Total += temp->money_Amount ;
+                    }
+                }
+                temp = temp->Link ;
+            }
+            system("cls");
+            printf("The total expense in the interval of that type is:%f\n",-Total);
+            loop_counter--;
+        }
+        else if(user_Choice == 8)
+        {
+            int B_year ,B_month ,B_day ;
+            printf("Please enter the beginning of the interval(YYYY/MM/DD):");
+            scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
+            fflush(stdin);
+
+            int E_year ,E_month ,E_day ;
+            printf("Please enter the end of the interval(YYYY/MM/DD):");
+            scanf("%d%*c%d%*c%d",&E_year ,&E_month ,&E_day);
+            fflush(stdin);
+
+            temp = start;
+            float Total = 0 ;
+            while(temp != NULL)
+            {
+                if(temp->money_Type > 0)
+                {
+                    if(temp->year == B_year)
+                    {
+                        if(temp->month > B_month)
+                        {
+                            Total += temp->money_Amount ;
+                        }
+                        else if(B_month == temp->month)
+                        {
+                            if(temp->day >= B_day)
+                            {
+                                Total += temp->money_Amount ;
+                            }
+                        }
+                    }
+                    else if(temp->year == E_year)
+                    {
+                        if(temp->month < E_month)
+                        {
+                            Total += temp->money_Amount ;
+                        }
+                        else if(temp->month == E_month)
+                        {
+                            if(temp->day <= E_day)
+                            {
+                                Total += temp->money_Amount ;
+                            }
+                        }
+                    }
+                    else if(temp->year > B_year && temp->year < E_year)
+                    {
+                        Total += temp->money_Amount ;
+                    }
+                }
+                temp = temp->Link ;
+            }
+            float total_Salary ;
+            temp = start ;
+            while(temp != NULL)
+            {
+                if(temp->money_Type == 1)
+                {
+                    total_Salary += temp->money_Amount ;
+                }
+                temp = temp->Link ;
+            }
+            float total_Yaraneh ;
+            temp = start ;
+            while(temp != NULL)
+            {
+                if(temp->money_Type == 2)
+                {
+                    total_Yaraneh += temp->money_Amount ;
+                }
+                temp = temp->Link ;
+            }
+            float total_Pocket_Money ;
+            temp = start ;
+            while(temp != NULL)
+            {
+                if(temp->money_Type == 3)
+                {
+                    total_Pocket_Money += temp->money_Amount ;
+                }
+                temp = temp->Link ;
+            }
+            float total_Grant ;
+            temp = start ;
+            while(temp != NULL)
+            {
+                if(temp->money_Type == 4)
+                {
+                    total_Grant += temp->money_Amount ;
+                }
+                temp = temp->Link ;
+            }
+            system("cls");
+            printf("The revenues share is:\n1.Programming salary:%f %%\t2.YARANEH:%f %%\n3.Pocket money:%f %%\t4.University grant:%f %%\n\n",((total_Salary/Total)*100) ,((total_Yaraneh/Total)*100) ,((total_Pocket_Money/Total)*100) ,((total_Grant/Total)*100));
+            loop_counter--;
+        }
+        else if(user_Choice == 9)
+        {
+            int B_year ,B_month ,B_day ;
+            printf("Please enter the beginning of the interval(YYYY/MM/DD):");
+            scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
+            fflush(stdin);
+
+            int E_year ,E_month ,E_day ;
+            printf("Please enter the end of the interval(YYYY/MM/DD):");
+            scanf("%d%*c%d%*c%d",&E_year ,&E_month ,&E_day);
+            fflush(stdin);
+
+            temp = start;
+            float Total = 0 ;
+            while(temp != NULL)
+            {
+                if(temp->money_Type < 0)
+                {
+                    if(temp->year == B_year)
+                    {
+                        if(temp->month > B_month)
+                        {
+                            Total += -temp->money_Amount ;
+                        }
+                        else if(B_month == temp->month)
+                        {
+                            if(temp->day >= B_day)
+                            {
+                                Total += -temp->money_Amount ;
+                            }
+                        }
+                    }
+                    else if(temp->year == E_year)
+                    {
+                        if(temp->month < E_month)
+                        {
+                            Total += -temp->money_Amount ;
+                        }
+                        else if(temp->month == E_month)
+                        {
+                            if(temp->day <= E_day)
+                            {
+                                Total += -temp->money_Amount ;
+                            }
+                        }
+                    }
+                    else if(temp->year > B_year && temp->year < E_year)
+                    {
+                        Total += -temp->money_Amount ;
+                    }
+                }
+                temp = temp->Link ;
+            }
+            float total_Wearing ;
+            temp = start ;
+            while(temp != NULL)
+            {
+                if(temp->money_Type == -1)
+                {
+                    total_Wearing += -temp->money_Amount ;
+                }
+                temp = temp->Link ;
+            }
+            float total_Transport ;
+            temp = start ;
+            while(temp != NULL)
+            {
+                if(temp->money_Type == -2)
+                {
+                    total_Transport += -temp->money_Amount ;
+                }
+                temp = temp->Link ;
+            }
+            float total_Tuition ;
+            temp = start ;
+            while(temp != NULL)
+            {
+                if(temp->money_Type == -3)
+                {
+                    total_Tuition += -temp->money_Amount ;
+                }
+                temp = temp->Link ;
+            }
+            float total_Entertainment ;
+            temp = start ;
+            while(temp != NULL)
+            {
+                if(temp->money_Type == -4)
+                {
+                    total_Entertainment += -temp->money_Amount ;
+                }
+                temp = temp->Link ;
+            }
+            float total_Mobile_Bill ;
+            temp = start ;
+            while(temp != NULL)
+            {
+                if(temp->money_Type == -5)
+                {
+                    total_Mobile_Bill += -temp->money_Amount ;
+                }
+                temp = temp->Link ;
+            }
+            float total_Medical ;
+            temp = start ;
+            while(temp != NULL)
+            {
+                if(temp->money_Type == -6)
+                {
+                    total_Medical += -temp->money_Amount ;
+                }
+                temp = temp->Link ;
+            }
+            float total_Charity ;
+            temp = start ;
+            while(temp != NULL)
+            {
+                if(temp->money_Type == -7)
+                {
+                    total_Charity += -temp->money_Amount ;
+                }
+                temp = temp->Link ;
+            }
+            system("cls");
+            printf("The revenues share is:\n1.WEarings:%f %%\t\t\t\t2.Transportations:%f %%\n\n3.Tuition fees:%f %%\t\t\t4.Entertainment:%f %%",((total_Wearing/Total)*100) ,((total_Transport/Total)*100) ,((total_Tuition/Total)*100) ,((total_Entertainment/Total)*100));
+            printf("\n\n5.Mobile and Internet bill:%f %%\t\t6.Medical expenses:%f %%\n\n\t\t\t7.Charity:%f %%\n\n",((total_Mobile_Bill/Total)*100) ,((total_Medical/Total)*100) ,((total_Charity/Total)*100));
+            loop_counter--;
+        }
+        else if(user_Choice == 10)
+        {
+            int B_year ,B_month ,B_day ;
+            printf("Please enter the beginning of the interval(YYYY/MM/DD):");
+            scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
+            fflush(stdin);
+
+            int E_year ,E_month ,E_day ;
+            printf("Please enter the end of the interval(YYYY/MM/DD):");
+            scanf("%d%*c%d%*c%d",&E_year ,&E_month ,&E_day);
+            fflush(stdin);
+
+            system("cls");
+
+            temp = start;
+            while(temp != NULL)
+            {
+                if(temp->money_Type > 0)
+                {
+                    if(temp->year == B_year)
+                    {
+                        if(temp->month > B_month)
+                        {
+                            if(temp->money_Type == 1)
+                            {
+                                printf("Programming Salary\n");
+                            }
+                            else if(temp->money_Type == 2)
+                            {
+                                printf("YARANRH\n");
+                            }
+                            else if(temp->money_Type == 3)
+                            {
+                                printf("Pocket money\n");
+                            }
+                            else if(temp->money_Type == 4)
+                            {
+                                printf("University Grant\n");
+                            }
+                            printf("Description: %s",temp->description);
+                            printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
+                            printf("Money amount:%f RIAL\n\n",temp->money_Amount);
+                        }
+                        else if(B_month == temp->month)
+                        {
+                            if(temp->day >= B_day)
+                            {
+                            if(temp->money_Type == 1)
+                            {
+                                printf("Programming Salary\n");
+                            }
+                            else if(temp->money_Type == 2)
+                            {
+                                printf("YARANRH\n");
+                            }
+                            else if(temp->money_Type == 3)
+                            {
+                                printf("Pocket money\n");
+                            }
+                            else if(temp->money_Type == 4)
+                            {
+                                printf("University Grant\n");
+                            }
+                            printf("Description: %s",temp->description);
+                            printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
+                            printf("Money amount:%f RIAL\n\n",temp->money_Amount);
+                            }
+                        }
+                    }
+                    else if(temp->year == E_year)
+                    {
+                        if(temp->month < E_month)
+                        {
+                            if(temp->money_Type == 1)
+                            {
+                                printf("Programming Salary\n");
+                            }
+                            else if(temp->money_Type == 2)
+                            {
+                                printf("YARANRH\n");
+                            }
+                            else if(temp->money_Type == 3)
+                            {
+                                printf("Pocket money\n");
+                            }
+                            else if(temp->money_Type == 4)
+                            {
+                                printf("University Grant\n");
+                            }
+                            printf("Description: %s",temp->description);
+                            printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
+                            printf("Money amount:%f RIAL\n\n",temp->money_Amount);
+                        }
+                        else if(temp->month == E_month)
+                        {
+                            if(temp->day <= E_day)
+                            {
+                                if(temp->money_Type == 1)
+                                {
+                                    printf("Programming Salary\n");
+                                }
+                                else if(temp->money_Type == 2)
+                                {
+                                    printf("YARANRH\n");
+                                }
+                                else if(temp->money_Type == 3)
+                                {
+                                    printf("Pocket money\n");
+                                }
+                                else if(temp->money_Type == 4)
+                                {
+                                    printf("University Grant\n");
+                                }
+                                printf("Description: %s",temp->description);
+                                printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
+                                printf("Money amount:%f RIAL\n\n",temp->money_Amount);
+                            }
+                        }
+                    }
+                    else if(temp->year > B_year && temp->year < E_year)
+                    {
+                        if(temp->money_Type == 1)
+                        {
+                            printf("Programming Salary\n");
+                        }
+                        else if(temp->money_Type == 2)
+                        {
+                            printf("YARANRH\n");
+                        }
+                        else if(temp->money_Type == 3)
+                        {
+                            printf("Pocket money\n");
+                        }
+                        else if(temp->money_Type == 4)
+                        {
+                            printf("University Grant\n");
+                        }
+                        printf("Description: %s",temp->description);
+                        printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
+                        printf("Money amount:%f RIAL\n\n",temp->money_Amount);
+                    }
+                }
+                temp = temp->Link ;
+            }
+            loop_counter--;
+        }
+        else if(user_Choice == 11)
+        {
+            int B_year ,B_month ,B_day ;
+            printf("Please enter the beginning of the interval(YYYY/MM/DD):");
+            scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
+            fflush(stdin);
+
+            int E_year ,E_month ,E_day ;
+            printf("Please enter the end of the interval(YYYY/MM/DD):");
+            scanf("%d%*c%d%*c%d",&E_year ,&E_month ,&E_day);
+            fflush(stdin);
+
+            system("cls");
+
+            temp = start;
+            while(temp != NULL)
+            {
+                if(temp->money_Type < 0)
+                {
+                    if(temp->year == B_year)
+                    {
+                        if(temp->month > B_month)
+                        {
+                            if(temp->money_Type == -1)
+                            {
+                                printf("Wearings\n");
+                            }
+                            else if(temp->money_Type == -2)
+                            {
+                                printf("Transportation\n");
+                            }
+                            else if(temp->money_Type == -3)
+                            {
+                                printf("Tuition fees\n");
+                            }
+                            else if(temp->money_Type == -4)
+                            {
+                                printf("Entertainment\n");
+                            }
+                            else if(temp->money_Type == -5)
+                            {
+                                printf("Mobile and Internet bill\n");
+                            }
+                            else if(temp->money_Type == -6)
+                            {
+                                printf("Medical expenses\n");
+                            }
+                            else if(temp->money_Type == -7)
+                            {
+                                printf("Charity donation\n");
+                            }
+                            printf("Description: %s",temp->description);
+                            printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
+                            printf("Money amount:%f RIAL\n\n",-temp->money_Amount);
+                        }
+                        else if(B_month == temp->month)
+                        {
+                            if(temp->day >= B_day)
+                            {
+                                if(temp->money_Type == -1)
+                                {
+                                    printf("Wearings\n");
+                                }
+                                else if(temp->money_Type == -2)
+                                {
+                                    printf("Transportation\n");
+                                }
+                                    else if(temp->money_Type == -3)
+                                {
+                                    printf("Tuition fees\n");
+                                }
+                                else if(temp->money_Type == -4)
+                                {
+                                    printf("Entertainment\n");
+                                }
+                                else if(temp->money_Type == -5)
+                                {
+                                    printf("Mobile and Internet bill\n");
+                                }
+                                else if(temp->money_Type == -6)
+                                {
+                                    printf("Medical expenses\n");
+                                }
+                                else if(temp->money_Type == -7)
+                                {
+                                    printf("Charity donation\n");
+                                }
+                                printf("Description: %s",temp->description);
+                                printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
+                                printf("Money amount:%f RIAL\n\n",-temp->money_Amount);
+                            }
+                        }
+                    }
+                    else if(temp->year == E_year)
+                    {
+                        if(temp->month < E_month)
+                        {
+                            if(temp->money_Type == -1)
+                            {
+                                printf("Wearings\n");
+                            }
+                            else if(temp->money_Type == -2)
+                            {
+                                printf("Transportation\n");
+                            }
+                            else if(temp->money_Type == -3)
+                            {
+                                printf("Tuition fees\n");
+                            }
+                            else if(temp->money_Type == -4)
+                            {
+                                printf("Entertainment\n");
+                            }
+                            else if(temp->money_Type == -5)
+                            {
+                                printf("Mobile and Internet bill\n");
+                            }
+                            else if(temp->money_Type == -6)
+                            {
+                                printf("Medical expenses\n");
+                            }
+                            else if(temp->money_Type == -7)
+                            {
+                                printf("Charity donation\n");
+                            }
+                            printf("Description: %s",temp->description);
+                            printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
+                            printf("Money amount:%f RIAL\n\n",-temp->money_Amount);
+                        }
+                        else if(temp->month == E_month)
+                        {
+                            if(temp->day <= E_day)
+                            {
+                                if(temp->money_Type == -1)
+                                {
+                                    printf("Wearings\n");
+                                }
+                                else if(temp->money_Type == -2)
+                                {
+                                    printf("Transportation\n");
+                                }
+                                else if(temp->money_Type == -3)
+                                {
+                                    printf("Tuition fees\n");
+                                }
+                                else if(temp->money_Type == -4)
+                                {
+                                    printf("Entertainment\n");
+                                }
+                                else if(temp->money_Type == -5)
+                                {
+                                    printf("Mobile and Internet bill\n");
+                                }
+                                else if(temp->money_Type == -6)
+                                {
+                                    printf("Medical expenses\n");
+                                }
+                                else if(temp->money_Type == -7)
+                                {
+                                    printf("Charity donation\n");
+                                }
+                                printf("Description: %s",temp->description);
+                                printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
+                                printf("Money amount:%f RIAL\n\n",-temp->money_Amount);
+                            }
+                        }
+                    }
+                    else if(temp->year > B_year && temp->year < E_year)
+                    {
+                            if(temp->money_Type == -1)
+                            {
+                                printf("Wearings\n");
+                            }
+                            else if(temp->money_Type == -2)
+                            {
+                                printf("Transportation\n");
+                            }
+                            else if(temp->money_Type == -3)
+                            {
+                                printf("Tuition fees\n");
+                            }
+                            else if(temp->money_Type == -4)
+                            {
+                                printf("Entertainment\n");
+                            }
+                            else if(temp->money_Type == -5)
+                            {
+                                printf("Mobile and Internet bill\n");
+                            }
+                            else if(temp->money_Type == -6)
+                            {
+                                printf("Medical expenses\n");
+                            }
+                            else if(temp->money_Type == -7)
+                            {
+                                printf("Charity donation\n");
+                            }
+                            printf("Description: %s",temp->description);
+                            printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
+                            printf("Money amount:%f RIAL\n\n",-temp->money_Amount);
+                    }
+                }
+                temp = temp->Link ;
+            }
+            loop_counter--;
+        }
+        else if(user_Choice == 12)
+        {
+            int B_year ,B_month ,B_day ;
+            printf("Please enter the beginning of the interval(YYYY/MM/DD):");
+            scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
+            fflush(stdin);
+
+            int E_year ,E_month ,E_day ;
+            printf("Please enter the end of the interval(YYYY/MM/DD):");
+            scanf("%d%*c%d%*c%d",&E_year ,&E_month ,&E_day);
+            fflush(stdin);
+
+            temp = start;
+            float Maximum = 0 ;
+            while(temp != NULL)
+            {
+                if(temp->money_Type > 0)
+                {
+                    if(temp->year == B_year)
+                    {
+                        if(temp->month > B_month)
+                        {
+                            if(temp->money_Amount > Maximum)
+                            {
+                                Maximum = temp->money_Amount ;
+                            }
+                        }
+                        else if(B_month == temp->month)
+                        {
+                            if(temp->day >= B_day)
+                            {
+                                if(temp->money_Amount > Maximum)
+                                {
+                                    Maximum = temp->money_Amount ;
+                                }
+                            }
+                        }
+                    }
+                    else if(temp->year == E_year)
+                    {
+                        if(temp->month < E_month)
+                        {
+                            if(temp->money_Amount > Maximum)
+                            {
+                                Maximum = temp->money_Amount ;
+                            }
+                        }
+                        else if(temp->month == E_month)
+                        {
+                            if(temp->day <= E_day)
+                            {
+                                if(temp->money_Amount > Maximum)
+                                {
+                                    Maximum = temp->money_Amount ;
+                                }
+                            }
+                        }
+                    }
+                    else if(temp->year > B_year && temp->year < E_year)
+                    {
+                        if(temp->money_Amount > Maximum)
+                        {
+                            Maximum = temp->money_Amount ;
+                        }
+                    }
+                }
+                temp = temp->Link ;
+            }
+            system("cls");
+            printf("The Maximum amount of the incomes in the interval is: %f RIAL\n\n",Maximum);
+            loop_counter--;
+        }
+        else if(user_Choice == 13)
+        {
+            int B_year ,B_month ,B_day ;
+            printf("Please enter the beginning of the interval(YYYY/MM/DD):");
+            scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
+            fflush(stdin);
+
+            int E_year ,E_month ,E_day ;
+            printf("Please enter the end of the interval(YYYY/MM/DD):");
+            scanf("%d%*c%d%*c%d",&E_year ,&E_month ,&E_day);
+            fflush(stdin);
+
+            temp = start;
+            float Maximum = 0 ;
+            while(temp != NULL)
+            {
+                if(temp->money_Type < 0)
+                {
+                    if(temp->year == B_year)
+                    {
+                        if(temp->month > B_month)
+                        {
+                            if(-temp->money_Amount > Maximum)
+                            {
+                                Maximum = temp->money_Amount ;
+                            }
+                        }
+                        else if(B_month == temp->month)
+                        {
+                            if(temp->day >= B_day)
+                            {
+                                if(-temp->money_Amount > Maximum)
+                                {
+                                    Maximum = temp->money_Amount ;
+                                }
+                            }
+                        }
+                    }
+                    else if(temp->year == E_year)
+                    {
+                        if(temp->month < E_month)
+                        {
+                            if(-temp->money_Amount > Maximum)
+                            {
+                                Maximum = temp->money_Amount ;
+                            }
+                        }
+                        else if(temp->month == E_month)
+                        {
+                            if(temp->day <= E_day)
+                            {
+                                if(-temp->money_Amount > Maximum)
+                                {
+                                    Maximum = temp->money_Amount ;
+                                }
+                            }
+                        }
+                    }
+                    else if(temp->year > B_year && temp->year < E_year)
+                    {
+                        if(-temp->money_Amount > Maximum)
+                        {
+                            Maximum = temp->money_Amount ;
+                        }
+                    }
+                }
+                temp = temp->Link ;
+            }
+            system("cls");
+            printf("The Maximum amount of the expenses in the interval is: %f RIAL\n\n",-Maximum);
+            loop_counter--;
+        }
+        else if(user_Choice == 16)
+        {
+            return 1 ;
+        }
+    }
 }
