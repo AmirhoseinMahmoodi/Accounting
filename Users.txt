@@ -1,7 +1,7 @@
-new_username
-new_name
-new_surname
-4901226060
-191919191
+AidinMahmodi
+aidin
+mah
+4901226096
+p
 aidinmahmoodi82@gmail.com
-pass
+1

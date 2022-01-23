@@ -4,59 +4,70 @@
 #include<ctype.h>
 #include<stdlib.h>
 #include<windows.h>
-
+int  mainmenu();
+int  log_in();
+int  Hold;
+int  user_count;
+int  User_menu(char username[41] , char password[41]);
+int  NID_check(char NID[11]);
+int  PhoneNumber_check(char phoneNumber[10]);
+int  User_Profile();
+int  user_settings(char User[41] , char password[41]);
+int  statistics(char User[41]);
+int  email_Check(char Email[41]);
 void intro();
-int mainmenu();
 void user_choice(int user_decision);
-int log_in();
 void sign_up();
-int Hold;
-int user_count;
 void Hold_func();
 void password_equallity_check(char defined_password[41], char password_cheker[41]);
-int User_menu(char username[41] , char password[41]);
 void Graphic_profile_initialize();
-int NID_check(char NID[11]);
-int PhoneNumber_check(char phoneNumber[10]);
-int User_Profile();
 void Income(char User[41]);
 void Expense(char User[41]);
-int user_settings(char User[41] , char password[41]);
-int statistics(char User[41]);
+void Account_Balance(char User[41]);
+void Specific_Year_Income(char User[41]);
+void Specific_Year_Expense(char User[41]);
+void Timed_Income(char User[41]);
+void Timed_Expense(char User[41]);
+void Specific_Timed_Income(char User[41]);
+void Specific_Timed_Expense(char User[41]);
+void Revenue_Share(char User[41]);
+void Cost_Share(char User[41]);
+void Timed_Income_Detail(char User[41]);
+void Timed_Expense_Detail(char User[41]);
+void Largest_Revenue(char User[41]);
+void Largest_Cost(char User[41]);
+void Search_income_descriptions(char User[41]);
+void Search_expense_descriptions(char User[41]);
 
 void main()
 {
     int Hold;
     int user_decision;
-    intro();
-    Main_Menu_Label:
-    Hold_func();
-    user_decision = mainmenu();
     int loop_counter , log_in_value;
-    if(user_decision == 1)
+    intro();
+    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
     {
-        for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+        Hold_func();
+        user_decision = mainmenu();
+        if(user_decision == 1)
         {
             log_in_value = log_in();
             if(log_in_value == 5)
             {
-                loop_counter--;
                 system("cls");
+                loop_counter--;
             }
         }
-    }
-    if (user_decision == 2)
-    {
-        for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+
+        if (user_decision == 2)
         {
-            sign_up();
-            loop_counter--;
-            goto Main_Menu_Label;
+                sign_up();
+                loop_counter--;
         }
     }
 
-
 }
+
 void intro()
 {
     int desing_count;
@@ -77,37 +88,31 @@ void intro()
 
     printf("ATTENTION                                              ATTENTION\n");
     printf("         **For better experience maximize the window**");
+    Sleep(5000);
 }
 
 int mainmenu()
 {
-    if(Hold == 0)
-    {
-        Sleep(5000);
-    }
+    int loop_counter ;
+
     system("cls");
-
-    int main_menu_value ;
-    printf("choose what you want to do with this program.\n");
-    printf("1)log in\n2)sign up\n3)EXIT\n");
-    printf("\n\nPlease enter your choice:");
-    scanf("%d",&main_menu_value);
-
-    int wrong_number = 0 ;
-    while(main_menu_value <= 0 || main_menu_value > 3)
+    char main_menu_value ;
+    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
     {
-        printf("Pleae just enter numbers 1 to 3.\n");
+        printf("choose what you want to do with this program.\n");
+        printf("1)log in\n2)sign up\n3)EXIT\n");
+        printf("\n\nPlease enter your choice:");
         scanf("%d",&main_menu_value);
-        wrong_number += 1 ;
-        if(wrong_number == 3)
+        fflush(stdin);
+
+        if(main_menu_value != 1 && main_menu_value != 2 && main_menu_value != 3)
         {
             system("cls");
-            printf("choose what you want to do with this program.\n");
-            printf("1)log in\n2)sign up\n3)EXIT\n");
-            wrong_number = 0 ;
+            printf("Pleae just enter numbers 1 to 3.\n");
+            loop_counter--;
         }
     }
-    system("cls");
+
     return main_menu_value ;
 }
 
@@ -120,7 +125,6 @@ void Hold_func()
     fclose(Holder);
     if(Hold == 1)
     {
-        fopen("Hold.txt", "w");
         for(loop_counter = 0 ; loop_counter < 300000 ; loop_counter++)
         {
             Sleep(1000);
@@ -129,13 +133,16 @@ void Hold_func()
             printf("otherwise the timer will be reset.");
             printf("%d:%d",(300000-loop_counter)/60000,(300000-loop_counter)%60);
         }
+        fopen("Hold.txt", "w");
         Hold = 0 ;
         fprintf(Holder, "%d",Hold);
+        fclose(Holder);
     }
 }
 
 void sign_up()
 {
+    system("cls");
     struct user{
         char username[41] ;
         char password[41] ;
@@ -146,20 +153,94 @@ void sign_up()
         char PhoneNumber[10] ;
         char Email[41] ;
     } NewUser ;//Defining a structure for collecting the information of user to sign up //
+
+    struct username{
+        char username[41] ;
+        struct user *Link ;
+    };
+    struct username *start , *end , *temp ;
+
+    FILE *user_opener , *user_counter ;
+
+    user_counter = fopen("usercount.txt", "r");
+    fscanf(user_counter, "%d",&user_count);
+    fclose(user_counter);
+
+    user_opener = fopen("Users.txt", "r");
+
+    if(user_counter != NULL)
+    {
+        start = malloc(sizeof(struct username));
+        fscanf(user_opener , "%s", start->username);
+        printf("%s",start->username);
+        start->Link = NULL ;
+
+        if(user_count > 1)
+        {
+            end = malloc(sizeof(struct username));
+            start->Link = end ;
+            fscanf(user_opener , "%*s%*s%*s%*s%*s%*s%s", end->username);
+            printf("\n%s",end->username);
+            end->Link = NULL ;
+        }
+    }
+    else
+    {
+        temp = NULL ;
+    }
+
     int loop_counter ;
-    FILE *user_opener , *user_counter ;//Defining pointers *user_opener to users.txt and *user_counter to usercount.txt //
+    if(user_count > 2)
+    {
+        for(loop_counter = 0 ; loop_counter < user_count - 2 ; loop_counter++)
+        {
+            temp = malloc(sizeof(struct username));
+            end->Link = temp ;
+            fscanf(user_opener , "%*s%*s%*s%*s%*s%*s%s", temp->username);
+            printf("\n%s",temp->username);
+            temp->Link = NULL ;
+            end = temp ;
+        }
+    }
     fflush(stdin);
-    printf("For all parts use _ instead of space character(' ')\n");
-    printf("Please enter your username up to 40 characters:");//Reading the username of user
-    gets(NewUser.username);
+    printf("For all parts use underline ('_') instead of space character(' ')\n");
+    printf("Please enter your username up to 40 characters:");
+    if(temp != NULL)
+    {
+        for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+        {
+            gets(NewUser.username);
+            temp = start ;
+            while(temp != NULL)
+            {
+                if(strcmp(NewUser.username,temp->username) == 0)
+                {
+                    system("cls");
+                    printf("For all parts use underline ('_') instead of space character(' ')\n");
+                    printf("This username is taken already try another one:\n");
+                    loop_counter-- ;
+                    break ;
+                }
+                else
+                {
+                    temp=temp->Link ;
+                }
+            }
+        }
+    }
+    else
+    {
+        gets(NewUser.username);
+    }
+
     fflush(stdin);
-    printf("please enter your name:\n");                                            //Collecting
+    printf("please enter your name:\n");
     gets(NewUser.Name);
     fflush(stdin);
-    printf("surname?\n");                                                           //          some
+    printf("surname?\n");
     gets(NewUser.surname);
     fflush(stdin);
-    printf("Please enter your national ID code:\n");                                //
+    printf("Please enter your national ID code:\n");
     int ID_check = 0;
     for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
     {
@@ -171,7 +252,7 @@ void sign_up()
             loop_counter--;
         }
     }
-    printf("Please enter your phone number:\n09");                                  //
+    printf("Please enter your phone number:\n09");
     int Phone_check = 0;
     for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
     {
@@ -183,55 +264,99 @@ void sign_up()
             loop_counter--;
         }
     }
-    printf("Please enter your Email:\n");                                           //
+    printf("Please enter your Email:\n");
     gets(NewUser.Email);
     fflush(stdin);
     system("cls");
     printf("Well done.\nNow enter your password up to 40 characters\nTry to set a ");
     printf("complicated password using capital and small letters and special characters:");
-//    char pass_Char ;
-//    loop_counter = 0 ;
-//    while ((pass_Char = _getch()) != 13)
-//    {
-//        NewUser.password[loop_counter] = pass_Char;
-//        if(pass_Char != 8)
-//        {
-//            printf("*");
-//        }
-//    }
-//    NewUser.password[loop_counter] = '\0';
-    gets(NewUser.password);
+
+
+    char pass_Char ;
+    int   pass_Counter = 0 , loop_counter1 = 0;
+    loop_counter = 0 ;
+    while ((pass_Char = _getch()) != 13 )
+    {
+        if(pass_Char == 8)
+        {
+            loop_counter--;
+            if(pass_Counter != 0)
+            {
+                pass_Counter--;
+            }
+            system("cls");
+            printf("Well done.\nNow enter your password up to 40 characters\nTry to set a ");
+            printf("complicated password using capital and small letters and special characters:");
+            for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
+            {
+                printf("*");
+            }
+        }
+        else
+        {
+            pass_Counter++;
+            NewUser.password[loop_counter] = pass_Char ;
+            system("cls");
+            printf("Well done.\nNow enter your password up to 40 characters\nTry to set a ");
+            printf("complicated password using capital and small letters and special characters:");
+            for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
+            {
+                printf("*");
+            }
+            loop_counter++;
+        }
+    }
+    NewUser.password[loop_counter] = '\0';
+
     fflush(stdin);
 
-    printf("\nEnter your password again:");
-//    while ((pass_Char = _getch()) != 13)
-//    {
-//        NewUser.pass_check[loop_counter] = pass_Char;
-//        if(pass_Char != 8)
-//        {
-//            printf("*");
-//        }
-//        loop_counter++;
-//    }
-//    NewUser.pass_check[loop_counter] = '\0' ;
-//    fflush(stdin);
-    gets(NewUser.pass_check);
+    system("cls");
+    printf("Enter your password again:");
+
+    char pass_Check_Char ;
+    int pass_Check_Counter = 0 ;
+    loop_counter1 = 0 ;
+    loop_counter = 0 ;
+    while ((pass_Check_Char = _getch()) != 13 )
+    {
+        if(pass_Check_Char == 8)
+        {
+            loop_counter--;
+            pass_Check_Counter--;
+            system("cls");
+            printf("Enter your password again:");
+            for (loop_counter1 = 0 ; loop_counter1 < pass_Check_Counter ; loop_counter1++)
+            {
+                printf("*");
+            }
+        }
+        else
+        {
+            pass_Check_Counter++;
+            NewUser.pass_check[loop_counter] = pass_Check_Char ;
+            system("cls");
+            printf("Enter your password again:");
+            for (loop_counter1 = 0 ; loop_counter1 < pass_Check_Counter ; loop_counter1++)
+            {
+                printf("*");
+            }
+            loop_counter++;
+        }
+    }
+    NewUser.pass_check[loop_counter] = '\0';
+
     password_equallity_check(NewUser.password,NewUser.pass_check);
     user_opener = fopen("Users.txt", "a");
-    fprintf(user_opener, "%s\n%s\n%s\n%s\n09%s\n%s\n%s\n",NewUser.username,NewUser.Name,NewUser.surname,NewUser.NID,NewUser.PhoneNumber,NewUser.Email,NewUser.password);
-    user_counter = fopen("usercount.txt", "r");
-    fscanf(user_counter, "%d",&user_count);
-    fclose(user_counter);
+    fprintf(user_opener, "%s\n%s\n%s\n%s\n%s\n%s\n%s\n",NewUser.username,NewUser.Name,NewUser.surname,NewUser.NID,NewUser.PhoneNumber,NewUser.Email,NewUser.password);
     user_counter = fopen("usercount.txt", "w");
     fprintf(user_counter,"%d",user_count+1);
     fclose(user_counter);
     fclose(user_opener);
 }
 
-
-
 int log_in()
 {
+    system("cls");
     struct user{
         char username[41] ;
         char password[41] ;
@@ -239,7 +364,7 @@ int log_in()
     }user_identifier;
 
     struct user *start , *end , *temp ;
-    int loop_counter , wrong = 0 , users_number ;
+    int loop_counter , wrong_Password_Input = 0 , users_number ;
     FILE *user_opener , *Holder , *user_counter ;
     start = malloc(sizeof(struct user));
     end = malloc(sizeof(struct user));
@@ -254,18 +379,22 @@ int log_in()
     if(user_opener == NULL)
     {
         printf("No users yet.");
-        return 5 ;
+        Sleep(2000);
+        return 5;
     }
     fscanf(user_opener, "%s",start->username);
     fscanf(user_opener, "%*s%*s%*s%*s%*s%s",start->password);
-    start->Link = end ;
-    printf("%s",start->username);
-    fscanf(user_opener, "%s",end->username);
-    fscanf(user_opener, "%*s%*s%*s%*s%*s%s",end->password);
-    end->Link = NULL;
-    printf("\n%s",end->username);
+    start->Link = NULL;
+    if(users_number >= 2)
+    {
+        start->Link = end;
+        fscanf(user_opener, "%s",end->username);
+        fscanf(user_opener, "%*s%*s%*s%*s%*s%s",end->password);
+        end->Link = NULL;
+    }
     for(loop_counter = 0 ; loop_counter < users_number - 2 ; loop_counter++)
     {
+        printf("111");
         temp = malloc(sizeof(struct user));
         fscanf(user_opener, "%s",temp->username);
         fscanf(user_opener, "%*s%*s%*s%*s%*s%s",temp->password);
@@ -305,20 +434,51 @@ int log_in()
             wrong_username_input = 0 ;
         }
     }
-    Sleep(1);
+    Sleep(1000);
     system("cls");
     printf("Please enter your password:\n");
+    char pass_Char ;
+    int  pass_Counter = 0 , loop_counter2 = 0 , loop_counter1;
     for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
     {
-        scanf("%40s",user_identifier.password);
-        if(strcmp(user_identifier.password,temp->password) == 0 )
+        pass_Counter = 0 ;
+        loop_counter2 = 0 ;
+        while ((pass_Char = _getch()) != 13 )
         {
-            printf("youve successfully entered your account");
-        }
-        else
-        {
-            if( wrong == 4 )
+            if(pass_Char == 8)
             {
+                loop_counter2--;
+                if(pass_Counter != 0)
+                {
+                    pass_Counter--;
+                }
+                system("cls");
+                printf("Please enter your password:\n");
+                for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
+                {
+                        printf("*");
+                }
+            }
+            else
+            {
+                pass_Counter++;
+                user_identifier.password[loop_counter2] = pass_Char ;
+                system("cls");
+                printf("Please enter your password:\n");
+                for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
+                {
+                    printf("*");
+                }
+                loop_counter2++;
+            }
+        }
+        user_identifier.password[loop_counter2] = '\0';
+
+        if(strcmp(user_identifier.password,temp->password) != 0 )
+        {
+            if( wrong_Password_Input == 4 )
+            {
+                printf("\a");
                 Holder = fopen("Hold.txt", "w");
                 Hold = 1;
                 fprintf(Holder, "%d",Hold);
@@ -330,12 +490,12 @@ int log_in()
                 Holder = fopen("Hold.txt", "w");
                 fprintf(Holder, "%d",Hold);
                 fclose(Holder);
-                wrong = 0;
+                wrong_Password_Input = 0;
 
             }
-            printf("Wrong password!!\nEnter your password again");
+            printf("Wrong password!!\nEnter your password again:\n");
             loop_counter--;
-            wrong++;
+            wrong_Password_Input++;
         }
     }
     system("cls");
@@ -349,31 +509,6 @@ int log_in()
     }
     system("cls");
 
-
-}
-
-void password_equallity_check(char defined_password[41], char password_cheker[41])
-{
-    int loop_counter , loop_counter2 = 0;
-    char pass_Char ;
-    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
-    {
-        if(strcmp(defined_password,password_cheker) != 0)
-        {
-            printf("Passwords did not match\n Try again:");
-            while((pass_Char =_getch()) != 13)
-            {
-                password_cheker[loop_counter2] = pass_Char ;
-                if(pass_Char != 8)
-                {
-                    printf("*");
-                }
-                loop_counter2++ ;
-            }
-            password_cheker[loop_counter2] = '\0' ;
-            loop_counter--;
-        }
-    }
 
 }
 
@@ -409,6 +544,10 @@ int User_menu(char username[41] , char password[41])
             {
                 return 5 ;
             }
+            else if(settings_Value == 1)
+            {
+                 loop_counter--;
+            }
         }
         else if(User_choice == 5)
         {
@@ -416,8 +555,86 @@ int User_menu(char username[41] , char password[41])
             break;
         }
     }
+}
+
+int User_Profile()
+{
+    int user_desicion ;
+    int loop_counter ;
+    system("cls");
+
+    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+    {
+        printf("Main menu\n1.Income\n2.Expenses\n3.Statistics\n4.Settings\n5.Sign out\n6.EXIT\n>>Please enter your choice:");
+        scanf("%d",&user_desicion);
+        fflush(stdin);
+        if(user_desicion != 1 && user_desicion != 2 && user_desicion!=3 && user_desicion != 4 && user_desicion != 5 && user_desicion!= 6)
+        {
+            loop_counter--;
+            system("cls");
+            printf("Please just enter numbers 1 to 6.\n");
+        }
+    }
+
+    fflush(stdin);
+    return user_desicion ;
+}
+
+void password_equallity_check(char defined_password[41], char password_cheker[41])
+{
+    system("cls");
+
+    int loop_counter ;
+    char pass_Char ;
+    int  pass_Counter ;
+    int loop_counter1 = 0 ;
+    int loop_counter2 ;
+
+    for(loop_counter2 = 0 ; loop_counter2 < 1 ; loop_counter2++)
+    {
+        loop_counter = 0 ;
+        pass_Counter = 0 ;
+        if(strcmp(defined_password,password_cheker) != 0)
+        {
+            system("cls");
+            printf("Passwords did not match\n Try again:");
+            while ((pass_Char = _getch()) != 13 )
+            {
+                if(pass_Char == 8)
+                {
+                    loop_counter--;
+                    if(pass_Counter != 0)
+                    {
+                        pass_Counter--;
+                    }
+                    system("cls");
+                    printf("Passwords did not match\n Try again:");
+                    for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
+                    {
+                        printf("*");
+                    }
+                }
+                else
+                {
+                    pass_Counter++;
+                    password_cheker[loop_counter] = pass_Char ;
+                    system("cls");
+                    printf("Passwords did not match\n Try again:");
+                    for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
+                    {
+                        printf("*");
+                    }
+                    loop_counter++;
+                }
+            }
+            password_cheker[loop_counter] = '\0';
+            loop_counter2--;
+        }
+    }
 
 }
+
+
 
 void Graphic_profile_initialize()
 {
@@ -443,7 +660,7 @@ int NID_check(char NID[11])
     {
         if(NID[loop_counter] < 48 || NID[loop_counter] > 57)
         {
-            if(NID[loop_counter] != '\0')
+            if(NID[loop_counter] != '\0' || NID[loop_counter] == ' ')
             {
                 wrong_input++;
             }
@@ -484,30 +701,30 @@ int PhoneNumber_check(char phoneNumber[10])
     }
 }
 
-int User_Profile()
-{
-    int user_desicion ;
-    system("cls");
-    printf("Main menu\n1.Income\n2.Expenses\n3.Statistics\n4.Settings\n5.Sign out\n6.EXIT\n>>Please enter your choice:");
-    scanf("%d",&user_desicion);
-    fflush(stdin);
-    return user_desicion ;
-}
-
 void Income(char User[41])
 {
     system("cls");
     FILE *user_Data_File ;
     char user_File_Name[46];
+    int loop_counter ;
+    int income_type ;
     sprintf(user_File_Name, "%s.txt",User);
     user_Data_File = fopen(user_File_Name, "a");
-    printf("You are entering your income information...\n\nPlease specify your income type\n");
-    printf("1.Progrramming Salary\n2.YARANEH\n3.Pocket Money\n4.University grant\n>>Please enter your choice:");
-    int income_type ;
-    scanf("%d",&income_type);
-    fflush(stdin);
-    printf("Please enter the amount of your income in RIAL:");
+    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+    {
+        printf("You are entering your income information...\n\nPlease specify your income type\n");
+        printf("1.Progrramming Salary\n2.YARANEH\n3.Pocket Money\n4.University grant\n>>Please enter your choice:");
+        scanf("%d",&income_type);
+        fflush(stdin);
+        if(income_type != 1 && income_type != 2 && income_type != 3 && income_type != 4)
+        {
+            system("cls");
+            printf("Wrong input.try again.\n\n");
+            loop_counter--;
+        }
+    }
     float amount ;
+    printf("Please enter the amount of your income in RIAL:");
     scanf("%f",&amount);
     fflush(stdin);
     printf("Please enter the date of income(YYYY/MM/DD):");
@@ -526,15 +743,25 @@ void Expense(char User[41])
     system("cls");
     FILE *user_Data_File ;
     char user_File_Name[46];
+    int loop_counter ;
+    int expense_type ;
     sprintf(user_File_Name, "%s.txt",User);
     user_Data_File = fopen(user_File_Name, "a");
-    printf("You are entering your expense information\nPlease specify your expense type:");
-    printf("Please specify your expense type\n");
-    printf("1.Wearings\n2.Transportation\n3.Tuition fees\n4.Entertainment\n5.Mobile and Internet bill\n6.Medical expenses\n7.Charity donation");
-    printf("\n\n>>Please enter your choice:");
-    int expense_type ;
-    scanf("%d",&expense_type);
-    fflush(stdin);
+    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+    {
+        printf("You are entering your expense information\nPlease specify your expense type:");
+        printf("Please specify your expense type\n");
+        printf("1.Wearings\n2.Transportation\n3.Tuition fees\n4.Entertainment\n5.Mobile and Internet bill\n6.Medical expenses\n7.Charity donation");
+        printf("\n\n>>Please enter your choice:");
+        scanf("%d",&expense_type);
+        fflush(stdin);
+        if(expense_type != 1 && expense_type != 2 && expense_type != 3 && expense_type != 4 && expense_type != 5 && expense_type != 6 && expense_type != 7)
+        {
+            system("cls");
+            printf("Wrong input.try again.\n");
+            loop_counter--;
+        }
+    }
     printf("Please enter the amount of your expense in RIAL:");
     float amount ;
     scanf("%f",&amount);
@@ -553,12 +780,26 @@ void Expense(char User[41])
 int user_settings(char User[41] , char password[41])
 {
 
+    FILE *user_Data_File ;
+    char user_Data_File_Name[46];
+    sprintf(user_Data_File_Name, "%s.txt",User);
     system("cls");
     int user_desicion ;
-    printf("Please choose what you want to change about your profile\n");
-    printf("1.Username\n2.Name & Surname\n3.NID\n4.PhoneNumber\n5.Email\n6.Password\n7.All infos\n\n");
-    printf("Please enter your choice>>");
-    scanf("%d",&user_desicion);
+    int loop_counter ;
+    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+    {
+        printf("Please choose what you want to change about your profile\n");
+        printf("1.Username\n2.Name & Surname\n3.NID\n4.PhoneNumber\n5.Email\n6.Password\n7.All infos\n8.Exit\n");
+        printf("Please enter your choice:");
+        scanf("%d",&user_desicion);
+        if(user_desicion != 1 && user_desicion != 2 && user_desicion != 3 && user_desicion != 4 && user_desicion != 5 && user_desicion != 6 && user_desicion != 7 && user_desicion != 8)
+        {
+            system("cls");
+            printf("Wrong input.try again.\n");
+            loop_counter--;
+        }
+    }
+
     struct user
     {
         char username[41] ;
@@ -573,7 +814,7 @@ int user_settings(char User[41] , char password[41])
     char user_Current_Pass_Check[41] ;
     char user_New_Pass_Check[41] ;
     struct user *start , *end , *temp ;
-    int loop_counter , wrong = 0 , users_number ;
+    int wrong = 0 , users_number ;
     FILE *user_opener , *Holder , *user_counter ;
     start = malloc(sizeof(struct user));
 
@@ -643,6 +884,11 @@ int user_settings(char User[41] , char password[41])
                 temp=temp->Link;
             }
         }while(temp != NULL);
+
+        char user_New_Data_File_Name[46] ;
+        int rename_value ;
+        sprintf(user_New_Data_File_Name, "%s.txt",temp->username);
+        rename_value = rename(user_Data_File_Name,user_New_Data_File_Name);
     }
     else if(user_desicion == 2)
     {
@@ -755,58 +1001,181 @@ int user_settings(char User[41] , char password[41])
             }
         }while(temp != NULL);
 
+        system("cls");
         printf("Please enter your current password:");
+        char pass_Char ;
+        int  pass_Counter = 0 , loop_counter2 = 0 , loop_counter1;
         for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
         {
-            scanf("%40s",user_Current_Pass_Check);
-            if(strcmp(password,user_Current_Pass_Check) != 0 )
+            for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
             {
-                if(wrong_Pass_Input == 4)
+                pass_Counter = 0 ;
+                loop_counter2 = 0 ;
+                while ((pass_Char = _getch()) != 13 )
                 {
-                    Holder = fopen("Hold.txt", "w");
-                    Hold = 1;
-                    fprintf(Holder, "%d",Hold);
-                    printf("you have entered wrong password 5 times so the program will be banned for 5 minutes\nATTENTION - Do not restart the program ");
-                    printf("otherwise the timer will be reset.");
-                    fclose(Holder);
-                    Hold_func();
-                    Hold = 0;
-                    Holder = fopen("Hold.txt", "w");
-                    fprintf(Holder, "%d",Hold);
-                    fclose(Holder);
-                    wrong_Pass_Input = 0 ;
+
+                    if(pass_Char == 8)
+                    {
+                        loop_counter2--;
+                        if(pass_Counter != 0)
+                        {
+                            pass_Counter--;
+                        }
+                        system("cls");
+                        if(wrong_Pass_Input != 0)
+                        {
+                            printf("Wrong password.\nReenter your password:");
+                        }
+                        else
+                        {
+                            printf("Please enter your current password:");
+                        }
+                        for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
+                        {
+                            printf("*");
+                        }
+                    }
+                    else
+                    {
+                        pass_Counter++;
+                        user_Current_Pass_Check[loop_counter2] = pass_Char ;
+                        system("cls");
+                        if(wrong_Pass_Input != 0)
+                        {
+                            printf("Wrong password.\nReenter your password:");
+                        }
+                        else
+                        {
+                            printf("Please enter your current password:");
+                        }
+                        for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
+                        {
+                            printf("*");
+                        }
+                        loop_counter2++;
+                    }
+                }
+                user_Current_Pass_Check[loop_counter2] = '\0';
+
+                if(strcmp(password,user_Current_Pass_Check) != 0 )
+                {
+                    if(wrong_Pass_Input == 4)
+                    {
+                        Holder = fopen("Hold.txt", "w");
+                        Hold = 1;
+                        fprintf(Holder, "%d",Hold);
+                        printf("you have entered wrong password 5 times so the program will be banned for 5 minutes\nATTENTION - Do not restart the program ");
+                        printf("otherwise the timer will be reset.");
+                        fclose(Holder);
+                        Hold_func();
+                        Hold = 0;
+                        Holder = fopen("Hold.txt", "w");
+                        fprintf(Holder, "%d",Hold);
+                        fclose(Holder);
+                        wrong_Pass_Input = 0 ;
+                    }
+                    else
+                    {
+                        system("cls");
+                        printf("Wrong password.\nReenter your password:");
+                        Sleep(4000);
+                        loop_counter--;
+                        wrong_Pass_Input++;
+                    }
                 }
                 else
                 {
                     system("cls");
-                    printf("Wrong password.\nReenter your password:");
+                    printf("Please enter your new password:");
+                    pass_Counter = 0 ;
+                    loop_counter2 = 0 ;
+                    while ((pass_Char = _getch()) != 13 )
+                    {
+                        if(pass_Char == 8)
+                        {
+                            loop_counter2--;
+                            if(pass_Counter != 0)
+                            {
+                                pass_Counter--;
+                            }
+                            system("cls");
+                            printf("Please enter your new password:");
+                            for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
+                            {
+                                printf("*");
+                            }
+                        }
+                        else
+                        {
+                            pass_Counter++;
+                            temp->password[loop_counter2] = pass_Char ;
+                            system("cls");
+                            printf("Please enter your new password:");
+                            for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
+                            {
+                                printf("*");
+                            }
+                            loop_counter2++;
+                        }
+                    }
+                    temp->password[loop_counter2] = '\0';
+
+                    fflush(stdin);
+
+                    Sleep(1000);
+                    system("cls");
+
+                    printf("Please enter your password again:");
+                    pass_Counter = 0 ;
+                    loop_counter2 = 0 ;
+                    while ((pass_Char = _getch()) != 13 )
+                    {
+                        if(pass_Char == 8)
+                        {
+                            loop_counter2--;
+                            if(pass_Counter != 0)
+                            {
+                                pass_Counter--;
+                            }
+                            system("cls");
+                            printf("Please enter your password again:");
+                            for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
+                            {
+                                printf("*");
+                            }
+                        }
+                        else
+                        {
+                            pass_Counter++;
+                            user_New_Pass_Check[loop_counter2] = pass_Char ;
+                            system("cls");
+                            printf("Please enter your password again:");
+                            for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
+                            {
+                                printf("*");
+                            }
+                            loop_counter2++;
+                        }
+                    }
+                    user_New_Pass_Check[loop_counter2] = '\0';
+
+                    password_equallity_check(temp->password,user_New_Pass_Check);
+
+                    printf("ALL DONE!");
                     Sleep(2000);
-                    loop_counter--;
-                    wrong_Pass_Input++;
+                    system("cls");
                 }
-            }
-            else
-            {
-                printf("Please enter your new password:");
-                scanf("%40s",temp->password);
-                fflush(stdin);
-
-                Sleep(2000);
-                system("cls");
-
-                printf("Please enter your password again:");
-                scanf("%40s",user_New_Pass_Check);
-
-                password_equallity_check(temp->password,user_New_Pass_Check);
-
-                printf("ALL DONE!");
-                Sleep(2000);
-                system("cls");
             }
         }
     }
     else if(user_desicion == 7)
     {
+        int pass_Counter ;
+        int loop_counter1 ;
+        int loop_counter ;
+        int loop_counter2 ;
+        char pass_Char ;
+
         temp = start ;
 
         int wrong_Pass_Input = 0 ;
@@ -827,6 +1196,10 @@ int user_settings(char User[41] , char password[41])
         fflush(stdin);
         gets(temp->username);
         fflush(stdin);
+        char user_New_Data_File_Name[46] ;
+        int rename_value ;
+        sprintf(user_New_Data_File_Name, "%s.txt",temp->username);
+        rename_value = rename(user_Data_File_Name,user_New_Data_File_Name);
 
         printf("Please enter your new name:");
         gets(temp->name);
@@ -836,26 +1209,93 @@ int user_settings(char User[41] , char password[41])
         gets(temp->surname);
         fflush(stdin);
 
+        int NID_Check_Value ;
         printf("Please enter your new national Id:");
-        gets(temp->NID);
+        for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+        {
+            gets(temp->NID);
+            NID_Check_Value = NID_check(temp->NID);
+            if(NID_Check_Value == 1)
+            {
+                loop_counter--;
+            }
+        }
         fflush(stdin);
 
         printf("Please enter your new PhoneNumber:\n09");
-        gets(temp->phonenumber);
-        fflush(stdin);
+        int PhoneNumber_check_value ;
+        for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+        {
+            gets(temp->phonenumber);
+            fflush(stdin);
+            PhoneNumber_check_value = PhoneNumber_check(temp->phonenumber);
+
+            if(PhoneNumber_check_value == 1)
+            {
+                loop_counter--;
+                system("cls");
+            }
+        }
+
 
         printf("Please enter your new Email:");
         gets(temp->Email);
         fflush(stdin);
 
         Sleep(1000);
+
         system("cls");
-
         printf("Please enter your current password:");
-
         for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
         {
-            scanf("%40s",user_Current_Pass_Check);
+            pass_Counter = 0 ;
+            loop_counter2 = 0 ;
+            while ((pass_Char = _getch()) != 13 )
+            {
+                if(pass_Char == 8)
+                {
+                    loop_counter2--;
+                    if(pass_Counter != 0)
+                    {
+                        pass_Counter--;
+                    }
+                    system("cls");
+                    if(wrong_Pass_Input != 0)
+                    {
+                        printf("You have entered your current password WRONG!\nTry again:");
+                    }
+                    else
+                    {
+                        printf("Please enter your current password:");
+                    }
+                    for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
+                    {
+                        printf("*");
+                    }
+                }
+                else
+                {
+                    pass_Counter++;
+                    user_Current_Pass_Check[loop_counter2] = pass_Char ;
+                    if(wrong_Pass_Input != 0)
+                    {
+                        system("cls");
+                        printf("You have entered your current password WRONG!\nTry again:");
+                    }
+                    else
+                    {
+                        system("cls");
+                        printf("Please enter your current password:");
+                    }
+                    for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
+                    {
+                        printf("*");
+                    }
+                    loop_counter2++;
+                }
+            }
+            user_Current_Pass_Check[loop_counter2] = '\0';
+
             if(strcmp(password,user_Current_Pass_Check) != 0)
             {
                 if(wrong_Pass_Input == 4)
@@ -873,49 +1313,217 @@ int user_settings(char User[41] , char password[41])
                     fclose(Holder);
                     wrong_Pass_Input = 0 ;
                 }
+                system("cls");
                 printf("You have entered your current password WRONG!\nTry again:");
                 loop_counter--;
                 wrong_Pass_Input++;
             }
             else
             {
+                system("cls");
                 printf("Please enter your new password:");
                 fflush(stdin);
-                gets(temp->password);
+                pass_Counter = 0 ;
+                loop_counter2 = 0 ;
+                while ((pass_Char = _getch()) != 13 )
+                {
+                    if(pass_Char == 8)
+                    {
+                        loop_counter2--;
+                        if(pass_Counter != 0)
+                        {
+                            pass_Counter--;
+                        }
+                        system("cls");
+                        printf("Please enter your new password:");
+                        for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
+                        {
+                            printf("*");
+                        }
+                    }
+                    else
+                    {
+                        pass_Counter++;
+                        temp->password[loop_counter2] = pass_Char ;
+                        system("cls");
+                        printf("Please enter your new password:");
+                        for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
+                        {
+                            printf("*");
+                        }
+                        loop_counter2++;
+                    }
+                }
+                temp->password[loop_counter2] = '\0';
                 fflush(stdin);
 
+                system("cls");
                 printf("Please enter your new password again:");
-                gets(user_New_Pass_Check);
+                pass_Counter = 0 ;
+                loop_counter2 = 0 ;
+                while ((pass_Char = _getch()) != 13 )
+                {
+                    if(pass_Char == 8)
+                    {
+                        loop_counter2--;
+                        if(pass_Counter != 0)
+                        {
+                            pass_Counter--;
+                        }
+                        system("cls");
+                        printf("Please enter your new password again:");
+                        for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
+                        {
+                            printf("*");
+                        }
+                    }
+                    else
+                    {
+                        pass_Counter++;
+                        user_New_Pass_Check[loop_counter2] = pass_Char ;
+                        system("cls");
+                        printf("Please enter your new password again:");
+                        for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
+                        {
+                            printf("*");
+                        }
+                        loop_counter2++;
+                    }
+                }
+                user_New_Pass_Check[loop_counter2] = '\0';
                 fflush(stdin);
 
                 password_equallity_check(temp->password,user_New_Pass_Check);
 
-                printf("ALL DONE!");
-                Sleep(2000);
-                system("cls");
             }
         }
+    }
+    else if(user_desicion == 8)
+    {
+        return 1 ;
     }
 
     user_opener = fopen("users.txt", "w");
     temp = start ;
     do
     {
-        printf("%s",temp->phonenumber);
-        Sleep(5000);
         fprintf(user_opener , "%s\n%s\n%s\n%s\n%s\n%s\n%s\n",temp->username ,temp->name ,temp->surname ,temp->NID ,temp->phonenumber ,temp->Email , temp->password);
         temp=temp->Link ;
     }while(temp != NULL);
     fclose(user_opener);
+    printf("ALL DONE!");
+    Sleep(1000);
+    system("cls");
     return 0 ;
 }
 
 int statistics(char User[41])
 {
     system("cls");
+
+    int loop_counter , user_Choice ;
+    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+    {
+        printf("Choose what statistics you want:\n\n");
+        printf("1.Current account balance\t\t\t2.Specific year incomes\n\n3.Specific year expenses\t\t\t4.Incomes in a time interval\n\n");
+        printf("5.Expenses in a time interval\t\t\t6.Specific income in a time interval\n\n7.Specific expense in a time interval\t\t8.Revenue share\n\n");
+        printf("9.Cost share\t\t\t\t\t10.Details of income in a time interval\t\t\n\n11.Details of expense in a time interval\t12.Largest revenue figure\t\t\t\n\n");
+        printf("13.Largest cost figure\t\t\t\t14.Search income descriptions for a word\n\n15.Search expense descriptions for a word\n\n16.EXIT\n\nPlease enter your choice:");
+        scanf("%d",&user_Choice);
+        fflush(stdin);
+
+        if(user_Choice < 1 || user_Choice >16)
+        {
+            system("cls");
+            printf("Wrong input\n");
+            loop_counter--;
+        }
+        else if(user_Choice == 1)
+        {
+            Account_Balance(User);
+            loop_counter--;
+        }
+        else if(user_Choice == 2)
+        {
+            Specific_Year_Income(User);
+            loop_counter--;
+        }
+        else if(user_Choice == 3)
+        {
+            Specific_Year_Expense(User);
+            loop_counter--;
+        }
+        else if(user_Choice == 4)
+        {
+            Timed_Income(User);
+            loop_counter--;
+        }
+        else if(user_Choice == 5)
+        {
+            Timed_Expense(User);
+            loop_counter--;
+        }
+        else if(user_Choice == 6)
+        {
+            Specific_Timed_Income(User);
+            loop_counter--;
+        }
+        else if(user_Choice == 7)
+        {
+            Specific_Timed_Expense(User);
+            loop_counter--;
+        }
+        else if(user_Choice == 8)
+        {
+            Revenue_Share(User);
+            loop_counter--;
+        }
+        else if(user_Choice == 9)
+        {
+            Cost_Share(User);
+            loop_counter--;
+        }
+        else if(user_Choice == 10)
+        {
+            Timed_Income_Detail(User);
+            loop_counter--;
+        }
+        else if(user_Choice == 11)
+        {
+            Timed_Expense_Detail(User);
+            loop_counter--;
+        }
+        else if(user_Choice == 12)
+        {
+            Largest_Revenue(User);
+            loop_counter--;
+        }
+        else if(user_Choice == 13)
+        {
+            Largest_Cost(User);
+            loop_counter--;
+        }
+        else if(user_Choice == 14)
+        {
+            Search_income_descriptions(User);
+            loop_counter--;
+        }
+        else if(user_Choice == 15)
+        {
+            Search_expense_descriptions(User);
+            loop_counter--;
+        }
+        else if(user_Choice == 16)
+        {
+            return 1 ;
+        }
+    }
+}
+
+void Account_Balance(char User[41])
+{
     FILE *user_Data_File ;
     char user_Data_File_Name[46];
-    int user_Choice , loop_counter ;
     sprintf(user_Data_File_Name, "%s.txt",User);
 
     struct IE
@@ -968,55 +1576,154 @@ int statistics(char User[41])
         end->Link = NULL;
 
     }while(1);
-    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
-    {
-        printf("Choose what statistics you want:\n\n");
-        printf("1.Current account balance\t\t\t2.Specific year incomes\n\n3.Specific year expenses\t\t\t4.Incomes in a time interval\n\n");
-        printf("5.Expenses in a time interval\t\t\t6.Specific income in a time interval\n\n7.Specific expense in a time interval\t\t8.Revenue share\n\n");
-        printf("9.Cost share\t\t\t\t\t10.Details of income in a time interval\t\t\n\n11.Details of expense in a time interval\t12.Largest revenue figure\t\t\t\n\n");
-        printf("13.Largest cost figure\t\t\t\t14.Search income descriptions for a word\n\n15.Search expense descriptions for a word\n\n16.EXIT\n\nPlease enter your choice:");
-        scanf("%d",&user_Choice);
-        fflush(stdin);
 
-        if(user_Choice == 1)
+    float account_balance = 0 ;
+    temp = start ;
+    while(temp != NULL)
+    {
+        account_balance = account_balance + temp->money_Amount ;
+        temp = temp->Link ;
+    }
+    system("cls");
+    printf("Your account balance is :%f\n",account_balance) ;
+}
+
+void Specific_Year_Income(char User[41])
+{
+    FILE *user_Data_File ;
+    char user_Data_File_Name[46];
+    sprintf(user_Data_File_Name, "%s.txt",User);
+
+    struct IE
+    {
+        int money_Type ;
+        float money_Amount ;
+        int year ;
+        int month ;
+        int day ;
+        char description[41] ;
+        struct IE *Link ;
+    };
+
+    struct IE *start , *end , *temp ;
+    start = malloc(sizeof(struct IE)) ;
+    end = malloc(sizeof(struct IE)) ;
+
+    user_Data_File = fopen(user_Data_File_Name , "r") ;
+
+    fscanf(user_Data_File, "%d",&start->money_Type);
+    fgets(start->description , 40 , user_Data_File);
+    fgets(start->description , 40 , user_Data_File);
+    fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&start->year ,&start->month ,&start->day ,&start->money_Amount);
+    start->Link = end ;
+
+    fscanf(user_Data_File, "%d",&end->money_Type);
+    fgets(end->description , 40 , user_Data_File);
+    fgets(end->description , 40 , user_Data_File);
+    fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&end->year ,&end->month ,&end->day ,&end->money_Amount);
+    end->Link = NULL;
+
+
+    do
+    {
+        temp = malloc(sizeof(struct IE));
+        fscanf(user_Data_File, "%d",&temp->money_Type);
+        if(temp->money_Type > 4 || temp->money_Type < -7)
         {
-            float account_balance = 0 ;
-            temp = start ;
-            while(temp != NULL)
-            {
-                account_balance = account_balance + temp->money_Amount ;
-                temp = temp->Link ;
-            }
-            system("cls");
-            printf("Your account balance is :%f\n",account_balance) ;
-            loop_counter--;
+            break ;
         }
-        else if(user_Choice == 2)
+        else if(temp->money_Type < 1 && temp->money_Type > -1)
         {
-            int specific_Year ;
-            float Total ;
-            printf("Please enter the specific year:");
-            scanf("%d",&specific_Year);
-            fflush(stdin);
-            temp = start ;
-            while(temp != NULL)
-            {
-                if(temp->money_Type > 0)
-                {
-                    if(temp->year == specific_Year)
-                    {
-                        Total += temp->money_Amount ;
-                    }
-                }
-                temp = temp->Link ;
-            }
-            system("cls");
-            printf("Your total income of year %d is:%f\n",specific_Year ,Total); ;
-            loop_counter--;
+            break ;
         }
-        else if(user_Choice == 3)
+        fgets(temp->description , 40 , user_Data_File);
+        fgets(temp->description , 40 , user_Data_File);
+        fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&temp->year ,&temp->month ,&temp->day ,&temp->money_Amount);
+        end->Link = temp;
+        end = temp;
+        end->Link = NULL;
+
+    }while(1);
+
+    int specific_Year ;
+    float Total ;
+    printf("Please enter the specific year:");
+    scanf("%d",&specific_Year);
+    fflush(stdin);
+    temp = start ;
+    while(temp != NULL)
+    {
+        if(temp->money_Type > 0)
         {
-            int specific_Year ;
+            if(temp->year == specific_Year)
+            {
+                Total += temp->money_Amount ;
+            }
+        }
+        temp = temp->Link ;
+    }
+    system("cls");
+    printf("Your total income of year %d is:%f\n",specific_Year ,Total); ;
+}
+
+void Specific_Year_Expense(char User[41])
+{
+    FILE *user_Data_File ;
+    char user_Data_File_Name[46];
+    sprintf(user_Data_File_Name, "%s.txt",User);
+
+    struct IE
+    {
+        int money_Type ;
+        float money_Amount ;
+        int year ;
+        int month ;
+        int day ;
+        char description[41] ;
+        struct IE *Link ;
+    };
+
+    struct IE *start , *end , *temp ;
+    start = malloc(sizeof(struct IE)) ;
+    end = malloc(sizeof(struct IE)) ;
+
+    user_Data_File = fopen(user_Data_File_Name , "r") ;
+
+    fscanf(user_Data_File, "%d",&start->money_Type);
+    fgets(start->description , 40 , user_Data_File);
+    fgets(start->description , 40 , user_Data_File);
+    fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&start->year ,&start->month ,&start->day ,&start->money_Amount);
+    start->Link = end ;
+
+    fscanf(user_Data_File, "%d",&end->money_Type);
+    fgets(end->description , 40 , user_Data_File);
+    fgets(end->description , 40 , user_Data_File);
+    fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&end->year ,&end->month ,&end->day ,&end->money_Amount);
+    end->Link = NULL;
+
+
+    do
+    {
+        temp = malloc(sizeof(struct IE));
+        fscanf(user_Data_File, "%d",&temp->money_Type);
+        if(temp->money_Type > 4 || temp->money_Type < -7)
+        {
+            break ;
+        }
+        else if(temp->money_Type < 1 && temp->money_Type > -1)
+        {
+            break ;
+        }
+        fgets(temp->description , 40 , user_Data_File);
+        fgets(temp->description , 40 , user_Data_File);
+        fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&temp->year ,&temp->month ,&temp->day ,&temp->money_Amount);
+        end->Link = temp;
+        end = temp;
+        end->Link = NULL;
+
+    }while(1);
+
+    int specific_Year ;
             float Total ;
             printf("Please enter the specific year:");
             scanf("%d",&specific_Year);
@@ -1035,11 +1742,66 @@ int statistics(char User[41])
             }
             system("cls");
             printf("Your total expense of year %d is:%f\n",specific_Year ,Total); ;
-            loop_counter--;
-        }
-        else if(user_Choice == 4)
+}
+
+void Timed_Income(char User[41])
+{
+    FILE *user_Data_File ;
+    char user_Data_File_Name[46];
+    sprintf(user_Data_File_Name, "%s.txt",User);
+
+    struct IE
+    {
+        int money_Type ;
+        float money_Amount ;
+        int year ;
+        int month ;
+        int day ;
+        char description[41] ;
+        struct IE *Link ;
+    };
+
+    struct IE *start , *end , *temp ;
+    start = malloc(sizeof(struct IE)) ;
+    end = malloc(sizeof(struct IE)) ;
+
+    user_Data_File = fopen(user_Data_File_Name , "r") ;
+
+    fscanf(user_Data_File, "%d",&start->money_Type);
+    fgets(start->description , 40 , user_Data_File);
+    fgets(start->description , 40 , user_Data_File);
+    fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&start->year ,&start->month ,&start->day ,&start->money_Amount);
+    start->Link = end ;
+
+    fscanf(user_Data_File, "%d",&end->money_Type);
+    fgets(end->description , 40 , user_Data_File);
+    fgets(end->description , 40 , user_Data_File);
+    fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&end->year ,&end->month ,&end->day ,&end->money_Amount);
+    end->Link = NULL;
+
+
+    do
+    {
+        temp = malloc(sizeof(struct IE));
+        fscanf(user_Data_File, "%d",&temp->money_Type);
+        if(temp->money_Type > 4 || temp->money_Type < -7)
         {
-            int B_year ,B_month ,B_day ;
+            break ;
+        }
+        else if(temp->money_Type < 1 && temp->money_Type > -1)
+        {
+            break ;
+        }
+        fgets(temp->description , 40 , user_Data_File);
+        fgets(temp->description , 40 , user_Data_File);
+        fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&temp->year ,&temp->month ,&temp->day ,&temp->money_Amount);
+        end->Link = temp;
+        end = temp;
+        end->Link = NULL;
+
+    }while(1);
+
+    int B_year ,B_month ,B_day ;
             printf("Please enter the beginning of the interval(YYYY/MM/DD):");
             scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
             fflush(stdin);
@@ -1092,11 +1854,66 @@ int statistics(char User[41])
             }
             system("cls");
             printf("The total income in the interval is:%f\n",Total);
-            loop_counter--;
-        }
-        else if(user_Choice == 5)
+}
+
+void Timed_Expense(char User[41])
+{
+    FILE *user_Data_File ;
+    char user_Data_File_Name[46];
+    sprintf(user_Data_File_Name, "%s.txt",User);
+
+    struct IE
+    {
+        int money_Type ;
+        float money_Amount ;
+        int year ;
+        int month ;
+        int day ;
+        char description[41] ;
+        struct IE *Link ;
+    };
+
+    struct IE *start , *end , *temp ;
+    start = malloc(sizeof(struct IE)) ;
+    end = malloc(sizeof(struct IE)) ;
+
+    user_Data_File = fopen(user_Data_File_Name , "r") ;
+
+    fscanf(user_Data_File, "%d",&start->money_Type);
+    fgets(start->description , 40 , user_Data_File);
+    fgets(start->description , 40 , user_Data_File);
+    fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&start->year ,&start->month ,&start->day ,&start->money_Amount);
+    start->Link = end ;
+
+    fscanf(user_Data_File, "%d",&end->money_Type);
+    fgets(end->description , 40 , user_Data_File);
+    fgets(end->description , 40 , user_Data_File);
+    fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&end->year ,&end->month ,&end->day ,&end->money_Amount);
+    end->Link = NULL;
+
+
+    do
+    {
+        temp = malloc(sizeof(struct IE));
+        fscanf(user_Data_File, "%d",&temp->money_Type);
+        if(temp->money_Type > 4 || temp->money_Type < -7)
         {
-            int B_year ,B_month ,B_day ;
+            break ;
+        }
+        else if(temp->money_Type < 1 && temp->money_Type > -1)
+        {
+            break ;
+        }
+        fgets(temp->description , 40 , user_Data_File);
+        fgets(temp->description , 40 , user_Data_File);
+        fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&temp->year ,&temp->month ,&temp->day ,&temp->money_Amount);
+        end->Link = temp;
+        end = temp;
+        end->Link = NULL;
+
+    }while(1);
+
+    int B_year ,B_month ,B_day ;
             printf("Please enter the beginning of the interval(YYYY/MM/DD):");
             scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
             fflush(stdin);
@@ -1149,11 +1966,66 @@ int statistics(char User[41])
             }
             system("cls");
             printf("The total expense in the interval is:%f\n",Total);
-            loop_counter--;
-        }
-        else if(user_Choice == 6)
+}
+
+void Specific_Timed_Income(char User[41])
+{
+    FILE *user_Data_File ;
+    char user_Data_File_Name[46];
+    sprintf(user_Data_File_Name, "%s.txt",User);
+
+    struct IE
+    {
+        int money_Type ;
+        float money_Amount ;
+        int year ;
+        int month ;
+        int day ;
+        char description[41] ;
+        struct IE *Link ;
+    };
+
+    struct IE *start , *end , *temp ;
+    start = malloc(sizeof(struct IE)) ;
+    end = malloc(sizeof(struct IE)) ;
+
+    user_Data_File = fopen(user_Data_File_Name , "r") ;
+
+    fscanf(user_Data_File, "%d",&start->money_Type);
+    fgets(start->description , 40 , user_Data_File);
+    fgets(start->description , 40 , user_Data_File);
+    fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&start->year ,&start->month ,&start->day ,&start->money_Amount);
+    start->Link = end ;
+
+    fscanf(user_Data_File, "%d",&end->money_Type);
+    fgets(end->description , 40 , user_Data_File);
+    fgets(end->description , 40 , user_Data_File);
+    fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&end->year ,&end->month ,&end->day ,&end->money_Amount);
+    end->Link = NULL;
+
+
+    do
+    {
+        temp = malloc(sizeof(struct IE));
+        fscanf(user_Data_File, "%d",&temp->money_Type);
+        if(temp->money_Type > 4 || temp->money_Type < -7)
         {
-            int B_year ,B_month ,B_day ,income_Type ;
+            break ;
+        }
+        else if(temp->money_Type < 1 && temp->money_Type > -1)
+        {
+            break ;
+        }
+        fgets(temp->description , 40 , user_Data_File);
+        fgets(temp->description , 40 , user_Data_File);
+        fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&temp->year ,&temp->month ,&temp->day ,&temp->money_Amount);
+        end->Link = temp;
+        end = temp;
+        end->Link = NULL;
+
+    }while(1);
+
+    int B_year ,B_month ,B_day ,income_Type ;
             printf("Please enter the beginning of the interval(YYYY/MM/DD):");
             scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
             fflush(stdin);
@@ -1211,11 +2083,66 @@ int statistics(char User[41])
             }
             system("cls");
             printf("The total income in the interval of that type is:%f\n",Total);
-            loop_counter--;
-        }
-        else if(user_Choice == 7)
+}
+
+void Specific_Timed_Expense(char User[41])
+{
+    FILE *user_Data_File ;
+    char user_Data_File_Name[46];
+    sprintf(user_Data_File_Name, "%s.txt",User);
+
+    struct IE
+    {
+        int money_Type ;
+        float money_Amount ;
+        int year ;
+        int month ;
+        int day ;
+        char description[41] ;
+        struct IE *Link ;
+    };
+
+    struct IE *start , *end , *temp ;
+    start = malloc(sizeof(struct IE)) ;
+    end = malloc(sizeof(struct IE)) ;
+
+    user_Data_File = fopen(user_Data_File_Name , "r") ;
+
+    fscanf(user_Data_File, "%d",&start->money_Type);
+    fgets(start->description , 40 , user_Data_File);
+    fgets(start->description , 40 , user_Data_File);
+    fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&start->year ,&start->month ,&start->day ,&start->money_Amount);
+    start->Link = end ;
+
+    fscanf(user_Data_File, "%d",&end->money_Type);
+    fgets(end->description , 40 , user_Data_File);
+    fgets(end->description , 40 , user_Data_File);
+    fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&end->year ,&end->month ,&end->day ,&end->money_Amount);
+    end->Link = NULL;
+
+
+    do
+    {
+        temp = malloc(sizeof(struct IE));
+        fscanf(user_Data_File, "%d",&temp->money_Type);
+        if(temp->money_Type > 4 || temp->money_Type < -7)
         {
-            int B_year ,B_month ,B_day ,expense_Type ;
+            break ;
+        }
+        else if(temp->money_Type < 1 && temp->money_Type > -1)
+        {
+            break ;
+        }
+        fgets(temp->description , 40 , user_Data_File);
+        fgets(temp->description , 40 , user_Data_File);
+        fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&temp->year ,&temp->month ,&temp->day ,&temp->money_Amount);
+        end->Link = temp;
+        end = temp;
+        end->Link = NULL;
+
+    }while(1);
+
+    int B_year ,B_month ,B_day ,expense_Type ;
             printf("Please enter the beginning of the interval(YYYY/MM/DD):");
             scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
             fflush(stdin);
@@ -1274,11 +2201,66 @@ int statistics(char User[41])
             }
             system("cls");
             printf("The total expense in the interval of that type is:%f\n",-Total);
-            loop_counter--;
-        }
-        else if(user_Choice == 8)
+}
+
+void Revenue_Share(char User[41])
+{
+    FILE *user_Data_File ;
+    char user_Data_File_Name[46];
+    sprintf(user_Data_File_Name, "%s.txt",User);
+
+    struct IE
+    {
+        int money_Type ;
+        float money_Amount ;
+        int year ;
+        int month ;
+        int day ;
+        char description[41] ;
+        struct IE *Link ;
+    };
+
+    struct IE *start , *end , *temp ;
+    start = malloc(sizeof(struct IE)) ;
+    end = malloc(sizeof(struct IE)) ;
+
+    user_Data_File = fopen(user_Data_File_Name , "r") ;
+
+    fscanf(user_Data_File, "%d",&start->money_Type);
+    fgets(start->description , 40 , user_Data_File);
+    fgets(start->description , 40 , user_Data_File);
+    fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&start->year ,&start->month ,&start->day ,&start->money_Amount);
+    start->Link = end ;
+
+    fscanf(user_Data_File, "%d",&end->money_Type);
+    fgets(end->description , 40 , user_Data_File);
+    fgets(end->description , 40 , user_Data_File);
+    fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&end->year ,&end->month ,&end->day ,&end->money_Amount);
+    end->Link = NULL;
+
+
+    do
+    {
+        temp = malloc(sizeof(struct IE));
+        fscanf(user_Data_File, "%d",&temp->money_Type);
+        if(temp->money_Type > 4 || temp->money_Type < -7)
         {
-            int B_year ,B_month ,B_day ;
+            break ;
+        }
+        else if(temp->money_Type < 1 && temp->money_Type > -1)
+        {
+            break ;
+        }
+        fgets(temp->description , 40 , user_Data_File);
+        fgets(temp->description , 40 , user_Data_File);
+        fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&temp->year ,&temp->month ,&temp->day ,&temp->money_Amount);
+        end->Link = temp;
+        end = temp;
+        end->Link = NULL;
+
+    }while(1);
+
+    int B_year ,B_month ,B_day ;
             printf("Please enter the beginning of the interval(YYYY/MM/DD):");
             scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
             fflush(stdin);
@@ -1371,11 +2353,66 @@ int statistics(char User[41])
             }
             system("cls");
             printf("The revenues share is:\n1.Programming salary:%f %%\t2.YARANEH:%f %%\n3.Pocket money:%f %%\t4.University grant:%f %%\n\n",((total_Salary/Total)*100) ,((total_Yaraneh/Total)*100) ,((total_Pocket_Money/Total)*100) ,((total_Grant/Total)*100));
-            loop_counter--;
-        }
-        else if(user_Choice == 9)
+}
+
+void Cost_Share(char User[41])
+{
+    FILE *user_Data_File ;
+    char user_Data_File_Name[46];
+    sprintf(user_Data_File_Name, "%s.txt",User);
+
+    struct IE
+    {
+        int money_Type ;
+        float money_Amount ;
+        int year ;
+        int month ;
+        int day ;
+        char description[41] ;
+        struct IE *Link ;
+    };
+
+    struct IE *start , *end , *temp ;
+    start = malloc(sizeof(struct IE)) ;
+    end = malloc(sizeof(struct IE)) ;
+
+    user_Data_File = fopen(user_Data_File_Name , "r") ;
+
+    fscanf(user_Data_File, "%d",&start->money_Type);
+    fgets(start->description , 40 , user_Data_File);
+    fgets(start->description , 40 , user_Data_File);
+    fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&start->year ,&start->month ,&start->day ,&start->money_Amount);
+    start->Link = end ;
+
+    fscanf(user_Data_File, "%d",&end->money_Type);
+    fgets(end->description , 40 , user_Data_File);
+    fgets(end->description , 40 , user_Data_File);
+    fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&end->year ,&end->month ,&end->day ,&end->money_Amount);
+    end->Link = NULL;
+
+
+    do
+    {
+        temp = malloc(sizeof(struct IE));
+        fscanf(user_Data_File, "%d",&temp->money_Type);
+        if(temp->money_Type > 4 || temp->money_Type < -7)
         {
-            int B_year ,B_month ,B_day ;
+            break ;
+        }
+        else if(temp->money_Type < 1 && temp->money_Type > -1)
+        {
+            break ;
+        }
+        fgets(temp->description , 40 , user_Data_File);
+        fgets(temp->description , 40 , user_Data_File);
+        fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&temp->year ,&temp->month ,&temp->day ,&temp->money_Amount);
+        end->Link = temp;
+        end = temp;
+        end->Link = NULL;
+
+    }while(1);
+
+    int B_year ,B_month ,B_day ;
             printf("Please enter the beginning of the interval(YYYY/MM/DD):");
             scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
             fflush(stdin);
@@ -1499,11 +2536,66 @@ int statistics(char User[41])
             system("cls");
             printf("The revenues share is:\n1.WEarings:%f %%\t\t\t\t2.Transportations:%f %%\n\n3.Tuition fees:%f %%\t\t\t4.Entertainment:%f %%",((total_Wearing/Total)*100) ,((total_Transport/Total)*100) ,((total_Tuition/Total)*100) ,((total_Entertainment/Total)*100));
             printf("\n\n5.Mobile and Internet bill:%f %%\t\t6.Medical expenses:%f %%\n\n\t\t\t7.Charity:%f %%\n\n",((total_Mobile_Bill/Total)*100) ,((total_Medical/Total)*100) ,((total_Charity/Total)*100));
-            loop_counter--;
-        }
-        else if(user_Choice == 10)
+}
+
+void Timed_Income_Detail(char User[41])
+{
+    FILE *user_Data_File ;
+    char user_Data_File_Name[46];
+    sprintf(user_Data_File_Name, "%s.txt",User);
+
+    struct IE
+    {
+        int money_Type ;
+        float money_Amount ;
+        int year ;
+        int month ;
+        int day ;
+        char description[41] ;
+        struct IE *Link ;
+    };
+
+    struct IE *start , *end , *temp ;
+    start = malloc(sizeof(struct IE)) ;
+    end = malloc(sizeof(struct IE)) ;
+
+    user_Data_File = fopen(user_Data_File_Name , "r") ;
+
+    fscanf(user_Data_File, "%d",&start->money_Type);
+    fgets(start->description , 40 , user_Data_File);
+    fgets(start->description , 40 , user_Data_File);
+    fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&start->year ,&start->month ,&start->day ,&start->money_Amount);
+    start->Link = end ;
+
+    fscanf(user_Data_File, "%d",&end->money_Type);
+    fgets(end->description , 40 , user_Data_File);
+    fgets(end->description , 40 , user_Data_File);
+    fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&end->year ,&end->month ,&end->day ,&end->money_Amount);
+    end->Link = NULL;
+
+
+    do
+    {
+        temp = malloc(sizeof(struct IE));
+        fscanf(user_Data_File, "%d",&temp->money_Type);
+        if(temp->money_Type > 4 || temp->money_Type < -7)
         {
-            int B_year ,B_month ,B_day ;
+            break ;
+        }
+        else if(temp->money_Type < 1 && temp->money_Type > -1)
+        {
+            break ;
+        }
+        fgets(temp->description , 40 , user_Data_File);
+        fgets(temp->description , 40 , user_Data_File);
+        fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&temp->year ,&temp->month ,&temp->day ,&temp->money_Amount);
+        end->Link = temp;
+        end = temp;
+        end->Link = NULL;
+
+    }while(1);
+
+    int B_year ,B_month ,B_day ;
             printf("Please enter the beginning of the interval(YYYY/MM/DD):");
             scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
             fflush(stdin);
@@ -1645,11 +2737,66 @@ int statistics(char User[41])
                 }
                 temp = temp->Link ;
             }
-            loop_counter--;
-        }
-        else if(user_Choice == 11)
+}
+
+void Timed_Expense_Detail(char User[41])
+{
+    FILE *user_Data_File ;
+    char user_Data_File_Name[46];
+    sprintf(user_Data_File_Name, "%s.txt",User);
+
+    struct IE
+    {
+        int money_Type ;
+        float money_Amount ;
+        int year ;
+        int month ;
+        int day ;
+        char description[41] ;
+        struct IE *Link ;
+    };
+
+    struct IE *start , *end , *temp ;
+    start = malloc(sizeof(struct IE)) ;
+    end = malloc(sizeof(struct IE)) ;
+
+    user_Data_File = fopen(user_Data_File_Name , "r") ;
+
+    fscanf(user_Data_File, "%d",&start->money_Type);
+    fgets(start->description , 40 , user_Data_File);
+    fgets(start->description , 40 , user_Data_File);
+    fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&start->year ,&start->month ,&start->day ,&start->money_Amount);
+    start->Link = end ;
+
+    fscanf(user_Data_File, "%d",&end->money_Type);
+    fgets(end->description , 40 , user_Data_File);
+    fgets(end->description , 40 , user_Data_File);
+    fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&end->year ,&end->month ,&end->day ,&end->money_Amount);
+    end->Link = NULL;
+
+
+    do
+    {
+        temp = malloc(sizeof(struct IE));
+        fscanf(user_Data_File, "%d",&temp->money_Type);
+        if(temp->money_Type > 4 || temp->money_Type < -7)
         {
-            int B_year ,B_month ,B_day ;
+            break ;
+        }
+        else if(temp->money_Type < 1 && temp->money_Type > -1)
+        {
+            break ;
+        }
+        fgets(temp->description , 40 , user_Data_File);
+        fgets(temp->description , 40 , user_Data_File);
+        fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&temp->year ,&temp->month ,&temp->day ,&temp->money_Amount);
+        end->Link = temp;
+        end = temp;
+        end->Link = NULL;
+
+    }while(1);
+
+    int B_year ,B_month ,B_day ;
             printf("Please enter the beginning of the interval(YYYY/MM/DD):");
             scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
             fflush(stdin);
@@ -1851,11 +2998,66 @@ int statistics(char User[41])
                 }
                 temp = temp->Link ;
             }
-            loop_counter--;
-        }
-        else if(user_Choice == 12)
+}
+
+void Largest_Revenue(char User[41])
+{
+    FILE *user_Data_File ;
+    char user_Data_File_Name[46];
+    sprintf(user_Data_File_Name, "%s.txt",User);
+
+    struct IE
+    {
+        int money_Type ;
+        float money_Amount ;
+        int year ;
+        int month ;
+        int day ;
+        char description[41] ;
+        struct IE *Link ;
+    };
+
+    struct IE *start , *end , *temp ;
+    start = malloc(sizeof(struct IE)) ;
+    end = malloc(sizeof(struct IE)) ;
+
+    user_Data_File = fopen(user_Data_File_Name , "r") ;
+
+    fscanf(user_Data_File, "%d",&start->money_Type);
+    fgets(start->description , 40 , user_Data_File);
+    fgets(start->description , 40 , user_Data_File);
+    fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&start->year ,&start->month ,&start->day ,&start->money_Amount);
+    start->Link = end ;
+
+    fscanf(user_Data_File, "%d",&end->money_Type);
+    fgets(end->description , 40 , user_Data_File);
+    fgets(end->description , 40 , user_Data_File);
+    fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&end->year ,&end->month ,&end->day ,&end->money_Amount);
+    end->Link = NULL;
+
+
+    do
+    {
+        temp = malloc(sizeof(struct IE));
+        fscanf(user_Data_File, "%d",&temp->money_Type);
+        if(temp->money_Type > 4 || temp->money_Type < -7)
         {
-            int B_year ,B_month ,B_day ;
+            break ;
+        }
+        else if(temp->money_Type < 1 && temp->money_Type > -1)
+        {
+            break ;
+        }
+        fgets(temp->description , 40 , user_Data_File);
+        fgets(temp->description , 40 , user_Data_File);
+        fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&temp->year ,&temp->month ,&temp->day ,&temp->money_Amount);
+        end->Link = temp;
+        end = temp;
+        end->Link = NULL;
+
+    }while(1);
+
+    int B_year ,B_month ,B_day ;
             printf("Please enter the beginning of the interval(YYYY/MM/DD):");
             scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
             fflush(stdin);
@@ -1923,11 +3125,66 @@ int statistics(char User[41])
             }
             system("cls");
             printf("The Maximum amount of the incomes in the interval is: %f RIAL\n\n",Maximum);
-            loop_counter--;
-        }
-        else if(user_Choice == 13)
+}
+
+void Largest_Cost(char User[41])
+{
+    FILE *user_Data_File ;
+    char user_Data_File_Name[46];
+    sprintf(user_Data_File_Name, "%s.txt",User);
+
+    struct IE
+    {
+        int money_Type ;
+        float money_Amount ;
+        int year ;
+        int month ;
+        int day ;
+        char description[41] ;
+        struct IE *Link ;
+    };
+
+    struct IE *start , *end , *temp ;
+    start = malloc(sizeof(struct IE)) ;
+    end = malloc(sizeof(struct IE)) ;
+
+    user_Data_File = fopen(user_Data_File_Name , "r") ;
+
+    fscanf(user_Data_File, "%d",&start->money_Type);
+    fgets(start->description , 40 , user_Data_File);
+    fgets(start->description , 40 , user_Data_File);
+    fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&start->year ,&start->month ,&start->day ,&start->money_Amount);
+    start->Link = end ;
+
+    fscanf(user_Data_File, "%d",&end->money_Type);
+    fgets(end->description , 40 , user_Data_File);
+    fgets(end->description , 40 , user_Data_File);
+    fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&end->year ,&end->month ,&end->day ,&end->money_Amount);
+    end->Link = NULL;
+
+
+    do
+    {
+        temp = malloc(sizeof(struct IE));
+        fscanf(user_Data_File, "%d",&temp->money_Type);
+        if(temp->money_Type > 4 || temp->money_Type < -7)
         {
-            int B_year ,B_month ,B_day ;
+            break ;
+        }
+        else if(temp->money_Type < 1 && temp->money_Type > -1)
+        {
+            break ;
+        }
+        fgets(temp->description , 40 , user_Data_File);
+        fgets(temp->description , 40 , user_Data_File);
+        fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&temp->year ,&temp->month ,&temp->day ,&temp->money_Amount);
+        end->Link = temp;
+        end = temp;
+        end->Link = NULL;
+
+    }while(1);
+
+    int B_year ,B_month ,B_day ;
             printf("Please enter the beginning of the interval(YYYY/MM/DD):");
             scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
             fflush(stdin);
@@ -1995,11 +3252,246 @@ int statistics(char User[41])
             }
             system("cls");
             printf("The Maximum amount of the expenses in the interval is: %f RIAL\n\n",-Maximum);
-            loop_counter--;
-        }
-        else if(user_Choice == 16)
+}
+
+void Search_income_descriptions(char User[41])
+{
+    system("cls");
+
+    FILE *user_Data_File ;
+    char user_Data_File_Name[46];
+    sprintf(user_Data_File_Name, "%s.txt",User);
+
+    struct IE
+    {
+        int money_Type ;
+        float money_Amount ;
+        int year ;
+        int month ;
+        int day ;
+        char description[41] ;
+        struct IE *Link ;
+    };
+
+    struct IE *start , *end , *temp ;
+    start = malloc(sizeof(struct IE)) ;
+    end = malloc(sizeof(struct IE)) ;
+
+    user_Data_File = fopen(user_Data_File_Name , "r") ;
+
+    fscanf(user_Data_File, "%d",&start->money_Type);
+    fgets(start->description , 40 , user_Data_File);
+    fgets(start->description , 40 , user_Data_File);
+    fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&start->year ,&start->month ,&start->day ,&start->money_Amount);
+    start->Link = end ;
+
+    fscanf(user_Data_File, "%d",&end->money_Type);
+    fgets(end->description , 40 , user_Data_File);
+    fgets(end->description , 40 , user_Data_File);
+    fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&end->year ,&end->month ,&end->day ,&end->money_Amount);
+    end->Link = NULL;
+
+
+    do
+    {
+        temp = malloc(sizeof(struct IE));
+        fscanf(user_Data_File, "%d",&temp->money_Type);
+        if(temp->money_Type > 4 || temp->money_Type < -7)
         {
-            return 1 ;
+            break ;
         }
-    }
+        else if(temp->money_Type < 1 && temp->money_Type > -1)
+        {
+            break ;
+        }
+        fgets(temp->description , 40 , user_Data_File);
+        fgets(temp->description , 40 , user_Data_File);
+        fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&temp->year ,&temp->month ,&temp->day ,&temp->money_Amount);
+        end->Link = temp;
+        end = temp;
+        end->Link = NULL;
+
+    }while(1);
+
+    char Word[11];
+    int Word_counter ;
+    printf("Please enter the word you want to search for(from 2 to 10 characters):");
+    scanf("%10s",Word);
+    fflush(stdin);
+
+    Word_counter = strlen(Word);
+    int loop_counter ;
+    int loop_counter2 = 0 ;
+    int same ;
+    temp = start;
+    do
+    {
+        same = 0 ;
+        for(loop_counter = 0 ; loop_counter < Word_counter ; loop_counter++)
+        {
+            if(temp->description[loop_counter2] == Word[loop_counter])
+            {
+                same++;
+            }
+            else
+            {
+                same = 0 ;
+                loop_counter--;
+            }
+            loop_counter2++;
+        }
+        if(same == strlen(Word))
+        {
+            if(temp->money_Type > 0)
+            {
+                printf("\nMoney type:");
+                if(temp->money_Type == 1)
+                {
+                    printf("Programming Salary\n");
+                }
+                else if(temp->money_Type == 2)
+                {
+                    printf("YARANRH\n");
+                }
+                else if(temp->money_Type == 3)
+                {
+                    printf("Pocket money\n");
+                }
+                else if(temp->money_Type == 4)
+                {
+                    printf("University Grant\n");
+                }
+                printf("Description:%sMoney amount:%f\nDate:%d\\%d\\%d\n\n",temp->description ,temp->money_Amount ,temp->year ,temp->month ,temp->day);
+            }
+        }
+        temp=temp->Link ;
+        loop_counter2 = 0 ;
+    }while(temp != NULL);
+}
+
+void Search_expense_descriptions(char User[41])
+{
+    system("cls");
+
+    FILE *user_Data_File ;
+    char user_Data_File_Name[46];
+    sprintf(user_Data_File_Name, "%s.txt",User);
+
+    struct IE
+    {
+        int money_Type ;
+        float money_Amount ;
+        int year ;
+        int month ;
+        int day ;
+        char description[41] ;
+        struct IE *Link ;
+    };
+
+    struct IE *start , *end , *temp ;
+    start = malloc(sizeof(struct IE)) ;
+    end = malloc(sizeof(struct IE)) ;
+
+    user_Data_File = fopen(user_Data_File_Name , "r") ;
+
+    fscanf(user_Data_File, "%d",&start->money_Type);
+    fgets(start->description , 40 , user_Data_File);
+    fgets(start->description , 40 , user_Data_File);
+    fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&start->year ,&start->month ,&start->day ,&start->money_Amount);
+    start->Link = end ;
+
+    fscanf(user_Data_File, "%d",&end->money_Type);
+    fgets(end->description , 40 , user_Data_File);
+    fgets(end->description , 40 , user_Data_File);
+    fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&end->year ,&end->month ,&end->day ,&end->money_Amount);
+    end->Link = NULL;
+
+
+    do
+    {
+        temp = malloc(sizeof(struct IE));
+        fscanf(user_Data_File, "%d",&temp->money_Type);
+        if(temp->money_Type > 4 || temp->money_Type < -7)
+        {
+            break ;
+        }
+        else if(temp->money_Type < 1 && temp->money_Type > -1)
+        {
+            break ;
+        }
+        fgets(temp->description , 40 , user_Data_File);
+        fgets(temp->description , 40 , user_Data_File);
+        fscanf(user_Data_File, "%d%*c%d%*c%d%f" ,&temp->year ,&temp->month ,&temp->day ,&temp->money_Amount);
+        end->Link = temp;
+        end = temp;
+        end->Link = NULL;
+
+    }while(1);
+
+    char Word[11];
+    int Word_counter ;
+    printf("Please enter the word you want to search for(from 2 to 10 characters):");
+    scanf("%10s",Word);
+    fflush(stdin);
+
+    Word_counter = strlen(Word);
+    int loop_counter ;
+    int loop_counter2 = 0 ;
+    int same ;
+    temp = start;
+    do
+    {
+        same = 0 ;
+        for(loop_counter = 0 ; loop_counter < Word_counter ; loop_counter++)
+        {
+            if(temp->description[loop_counter2] == Word[loop_counter])
+            {
+                same++;
+            }
+            else
+            {
+                same = 0 ;
+                loop_counter--;
+            }
+            loop_counter2++;
+        }
+        if(same == strlen(Word))
+        {
+            if(temp->money_Type < 0)
+            {
+                printf("\nExpense type:");
+                if(temp->money_Type == -1)
+                {
+                    printf("Wearings\n");
+                }
+                else if(temp->money_Type == -2)
+                {
+                    printf("Transportation\n");
+                }
+                else if(temp->money_Type == -3)
+                {
+                    printf("Tuition fees\n");
+                }
+                else if(temp->money_Type == -4)
+                {
+                    printf("Entertainment\n");
+                }
+                else if(temp->money_Type == -5)
+                {
+                    printf("Mobile and Internet bill\n");
+                }
+                else if(temp->money_Type == -6)
+                {
+                    printf("Medical expenses\n");
+                }
+                else if(temp->money_Type == -7)
+                {
+                    printf("Charity donation\n");
+                }
+                printf("Description:%sExpense amount:%f\nDate:%d\\%d\\%d\n\n",temp->description ,temp->money_Amount ,temp->year ,temp->month ,temp->day);
+            }
+        }
+        temp=temp->Link ;
+        loop_counter2 = 0 ;
+    }while(temp != NULL);
 }
