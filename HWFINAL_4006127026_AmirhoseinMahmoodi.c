@@ -4,6 +4,7 @@
 #include<ctype.h>
 #include<stdlib.h>
 #include<windows.h>
+
 int  mainmenu();
 int  log_in();
 int  Hold;
@@ -15,6 +16,9 @@ int  User_Profile();
 int  user_settings(char User[41] , char password[41]);
 int  statistics(char User[41]);
 int  email_Check(char Email[41]);
+int  password_Complexity_check(char password[41]);
+int  non_Space_Check(char object[41]);
+int  username_Validity_Check(char username[41]);
 void intro();
 void user_choice(int user_decision);
 void sign_up();
@@ -172,7 +176,6 @@ void sign_up()
     {
         start = malloc(sizeof(struct username));
         fscanf(user_opener , "%s", start->username);
-        printf("%s",start->username);
         start->Link = NULL ;
 
         if(user_count > 1)
@@ -180,7 +183,6 @@ void sign_up()
             end = malloc(sizeof(struct username));
             start->Link = end ;
             fscanf(user_opener , "%*s%*s%*s%*s%*s%*s%s", end->username);
-            printf("\n%s",end->username);
             end->Link = NULL ;
         }
     }
@@ -203,13 +205,32 @@ void sign_up()
         }
     }
     fflush(stdin);
+
+
     printf("For all parts use underline ('_') instead of space character(' ')\n");
     printf("Please enter your username up to 40 characters:");
+    int non_Space_Check_Value ;
+    int username_Validity_Check_Value ;
     if(temp != NULL)
     {
         for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
         {
             gets(NewUser.username);
+            non_Space_Check_Value = non_Space_Check(NewUser.username);
+            if(non_Space_Check_Value == 1)
+            {
+                loop_counter--;
+                continue ;
+            }
+            else
+            {
+                username_Validity_Check_Value = username_Validity_Check(NewUser.username);
+                if(username_Validity_Check_Value == 1)
+                {
+                    loop_counter--;
+                    continue ;
+                }
+            }
             temp = start ;
             while(temp != NULL)
             {
@@ -230,16 +251,40 @@ void sign_up()
     }
     else
     {
-        gets(NewUser.username);
+        for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+        {
+            gets(NewUser.username);
+            non_Space_Check_Value = non_Space_Check(NewUser.username);
+            if(non_Space_Check_Value == 1)
+            {
+                loop_counter--;
+            }
+        }
     }
 
     fflush(stdin);
     printf("please enter your name:\n");
-    gets(NewUser.Name);
-    fflush(stdin);
+    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+    {
+        gets(NewUser.Name);
+        fflush(stdin);
+        non_Space_Check_Value = non_Space_Check(NewUser.Name);
+        if(non_Space_Check_Value == 1)
+        {
+            loop_counter--;
+        }
+    }
     printf("surname?\n");
-    gets(NewUser.surname);
-    fflush(stdin);
+    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+    {
+        gets(NewUser.surname);
+        fflush(stdin);
+        non_Space_Check_Value = non_Space_Check(NewUser.surname);
+        if(non_Space_Check_Value == 1)
+        {
+            loop_counter--;
+        }
+    }
     printf("Please enter your national ID code:\n");
     int ID_check = 0;
     for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
@@ -265,54 +310,80 @@ void sign_up()
         }
     }
     printf("Please enter your Email:\n");
-    gets(NewUser.Email);
-    fflush(stdin);
+    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+    {
+        gets(NewUser.Email);
+        fflush(stdin);
+        non_Space_Check_Value = non_Space_Check(NewUser.Email);
+        if(non_Space_Check_Value == 1)
+        {
+            loop_counter--;
+        }
+    }
     system("cls");
-    printf("Well done.\nNow enter your password up to 40 characters\nTry to set a ");
-    printf("complicated password using capital and small letters and special characters:");
-
 
     char pass_Char ;
     int   pass_Counter = 0 , loop_counter1 = 0;
-    loop_counter = 0 ;
-    while ((pass_Char = _getch()) != 13 )
+    int   loop_counter2 ;
+    int coplexity_Value ;
+    for(loop_counter2 = 0 ; loop_counter2 < 1 ; loop_counter2++)
     {
-        if(pass_Char == 8)
+        printf("Enter your password up to 40 characters\nTry to set a ");
+        printf("complicated password using numbers , capital and small letters , and special characters(At least 8 characters):");
+        loop_counter = 0 ;
+        while ((pass_Char = _getch()) != 13 )
         {
-            loop_counter--;
-            if(pass_Counter != 0)
+            if(pass_Char == 8)
             {
-                pass_Counter--;
+                loop_counter--;
+                if(pass_Counter != 0)
+                {
+                    pass_Counter--;
+                }
+                system("cls");
+                printf("Enter your password up to 40 characters\nTry to set a ");
+                printf("complicated password using numbers , capital and small letters , and special characters(At least 8 characters):");
+                for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
+                {
+                    printf("*");
+                }
             }
-            system("cls");
-            printf("Well done.\nNow enter your password up to 40 characters\nTry to set a ");
-            printf("complicated password using capital and small letters and special characters:");
-            for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
+            else
             {
-                printf("*");
+                pass_Counter++;
+                NewUser.password[loop_counter] = pass_Char ;
+                system("cls");
+                printf("Enter your password up to 40 characters\nTry to set a ");
+                printf("complicated password using numbers , capital and small letters , and special characters(At least 8 characters):");
+                for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
+                {
+                    printf("*");
+                }
+                loop_counter++;
             }
+        }
+        NewUser.password[loop_counter] = '\0';
+        fflush(stdin);
+
+        non_Space_Check_Value = non_Space_Check(NewUser.password);
+        if(non_Space_Check_Value == 1)
+        {
+            loop_counter2--;
+            pass_Counter = 0 ;
         }
         else
         {
-            pass_Counter++;
-            NewUser.password[loop_counter] = pass_Char ;
-            system("cls");
-            printf("Well done.\nNow enter your password up to 40 characters\nTry to set a ");
-            printf("complicated password using capital and small letters and special characters:");
-            for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
+            coplexity_Value = password_Complexity_check(NewUser.password);
+            if(coplexity_Value == 1)
             {
-                printf("*");
+                loop_counter2--;
+                pass_Counter = 0 ;
             }
-            loop_counter++;
         }
     }
-    NewUser.password[loop_counter] = '\0';
-
-    fflush(stdin);
 
     system("cls");
     printf("Enter your password again:");
-
     char pass_Check_Char ;
     int pass_Check_Counter = 0 ;
     loop_counter1 = 0 ;
@@ -385,7 +456,7 @@ int log_in()
     fscanf(user_opener, "%s",start->username);
     fscanf(user_opener, "%*s%*s%*s%*s%*s%s",start->password);
     start->Link = NULL;
-    if(users_number >= 2)
+    if(users_number > 1)
     {
         start->Link = end;
         fscanf(user_opener, "%s",end->username);
@@ -580,6 +651,41 @@ int User_Profile()
     return user_desicion ;
 }
 
+int username_Validity_Check(char username[41])
+{
+    int loop_counter = 0 ;
+    int loop_counter2;
+    int not_allowed[9] = {34,42,47,58,60,62,63,92,124};
+    while(username[loop_counter] != '\0')
+    {
+        for(loop_counter2 = 0 ; loop_counter2 <= 8 ; loop_counter2++)
+        {
+            if(not_allowed[loop_counter2] == username[loop_counter])
+            {
+                printf("\nA username can not contain any of the following charactes:(\\/:*?<>|)\n");
+                return 1 ;
+            }
+        }
+        loop_counter++;
+    }
+    return 0 ;
+}
+
+int non_Space_Check(char object[41])
+{
+    int loop_counter ;
+    while(object[loop_counter] != '\0')
+    {
+        if(object[loop_counter] == 32)
+        {
+            printf("Wrong.input.please use no spaces.\ntry again:\n");
+            return 1 ;
+        }
+        loop_counter++;
+    }
+    return 0 ;
+}
+
 void password_equallity_check(char defined_password[41], char password_cheker[41])
 {
     system("cls");
@@ -634,7 +740,50 @@ void password_equallity_check(char defined_password[41], char password_cheker[41
 
 }
 
-
+int  password_Complexity_check(char password[41])
+{
+    int loop_counter ;
+    int special_Character_Count = 0 ;
+    int capital_Word_Count = 0 ;
+    int small_Word_Count = 0 ;
+    int number_Count = 0 ;
+    int digit_Count = 1 ;
+    int ascii ;
+    for(loop_counter = 0 ; loop_counter < 40 ; loop_counter++)
+    {
+        if(password[loop_counter] == '\0')
+        {
+            break ;
+        }
+        ascii = password[loop_counter];
+        if(ascii >= 48 && ascii <= 57)
+        {
+            number_Count++;
+            digit_Count++;
+        }
+        else if(ascii >= 65 && ascii <=90)
+        {
+            capital_Word_Count++;
+            digit_Count++;
+        }
+        else if(ascii >= 97 && ascii <= 122)
+        {
+            small_Word_Count++;
+            digit_Count++;
+        }
+        else if((ascii >= 33 && ascii <= 47) || (ascii >= 58 && ascii <= 64) || (ascii >= 91 && ascii <= 96) || (ascii >= 123 && ascii <= 126))
+        {
+            special_Character_Count++;
+            digit_Count++;
+        }
+    }
+    if(special_Character_Count == 0 || small_Word_Count == 0 || capital_Word_Count == 0 || number_Count == 0 || digit_Count < 8)
+    {
+        system("cls");
+        printf("\nNot complicated enough.try another one.\n");
+        return 1 ;
+    }
+}
 
 void Graphic_profile_initialize()
 {
@@ -779,7 +928,8 @@ void Expense(char User[41])
 
 int user_settings(char User[41] , char password[41])
 {
-
+    int loop_counter2 ;
+    int complexity_Value ;
     FILE *user_Data_File ;
     char user_Data_File_Name[46];
     sprintf(user_Data_File_Name, "%s.txt",User);
@@ -795,7 +945,7 @@ int user_settings(char User[41] , char password[41])
         if(user_desicion != 1 && user_desicion != 2 && user_desicion != 3 && user_desicion != 4 && user_desicion != 5 && user_desicion != 6 && user_desicion != 7 && user_desicion != 8)
         {
             system("cls");
-            printf("Wrong input.try again.\n");
+            printf("Please just enter numbers 1 to 8.\n");
             loop_counter--;
         }
     }
@@ -813,10 +963,9 @@ int user_settings(char User[41] , char password[41])
     };
     char user_Current_Pass_Check[41] ;
     char user_New_Pass_Check[41] ;
-    struct user *start , *end , *temp ;
+    struct user *start , *end , *temp , *temp2;
     int wrong = 0 , users_number ;
     FILE *user_opener , *Holder , *user_counter ;
-    start = malloc(sizeof(struct user));
 
     user_counter = fopen("usercount.txt", "r");
     fscanf(user_counter, "%d", &users_number);
@@ -825,25 +974,25 @@ int user_settings(char User[41] , char password[41])
     user_opener = fopen("users.txt", "r");
 
     fflush(stdin);
-
+    start = malloc(sizeof(struct user));
     fscanf(user_opener, "%40s" , start->username);
     fscanf(user_opener, "%40s" , start->name);
     fscanf(user_opener, "%40s" , start->surname);
     fscanf(user_opener, "%10s" , start->NID);
-    fscanf(user_opener, "%9s" , start->phonenumber);
+    fscanf(user_opener, "%9s"  , start->phonenumber);
     fscanf(user_opener, "%40s" , start->Email);
     fscanf(user_opener, "%40s" , start->password);
     start->Link = NULL ;
 
     if(users_number > 1)
     {
-        start->Link = end ;
         end = malloc(sizeof(struct user));
+        start->Link = end ;
         fscanf(user_opener, "%40s" , end->username);
         fscanf(user_opener, "%40s" , end->name);
         fscanf(user_opener, "%40s" , end->surname);
         fscanf(user_opener, "%10s" , end->NID);
-        fscanf(user_opener, "%9s" , end->phonenumber);
+        fscanf(user_opener, "%9s"  , end->phonenumber);
         fscanf(user_opener, "%40s" , end->Email);
         fscanf(user_opener, "%40s" , end->password);
         end->Link = NULL;
@@ -851,32 +1000,72 @@ int user_settings(char User[41] , char password[41])
         for(loop_counter = 0 ; loop_counter < users_number - 2 ; loop_counter++)
         {
             temp = malloc(sizeof(struct user));
+            end->Link = temp;
             fscanf(user_opener, "%40s" , temp->username);
             fscanf(user_opener, "%40s" , temp->name);
             fscanf(user_opener, "%40s" , temp->surname);
             fscanf(user_opener, "%10s" , temp->NID);
-            fscanf(user_opener, "%9s" , temp->phonenumber);
+            fscanf(user_opener, "%9s"  , temp->phonenumber);
             fscanf(user_opener, "%40s" , temp->Email);
             fscanf(user_opener, "%40s" , temp->password);
-            end->Link = temp;
-            end = temp;
+            end = temp ;
             end->Link = NULL ;
         }
     }
-
     fclose(user_opener);
+
+    int non_Space_Check_Value ;
+
+    fflush(stdin);
 
     if(user_desicion == 1)
     {
+        char new_Username[41] ;
+        int username_Validity_Check_Value ;
+
         temp = start ;
 
         do
         {
             if(strcmp(temp->username,User) == 0)
             {
+                printf("Please use underline character('_') instead of space character(' ').\n");
                 printf("Please enter your new Username:");
-                fflush(stdin);
-                gets(temp->username);
+                for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+                {
+                    gets(new_Username);
+                    fflush(stdin);
+                    non_Space_Check_Value = non_Space_Check(new_Username);
+                    if(non_Space_Check_Value == 1)
+                    {
+                        loop_counter--;
+                        continue ;
+                    }
+                    else
+                    {
+                        username_Validity_Check_Value = username_Validity_Check(new_Username);
+                        if(username_Validity_Check_Value == 1)
+                        {
+                            loop_counter--;
+                            continue ;
+                        }
+                    }
+                    temp2 = start ;
+                    while(temp2 != NULL)
+                    {
+                        if(strcmp(new_Username,temp2->username) == 0)
+                        {
+                            printf("This username is taken already try another one:\n");
+                            loop_counter-- ;
+                            break ;
+                        }
+                        else
+                        {
+                            temp2=temp2->Link ;
+                        }
+                    }
+                }
+                strcpy(temp->username,new_Username);
                 break ;
             }
             else
@@ -906,11 +1095,27 @@ int user_settings(char User[41] , char password[41])
         }while(temp != NULL);
 
         printf("Please enter your name:");
-        fflush(stdin);
-        gets(temp->name);
+        for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+        {
+            gets(temp->name);
+            fflush(stdin);
+            non_Space_Check_Value = non_Space_Check(temp->name);
+            if(non_Space_Check_Value == 1)
+            {
+                loop_counter--;
+            }
+        }
         printf("surname?");
-        fflush(stdin);
-        gets(temp->surname);
+        for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+        {
+            gets(temp->surname);
+            fflush(stdin);
+            non_Space_Check_Value = non_Space_Check(temp->surname);
+            if(non_Space_Check_Value == 1)
+            {
+                loop_counter--;
+            }
+        }
 
     }
     else if(user_desicion == 3)
@@ -980,12 +1185,20 @@ int user_settings(char User[41] , char password[41])
         }while(temp != NULL);
 
         printf("Please enter your new Email:");
-        fflush(stdin);
-        gets(temp->Email);
-
+        for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+        {
+            gets(temp->Email);
+            fflush(stdin);
+            non_Space_Check_Value = non_Space_Check(temp->Email);
+            if(non_Space_Check_Value == 1)
+            {
+                loop_counter--;
+            }
+        }
     }
     else if(user_desicion == 6)
     {
+        int coplexity_Value ;
         temp = start ;
 
         int wrong_Pass_Input = 0 ;
@@ -1005,88 +1218,87 @@ int user_settings(char User[41] , char password[41])
         printf("Please enter your current password:");
         char pass_Char ;
         int  pass_Counter = 0 , loop_counter2 = 0 , loop_counter1;
+        int loop_counter3 ;
         for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
         {
-            for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+            pass_Counter = 0 ;
+            loop_counter2 = 0 ;
+            while ((pass_Char = _getch()) != 13 )
             {
-                pass_Counter = 0 ;
-                loop_counter2 = 0 ;
-                while ((pass_Char = _getch()) != 13 )
+                if(pass_Char == 8)
                 {
-
-                    if(pass_Char == 8)
+                    loop_counter2--;
+                    if(pass_Counter != 0)
                     {
-                        loop_counter2--;
-                        if(pass_Counter != 0)
-                        {
-                            pass_Counter--;
-                        }
-                        system("cls");
-                        if(wrong_Pass_Input != 0)
-                        {
-                            printf("Wrong password.\nReenter your password:");
-                        }
-                        else
-                        {
-                            printf("Please enter your current password:");
-                        }
-                        for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
-                        {
-                            printf("*");
-                        }
+                        pass_Counter--;
                     }
-                    else
+                    system("cls");
+                    if(wrong_Pass_Input != 0)
                     {
-                        pass_Counter++;
-                        user_Current_Pass_Check[loop_counter2] = pass_Char ;
-                        system("cls");
-                        if(wrong_Pass_Input != 0)
-                        {
-                            printf("Wrong password.\nReenter your password:");
-                        }
-                        else
-                        {
-                            printf("Please enter your current password:");
-                        }
-                        for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
-                        {
-                            printf("*");
-                        }
-                        loop_counter2++;
-                    }
-                }
-                user_Current_Pass_Check[loop_counter2] = '\0';
-
-                if(strcmp(password,user_Current_Pass_Check) != 0 )
-                {
-                    if(wrong_Pass_Input == 4)
-                    {
-                        Holder = fopen("Hold.txt", "w");
-                        Hold = 1;
-                        fprintf(Holder, "%d",Hold);
-                        printf("you have entered wrong password 5 times so the program will be banned for 5 minutes\nATTENTION - Do not restart the program ");
-                        printf("otherwise the timer will be reset.");
-                        fclose(Holder);
-                        Hold_func();
-                        Hold = 0;
-                        Holder = fopen("Hold.txt", "w");
-                        fprintf(Holder, "%d",Hold);
-                        fclose(Holder);
-                        wrong_Pass_Input = 0 ;
-                    }
-                    else
-                    {
-                        system("cls");
                         printf("Wrong password.\nReenter your password:");
-                        Sleep(4000);
-                        loop_counter--;
-                        wrong_Pass_Input++;
+                    }
+                    else
+                    {
+                        printf("Please enter your current password:");
+                    }
+                    for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
+                    {
+                        printf("*");
                     }
                 }
                 else
                 {
+                    pass_Counter++;
+                    user_Current_Pass_Check[loop_counter2] = pass_Char ;
                     system("cls");
-                    printf("Please enter your new password:");
+                    if(wrong_Pass_Input != 0)
+                    {
+                        printf("Wrong password.\nReenter your password:");
+                    }
+                    else
+                    {
+                        printf("Please enter your current password:");
+                    }
+                    for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
+                    {
+                        printf("*");
+                    }
+                    loop_counter2++;
+                }
+            }
+            user_Current_Pass_Check[loop_counter2] = '\0';
+            if(strcmp(password,user_Current_Pass_Check) != 0 )
+            {
+                if(wrong_Pass_Input == 4)
+                {
+                    Holder = fopen("Hold.txt", "w");
+                    Hold = 1;
+                    fprintf(Holder, "%d",Hold);
+                    printf("you have entered wrong password 5 times so the program will be banned for 5 minutes\nATTENTION - Do not restart the program ");
+                    printf("otherwise the timer will be reset.");
+                    fclose(Holder);
+                    Hold_func();
+                    Hold = 0;
+                    Holder = fopen("Hold.txt", "w");
+                    fprintf(Holder, "%d",Hold);
+                    fclose(Holder);
+                    wrong_Pass_Input = 0 ;
+                }
+                else
+                {
+                    system("cls");
+                    printf("Wrong password.\nReenter your password:");
+                    Sleep(4000);
+                    loop_counter--;
+                    wrong_Pass_Input++;
+                }
+            }
+            else
+            {
+                system("cls");
+                printf("Please enter your new password:");
+                for(loop_counter3 = 0 ; loop_counter3 < 1 ; loop_counter3++)
+                {
                     pass_Counter = 0 ;
                     loop_counter2 = 0 ;
                     while ((pass_Char = _getch()) != 13 )
@@ -1119,66 +1331,85 @@ int user_settings(char User[41] , char password[41])
                         }
                     }
                     temp->password[loop_counter2] = '\0';
-
                     fflush(stdin);
 
-                    Sleep(1000);
-                    system("cls");
-
-                    printf("Please enter your password again:");
-                    pass_Counter = 0 ;
-                    loop_counter2 = 0 ;
-                    while ((pass_Char = _getch()) != 13 )
+                    non_Space_Check_Value = non_Space_Check(temp->password);
+                    if(non_Space_Check_Value == 1)
                     {
-                        if(pass_Char == 8)
+                        loop_counter3-- ;
+                        pass_Counter = 0 ;
+                    }
+                    else
+                    {
+                        coplexity_Value = password_Complexity_check(temp->password);
+                        if(coplexity_Value == 1)
                         {
-                            loop_counter2--;
-                            if(pass_Counter != 0)
-                            {
-                                pass_Counter--;
-                            }
-                            system("cls");
-                            printf("Please enter your password again:");
-                            for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
-                            {
-                                printf("*");
-                            }
-                        }
-                        else
-                        {
-                            pass_Counter++;
-                            user_New_Pass_Check[loop_counter2] = pass_Char ;
-                            system("cls");
-                            printf("Please enter your password again:");
-                            for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
-                            {
-                                printf("*");
-                            }
-                            loop_counter2++;
+                            loop_counter3-- ;
+                            pass_Counter = 0 ;
                         }
                     }
-                    user_New_Pass_Check[loop_counter2] = '\0';
-
-                    password_equallity_check(temp->password,user_New_Pass_Check);
-
-                    printf("ALL DONE!");
-                    Sleep(2000);
-                    system("cls");
                 }
+                Sleep(1000);
+                system("cls");
+
+                printf("Please enter your password again:");
+                pass_Counter = 0 ;
+                loop_counter2 = 0 ;
+                while ((pass_Char = _getch()) != 13 )
+                {
+                    if(pass_Char == 8)
+                    {
+                        loop_counter2--;
+                        if(pass_Counter != 0)
+                        {
+                            pass_Counter--;
+                        }
+                        system("cls");
+                        printf("Please enter your password again:");
+                        for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
+                        {
+                            printf("*");
+                        }
+                    }
+                    else
+                    {
+                        pass_Counter++;
+                        user_New_Pass_Check[loop_counter2] = pass_Char ;
+                        system("cls");
+                        printf("Please enter your password again:");
+                        for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
+                        {
+                            printf("*");
+                        }
+                        loop_counter2++;
+                    }
+                }
+                user_New_Pass_Check[loop_counter2] = '\0';
+
+                password_equallity_check(temp->password,user_New_Pass_Check);
+
+                printf("ALL DONE!");
+                Sleep(2000);
+                system("cls");
             }
         }
     }
     else if(user_desicion == 7)
     {
-        int pass_Counter ;
-        int loop_counter1 ;
-        int loop_counter ;
-        int loop_counter2 ;
+        int  coplexity_Value ;
+        int  username_Validity_Check_Value ;
+        int  rename_value ;
+        int  wrong_Pass_Input = 0 ;
+        int  pass_Counter ;
+        int  loop_counter1 ;
+        int  loop_counter ;
+        int  loop_counter2 ;
+        int  loop_counter3 ;
         char pass_Char ;
+        char user_New_Data_File_Name[46] ;
+        char new_Username[41] ;
 
         temp = start ;
-
-        int wrong_Pass_Input = 0 ;
         while(temp != NULL)
         {
             if(strcmp(temp->username,User) == 0)
@@ -1190,24 +1421,64 @@ int user_settings(char User[41] , char password[41])
                 temp=temp->Link;
             }
         }
+        fflush(stdin);
 
         printf("Please use underline character('_') instead of space character(' ') in all parts.\n");
         printf("Please enter your new Username:");
-        fflush(stdin);
-        gets(temp->username);
-        fflush(stdin);
-        char user_New_Data_File_Name[46] ;
-        int rename_value ;
-        sprintf(user_New_Data_File_Name, "%s.txt",temp->username);
-        rename_value = rename(user_Data_File_Name,user_New_Data_File_Name);
+        for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+        {
+            gets(new_Username);
+            temp2 = start ;
+            while(temp2 != NULL)
+            {
+                if(strcmp(new_Username,temp2->username) == 0)
+                {
+                    printf("This username is taken already try another one:\n");
+                    loop_counter--;
+                    break;
+                }
+                temp2 = temp2->Link ;
+            }
+
+            non_Space_Check_Value = non_Space_Check(new_Username);
+            if(non_Space_Check_Value != 1)
+            {
+                username_Validity_Check_Value = username_Validity_Check(new_Username);
+                if(username_Validity_Check_Value != 1)
+                {
+                    strcpy(temp->username,new_Username);
+                }
+                else
+                {
+                    loop_counter--;
+                }
+            }
+        }
+
 
         printf("Please enter your new name:");
-        gets(temp->name);
-        fflush(stdin);
+        for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+        {
+            gets(temp->name);
+            fflush(stdin);
+            non_Space_Check_Value = non_Space_Check(temp->name);
+            if(non_Space_Check_Value == 1)
+            {
+                loop_counter--;
+            }
+        }
 
         printf("Surname?");
-        gets(temp->surname);
-        fflush(stdin);
+        for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+        {
+            gets(temp->surname);
+            fflush(stdin);
+            non_Space_Check_Value = non_Space_Check(temp->surname);
+            if(non_Space_Check_Value == 1)
+            {
+                loop_counter--;
+            }
+        }
 
         int NID_Check_Value ;
         printf("Please enter your new national Id:");
@@ -1239,8 +1510,16 @@ int user_settings(char User[41] , char password[41])
 
 
         printf("Please enter your new Email:");
-        gets(temp->Email);
-        fflush(stdin);
+        for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+        {
+            gets(temp->Email);
+            fflush(stdin);
+            non_Space_Check_Value = non_Space_Check(temp->Email);
+            if(non_Space_Check_Value == 1)
+            {
+                loop_counter--;
+            }
+        }
 
         Sleep(1000);
 
@@ -1318,85 +1597,96 @@ int user_settings(char User[41] , char password[41])
                 loop_counter--;
                 wrong_Pass_Input++;
             }
+        }
+        system("cls");
+        for(loop_counter3 = 0 ; loop_counter3 < 1 ; loop_counter3++)
+        {
+            printf("Please enter your new password:");
+            fflush(stdin);
+            pass_Counter = 0 ;
+            loop_counter2 = 0 ;
+            while ((pass_Char = _getch()) != 13 )
+            {
+                if(pass_Char == 8)
+                {
+                    loop_counter2--;
+                    if(pass_Counter != 0)
+                    {
+                        pass_Counter--;
+                    }
+                    system("cls");
+                    printf("Please enter your new password:");
+                    for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
+                    {
+                        printf("*");
+                    }
+                }
+                else
+                {
+                    pass_Counter++;
+                    temp->password[loop_counter2] = pass_Char ;
+                    system("cls");
+                    printf("Please enter your new password:");
+                    for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
+                    {
+                        printf("*");
+                    }
+                    loop_counter2++;
+                }
+            }
+            temp->password[loop_counter2] = '\0';
+            non_Space_Check_Value = non_Space_Check(temp->password);
+            if(non_Space_Check_Value == 1)
+            {
+                loop_counter3--;
+            }
             else
             {
-                system("cls");
-                printf("Please enter your new password:");
-                fflush(stdin);
-                pass_Counter = 0 ;
-                loop_counter2 = 0 ;
-                while ((pass_Char = _getch()) != 13 )
+                complexity_Value = password_Complexity_check(temp->password);
+                if(complexity_Value == 1)
                 {
-                    if(pass_Char == 8)
-                    {
-                        loop_counter2--;
-                        if(pass_Counter != 0)
-                        {
-                            pass_Counter--;
-                        }
-                        system("cls");
-                        printf("Please enter your new password:");
-                        for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
-                        {
-                            printf("*");
-                        }
-                    }
-                    else
-                    {
-                        pass_Counter++;
-                        temp->password[loop_counter2] = pass_Char ;
-                        system("cls");
-                        printf("Please enter your new password:");
-                        for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
-                        {
-                            printf("*");
-                        }
-                        loop_counter2++;
-                    }
+                    loop_counter3--;
                 }
-                temp->password[loop_counter2] = '\0';
                 fflush(stdin);
-
-                system("cls");
-                printf("Please enter your new password again:");
-                pass_Counter = 0 ;
-                loop_counter2 = 0 ;
-                while ((pass_Char = _getch()) != 13 )
-                {
-                    if(pass_Char == 8)
-                    {
-                        loop_counter2--;
-                        if(pass_Counter != 0)
-                        {
-                            pass_Counter--;
-                        }
-                        system("cls");
-                        printf("Please enter your new password again:");
-                        for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
-                        {
-                            printf("*");
-                        }
-                    }
-                    else
-                    {
-                        pass_Counter++;
-                        user_New_Pass_Check[loop_counter2] = pass_Char ;
-                        system("cls");
-                        printf("Please enter your new password again:");
-                        for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
-                        {
-                            printf("*");
-                        }
-                        loop_counter2++;
-                    }
-                }
-                user_New_Pass_Check[loop_counter2] = '\0';
-                fflush(stdin);
-
-                password_equallity_check(temp->password,user_New_Pass_Check);
-
             }
         }
+        system("cls");
+        printf("Please enter your new password again:");
+        pass_Counter = 0 ;
+        loop_counter2 = 0 ;
+        while ((pass_Char = _getch()) != 13 )
+        {
+            if(pass_Char == 8)
+            {
+                loop_counter2--;
+                if(pass_Counter != 0)
+                {
+                    pass_Counter--;
+                }
+                system("cls");
+                printf("Please enter your new password again:");
+                for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
+                {
+                    printf("*");
+                }
+            }
+            else
+            {
+                pass_Counter++;
+                user_New_Pass_Check[loop_counter2] = pass_Char ;
+                system("cls");
+                printf("Please enter your new password again:");
+                for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
+                {
+                    printf("*");
+                }
+                loop_counter2++;
+            }
+        }
+        user_New_Pass_Check[loop_counter2] = '\0';
+        fflush(stdin);
+        sprintf(user_New_Data_File_Name, "%s.txt",temp->username);
+        rename_value = rename(user_Data_File_Name,user_New_Data_File_Name);
     }
     else if(user_desicion == 8)
     {
@@ -1410,7 +1700,9 @@ int user_settings(char User[41] , char password[41])
         fprintf(user_opener , "%s\n%s\n%s\n%s\n%s\n%s\n%s\n",temp->username ,temp->name ,temp->surname ,temp->NID ,temp->phonenumber ,temp->Email , temp->password);
         temp=temp->Link ;
     }while(temp != NULL);
+
     fclose(user_opener);
+    system("cls");
     printf("ALL DONE!");
     Sleep(1000);
     system("cls");
