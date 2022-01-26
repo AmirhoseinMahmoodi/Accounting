@@ -19,6 +19,7 @@ int  email_Check(char Email[41]);
 int  password_Complexity_check(char password[41]);
 int  non_Space_Check(char object[41]);
 int  username_Validity_Check(char username[41]);
+int  date_Check(int year , int month , int day);
 void intro();
 void user_choice(int user_decision);
 void sign_up();
@@ -124,7 +125,7 @@ void Hold_func()
 {
     int loop_counter ;
     FILE *Holder;
-    Holder = fopen("Hold.txt", "r");
+    Holder = fopen("Hold.bin", "rb");
     fscanf(Holder, "%d",&Hold);
     fclose(Holder);
     if(Hold == 1)
@@ -137,7 +138,7 @@ void Hold_func()
             printf("otherwise the timer will be reset.");
             printf("%d:%d",(300000-loop_counter)/60000,(300000-loop_counter)%60);
         }
-        fopen("Hold.txt", "w");
+        fopen("Hold.bin", "wb");
         Hold = 0 ;
         fprintf(Holder, "%d",Hold);
         fclose(Holder);
@@ -166,11 +167,11 @@ void sign_up()
 
     FILE *user_opener , *user_counter ;
 
-    user_counter = fopen("usercount.txt", "r");
+    user_counter = fopen("usercount.bin", "rb");
     fscanf(user_counter, "%d",&user_count);
     fclose(user_counter);
 
-    user_opener = fopen("Users.txt", "r");
+    user_opener = fopen("Users.bin", "rb");
 
     if(user_counter != NULL)
     {
@@ -417,9 +418,9 @@ void sign_up()
     NewUser.pass_check[loop_counter] = '\0';
 
     password_equallity_check(NewUser.password,NewUser.pass_check);
-    user_opener = fopen("Users.txt", "a");
+    user_opener = fopen("Users.bin", "ab");
     fprintf(user_opener, "%s\n%s\n%s\n%s\n%s\n%s\n%s\n",NewUser.username,NewUser.Name,NewUser.surname,NewUser.NID,NewUser.PhoneNumber,NewUser.Email,NewUser.password);
-    user_counter = fopen("usercount.txt", "w");
+    user_counter = fopen("usercount.bin", "wb");
     fprintf(user_counter,"%d",user_count+1);
     fclose(user_counter);
     fclose(user_opener);
@@ -441,12 +442,12 @@ int log_in()
     end = malloc(sizeof(struct user));
 
 
-    user_counter = fopen("usercount.txt", "r");
+    user_counter = fopen("usercount.bin", "rb");
 
     fscanf(user_counter, "%d", &users_number);
     fclose(user_counter);
 
-    user_opener = fopen("users.txt", "r");
+    user_opener = fopen("users.bin", "rb");
     if(user_opener == NULL)
     {
         printf("No users yet.");
@@ -550,7 +551,7 @@ int log_in()
             if( wrong_Password_Input == 4 )
             {
                 printf("\a");
-                Holder = fopen("Hold.txt", "w");
+                Holder = fopen("Hold.bin", "wb");
                 Hold = 1;
                 fprintf(Holder, "%d",Hold);
                 printf("you have entered wrong password 5 times so the program will be banned for 5 minutes\nATTENTION - Do not restart the program ");
@@ -558,7 +559,7 @@ int log_in()
                 fclose(Holder);
                 Hold_func();
                 Hold = 0;
-                Holder = fopen("Hold.txt", "w");
+                Holder = fopen("Hold.bin", "wb");
                 fprintf(Holder, "%d",Hold);
                 fclose(Holder);
                 wrong_Password_Input = 0;
@@ -802,6 +803,26 @@ void Graphic_profile_initialize()
     }
 }
 
+int date_Check(int year , int month , int day)
+{
+    if(year < 1300)
+    {
+        printf("\nWrong input.Year must be bigger than 1300.\nTry again:");
+        return 1 ;
+    }
+    else if(month > 12 || month < 1)
+    {
+        printf("\nWrong input.Month must be between 1 and 12.\nTry again:");
+        return 1 ;
+    }
+    else if(day > 30 || day < 1)
+    {
+        printf("\nWrong input.Day must be between 1 and 31");
+        return 1 ;
+    }
+    return 0 ;
+}
+
 int NID_check(char NID[11])
 {
     int loop_counter , wrong_input = 0 ;
@@ -857,8 +878,8 @@ void Income(char User[41])
     char user_File_Name[46];
     int loop_counter ;
     int income_type ;
-    sprintf(user_File_Name, "%s.txt",User);
-    user_Data_File = fopen(user_File_Name, "a");
+    sprintf(user_File_Name, "%s.bin",User);
+    user_Data_File = fopen(user_File_Name, "ab");
     for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
     {
         printf("You are entering your income information...\n\nPlease specify your income type\n");
@@ -878,8 +899,17 @@ void Income(char User[41])
     fflush(stdin);
     printf("Please enter the date of income(YYYY/MM/DD):");
     int year , month , day ;
-    scanf("%d%*c%d%*c%d",&year,&month,&day);
-    fflush(stdin);
+    int date_Check_Value ;
+    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+    {
+        scanf("%d%*c%d%*c%d",&year,&month,&day);
+        fflush(stdin);
+        date_Check_Value = date_Check(year ,month ,day);
+        if(date_Check_Value == 1)
+        {
+            loop_counter--;
+        }
+    }
     printf("Please enter a short description:");
     char description[71];
     gets(description);
@@ -894,8 +924,8 @@ void Expense(char User[41])
     char user_File_Name[46];
     int loop_counter ;
     int expense_type ;
-    sprintf(user_File_Name, "%s.txt",User);
-    user_Data_File = fopen(user_File_Name, "a");
+    sprintf(user_File_Name, "%s.bin",User);
+    user_Data_File = fopen(user_File_Name, "ab");
     for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
     {
         printf("You are entering your expense information\nPlease specify your expense type:");
@@ -917,8 +947,17 @@ void Expense(char User[41])
     fflush(stdin);
     printf("Please enter the date of income(YYYY/MM/DD):");
     int year , month , day ;
-    scanf("%d%*c%d%*c%d",&year,&month,&day);
-    fflush(stdin);
+    int date_Check_Value ;
+    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+    {
+        scanf("%d%*c%d%*c%d",&year,&month,&day);
+        fflush(stdin);
+        date_Check_Value = date_Check(year ,month ,day);
+        if(date_Check_Value == 1)
+        {
+            loop_counter--;
+        }
+    }
     printf("Please enter a short description:");
     char description[71];
     gets(description);
@@ -932,7 +971,7 @@ int user_settings(char User[41] , char password[41])
     int complexity_Value ;
     FILE *user_Data_File ;
     char user_Data_File_Name[46];
-    sprintf(user_Data_File_Name, "%s.txt",User);
+    sprintf(user_Data_File_Name, "%s.bin",User);
     system("cls");
     int user_desicion ;
     int loop_counter ;
@@ -967,11 +1006,11 @@ int user_settings(char User[41] , char password[41])
     int wrong = 0 , users_number ;
     FILE *user_opener , *Holder , *user_counter ;
 
-    user_counter = fopen("usercount.txt", "r");
+    user_counter = fopen("usercount.bin", "rb");
     fscanf(user_counter, "%d", &users_number);
     fclose(user_counter);
 
-    user_opener = fopen("users.txt", "r");
+    user_opener = fopen("users.bin", "rb");
 
     fflush(stdin);
     start = malloc(sizeof(struct user));
@@ -1076,7 +1115,7 @@ int user_settings(char User[41] , char password[41])
 
         char user_New_Data_File_Name[46] ;
         int rename_value ;
-        sprintf(user_New_Data_File_Name, "%s.txt",temp->username);
+        sprintf(user_New_Data_File_Name, "%s.bin",temp->username);
         rename_value = rename(user_Data_File_Name,user_New_Data_File_Name);
     }
     else if(user_desicion == 2)
@@ -1271,7 +1310,7 @@ int user_settings(char User[41] , char password[41])
             {
                 if(wrong_Pass_Input == 4)
                 {
-                    Holder = fopen("Hold.txt", "w");
+                    Holder = fopen("Hold.bin", "wb");
                     Hold = 1;
                     fprintf(Holder, "%d",Hold);
                     printf("you have entered wrong password 5 times so the program will be banned for 5 minutes\nATTENTION - Do not restart the program ");
@@ -1279,7 +1318,7 @@ int user_settings(char User[41] , char password[41])
                     fclose(Holder);
                     Hold_func();
                     Hold = 0;
-                    Holder = fopen("Hold.txt", "w");
+                    Holder = fopen("Hold.bin", "wb");
                     fprintf(Holder, "%d",Hold);
                     fclose(Holder);
                     wrong_Pass_Input = 0 ;
@@ -1579,7 +1618,7 @@ int user_settings(char User[41] , char password[41])
             {
                 if(wrong_Pass_Input == 4)
                 {
-                    Holder = fopen("Hold.txt", "w");
+                    Holder = fopen("Hold.bin", "wb");
                     Hold = 1;
                     fprintf(Holder, "%d",Hold);
                     printf("you have entered wrong password 5 times so the program will be banned for 5 minutes\nATTENTION - Do not restart the program ");
@@ -1587,7 +1626,7 @@ int user_settings(char User[41] , char password[41])
                     fclose(Holder);
                     Hold_func();
                     Hold = 0;
-                    Holder = fopen("Hold.txt", "w");
+                    Holder = fopen("Hold.bin", "wb");
                     fprintf(Holder, "%d",Hold);
                     fclose(Holder);
                     wrong_Pass_Input = 0 ;
@@ -1685,7 +1724,7 @@ int user_settings(char User[41] , char password[41])
         }
         user_New_Pass_Check[loop_counter2] = '\0';
         fflush(stdin);
-        sprintf(user_New_Data_File_Name, "%s.txt",temp->username);
+        sprintf(user_New_Data_File_Name, "%s.bin",temp->username);
         rename_value = rename(user_Data_File_Name,user_New_Data_File_Name);
     }
     else if(user_desicion == 8)
@@ -1693,7 +1732,7 @@ int user_settings(char User[41] , char password[41])
         return 1 ;
     }
 
-    user_opener = fopen("users.txt", "w");
+    user_opener = fopen("users.bin", "wb");
     temp = start ;
     do
     {
@@ -1816,7 +1855,7 @@ void Account_Balance(char User[41])
 {
     FILE *user_Data_File ;
     char user_Data_File_Name[46];
-    sprintf(user_Data_File_Name, "%s.txt",User);
+    sprintf(user_Data_File_Name, "%s.bin",User);
 
     struct IE
     {
@@ -1833,7 +1872,7 @@ void Account_Balance(char User[41])
     start = malloc(sizeof(struct IE)) ;
     end = malloc(sizeof(struct IE)) ;
 
-    user_Data_File = fopen(user_Data_File_Name , "r") ;
+    user_Data_File = fopen(user_Data_File_Name , "rb") ;
 
     fscanf(user_Data_File, "%d",&start->money_Type);
     fgets(start->description , 40 , user_Data_File);
@@ -1884,7 +1923,7 @@ void Specific_Year_Income(char User[41])
 {
     FILE *user_Data_File ;
     char user_Data_File_Name[46];
-    sprintf(user_Data_File_Name, "%s.txt",User);
+    sprintf(user_Data_File_Name, "%s.bin",User);
 
     struct IE
     {
@@ -1901,7 +1940,7 @@ void Specific_Year_Income(char User[41])
     start = malloc(sizeof(struct IE)) ;
     end = malloc(sizeof(struct IE)) ;
 
-    user_Data_File = fopen(user_Data_File_Name , "r") ;
+    user_Data_File = fopen(user_Data_File_Name , "rb") ;
 
     fscanf(user_Data_File, "%d",&start->money_Type);
     fgets(start->description , 40 , user_Data_File);
@@ -1962,7 +2001,7 @@ void Specific_Year_Expense(char User[41])
 {
     FILE *user_Data_File ;
     char user_Data_File_Name[46];
-    sprintf(user_Data_File_Name, "%s.txt",User);
+    sprintf(user_Data_File_Name, "%s.bin",User);
 
     struct IE
     {
@@ -1979,7 +2018,7 @@ void Specific_Year_Expense(char User[41])
     start = malloc(sizeof(struct IE)) ;
     end = malloc(sizeof(struct IE)) ;
 
-    user_Data_File = fopen(user_Data_File_Name , "r") ;
+    user_Data_File = fopen(user_Data_File_Name , "rb") ;
 
     fscanf(user_Data_File, "%d",&start->money_Type);
     fgets(start->description , 40 , user_Data_File);
@@ -2040,7 +2079,7 @@ void Timed_Income(char User[41])
 {
     FILE *user_Data_File ;
     char user_Data_File_Name[46];
-    sprintf(user_Data_File_Name, "%s.txt",User);
+    sprintf(user_Data_File_Name, "%s.bin",User);
 
     struct IE
     {
@@ -2057,7 +2096,7 @@ void Timed_Income(char User[41])
     start = malloc(sizeof(struct IE)) ;
     end = malloc(sizeof(struct IE)) ;
 
-    user_Data_File = fopen(user_Data_File_Name , "r") ;
+    user_Data_File = fopen(user_Data_File_Name , "rb") ;
 
     fscanf(user_Data_File, "%d",&start->money_Type);
     fgets(start->description , 40 , user_Data_File);
@@ -2093,66 +2132,84 @@ void Timed_Income(char User[41])
 
     }while(1);
 
+    int loop_counter ;
+    int date_Check_Value ;
     int B_year ,B_month ,B_day ;
-            printf("Please enter the beginning of the interval(YYYY/MM/DD):");
-            scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
-            fflush(stdin);
+    printf("Please enter the beginning of the interval(YYYY/MM/DD):");
+    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+    {
+        scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
+        fflush(stdin);
+        date_Check_Value = date_Check(B_year, B_month, B_day);
+        if(date_Check_Value == 1)
+        {
+            loop_counter--;
+        }
+    }
 
-            int E_year ,E_month ,E_day ;
-            printf("Please enter the end of the interval(YYYY/MM/DD):");
-            scanf("%d%*c%d%*c%d",&E_year ,&E_month ,&E_day);
-            fflush(stdin);
+    int E_year ,E_month ,E_day ;
+    printf("Please enter the end of the interval(YYYY/MM/DD):");
+    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+    {
+        scanf("%d%*c%d%*c%d",&E_year ,&E_month ,&E_day);
+        fflush(stdin);
+        date_Check_Value = date_Check(E_year, E_month, E_day);
+        if(date_Check_Value == 1)
+        {
+            loop_counter--;
+        }
+    }
 
-            temp = start;
-            float Total = 0 ;
-            while(temp != NULL)
+    temp = start;
+    float Total = 0 ;
+    while(temp != NULL)
+    {
+        if(temp->money_Type > 0)
+        {
+            if(temp->year == B_year)
             {
-                if(temp->money_Type > 0)
+                if(temp->month > B_month)
                 {
-                    if(temp->year == B_year)
-                    {
-                        if(temp->month > B_month)
-                        {
-                            Total += temp->money_Amount ;
-                        }
-                        else if(B_month == temp->month)
-                        {
-                            if(temp->day >= B_day)
-                            {
-                                Total += temp->money_Amount ;
-                            }
-                        }
-                    }
-                    else if(temp->year == E_year)
-                    {
-                        if(temp->month < E_month)
-                        {
-                            Total += temp->money_Amount ;
-                        }
-                        else if(temp->month == E_month)
-                        {
-                            if(temp->day <= E_day)
-                            {
-                                Total += temp->money_Amount ;
-                            }
-                        }
-                    }
-                    else if(temp->year > B_year && temp->year < E_year)
+                    Total += temp->money_Amount ;
+                }
+                else if(B_month == temp->month)
+                {
+                    if(temp->day >= B_day)
                     {
                         Total += temp->money_Amount ;
                     }
                 }
-                temp = temp->Link ;
             }
-            system("cls");
-            printf("The total income in the interval is:%f\n",Total);
+            else if(temp->year == E_year)
+            {
+                if(temp->month < E_month)
+                {
+                    Total += temp->money_Amount ;
+                }
+                else if(temp->month == E_month)
+                {
+                    if(temp->day <= E_day)
+                    {
+                        Total += temp->money_Amount ;
+                    }
+                }
+            }
+            else if(temp->year > B_year && temp->year < E_year)
+            {
+                Total += temp->money_Amount ;
+            }
+        }
+        temp = temp->Link ;
+    }
+    system("cls");
+    printf("The total income in the interval is:%f\n",Total);
 }
 
 void Timed_Expense(char User[41])
 {
     FILE *user_Data_File ;
     char user_Data_File_Name[46];
-    sprintf(user_Data_File_Name, "%s.txt",User);
+    sprintf(user_Data_File_Name, "%s.bin",User);
 
     struct IE
     {
@@ -2169,7 +2226,7 @@ void Timed_Expense(char User[41])
     start = malloc(sizeof(struct IE)) ;
     end = malloc(sizeof(struct IE)) ;
 
-    user_Data_File = fopen(user_Data_File_Name , "r") ;
+    user_Data_File = fopen(user_Data_File_Name , "rb") ;
 
     fscanf(user_Data_File, "%d",&start->money_Type);
     fgets(start->description , 40 , user_Data_File);
@@ -2205,66 +2262,84 @@ void Timed_Expense(char User[41])
 
     }while(1);
 
+    int loop_counter ;
+    int date_Check_Value ;
     int B_year ,B_month ,B_day ;
-            printf("Please enter the beginning of the interval(YYYY/MM/DD):");
-            scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
-            fflush(stdin);
+    printf("Please enter the beginning of the interval(YYYY/MM/DD):");
+    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+    {
+        scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
+        fflush(stdin);
+        date_Check_Value = date_Check(B_year, B_month, B_day);
+        if(date_Check_Value == 1)
+        {
+            loop_counter--;
+        }
+    }
 
-            int E_year ,E_month ,E_day ;
-            printf("Please enter the end of the interval(YYYY/MM/DD):");
-            scanf("%d%*c%d%*c%d",&E_year ,&E_month ,&E_day);
-            fflush(stdin);
+    int E_year ,E_month ,E_day ;
+    printf("Please enter the end of the interval(YYYY/MM/DD):");
+    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+    {
+        scanf("%d%*c%d%*c%d",&E_year ,&E_month ,&E_day);
+        fflush(stdin);
+        date_Check_Value = date_Check(E_year, E_month, E_day);
+        if(date_Check_Value == 1)
+        {
+            loop_counter--;
+        }
+    }
 
-            temp = start;
-            float Total = 0 ;
-            while(temp != NULL)
+    temp = start;
+    float Total = 0 ;
+    while(temp != NULL)
+    {
+        if(temp->money_Type < 0)
+        {
+            if(temp->year == B_year)
             {
-                if(temp->money_Type < 0)
+                if(temp->month > B_month)
                 {
-                    if(temp->year == B_year)
-                    {
-                        if(temp->month > B_month)
-                        {
-                            Total += temp->money_Amount ;
-                        }
-                        else if(B_month == temp->month)
-                        {
-                            if(temp->day >= B_day)
-                            {
-                                Total += temp->money_Amount ;
-                            }
-                        }
-                    }
-                    else if(temp->year == E_year)
-                    {
-                        if(temp->month < E_month)
-                        {
-                            Total += temp->money_Amount ;
-                        }
-                        else if(temp->month == E_month)
-                        {
-                            if(temp->day <= E_day)
-                            {
-                                Total += temp->money_Amount ;
-                            }
-                        }
-                    }
-                    else if(temp->year > B_year && temp->year < E_year)
+                    Total += temp->money_Amount ;
+                }
+                else if(B_month == temp->month)
+                {
+                    if(temp->day >= B_day)
                     {
                         Total += temp->money_Amount ;
                     }
                 }
-                temp = temp->Link ;
             }
-            system("cls");
-            printf("The total expense in the interval is:%f\n",Total);
+            else if(temp->year == E_year)
+            {
+                if(temp->month < E_month)
+                {
+                    Total += temp->money_Amount ;
+                }
+                else if(temp->month == E_month)
+                {
+                    if(temp->day <= E_day)
+                    {
+                        Total += temp->money_Amount ;
+                    }
+                }
+            }
+            else if(temp->year > B_year && temp->year < E_year)
+            {
+                Total += temp->money_Amount ;
+            }
+        }
+        temp = temp->Link ;
+    }
+    system("cls");
+    printf("The total expense in the interval is:%f\n",Total);
 }
 
 void Specific_Timed_Income(char User[41])
 {
     FILE *user_Data_File ;
     char user_Data_File_Name[46];
-    sprintf(user_Data_File_Name, "%s.txt",User);
+    sprintf(user_Data_File_Name, "%s.bin",User);
 
     struct IE
     {
@@ -2281,7 +2356,7 @@ void Specific_Timed_Income(char User[41])
     start = malloc(sizeof(struct IE)) ;
     end = malloc(sizeof(struct IE)) ;
 
-    user_Data_File = fopen(user_Data_File_Name , "r") ;
+    user_Data_File = fopen(user_Data_File_Name , "rb") ;
 
     fscanf(user_Data_File, "%d",&start->money_Type);
     fgets(start->description , 40 , user_Data_File);
@@ -2317,71 +2392,89 @@ void Specific_Timed_Income(char User[41])
 
     }while(1);
 
+    int loop_counter ;
+    int date_Check_Value ;
     int B_year ,B_month ,B_day ,income_Type ;
-            printf("Please enter the beginning of the interval(YYYY/MM/DD):");
-            scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
-            fflush(stdin);
+    printf("Please enter the beginning of the interval(YYYY/MM/DD):");
+    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+    {
+        scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
+        fflush(stdin);
+        date_Check_Value = date_Check(B_year, B_month, B_day);
+        if(date_Check_Value == 1)
+        {
+            loop_counter--;
+        }
+    }
 
-            int E_year ,E_month ,E_day ;
-            printf("Please enter the end of the interval(YYYY/MM/DD):");
-            scanf("%d%*c%d%*c%d",&E_year ,&E_month ,&E_day);
-            fflush(stdin);
+    int E_year ,E_month ,E_day ;
+    printf("Please enter the end of the interval(YYYY/MM/DD):");
+    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+    {
+        scanf("%d%*c%d%*c%d",&E_year ,&E_month ,&E_day);
+        fflush(stdin);
+        date_Check_Value = date_Check(E_year, E_month, E_day);
+        if(date_Check_Value == 1)
+        {
+            loop_counter--;
+        }
+    }
 
-            system("cls");
-            printf("Please specify the income type:\n");
-            printf("1.Programming Salary\n2.YARANEH\n3.Pocket Money\n4.University grant\n>>Please enter your choice:");
-            scanf("%d",&income_Type);
+    system("cls");
+    printf("Please specify the income type:\n");
+    printf("1.Programming Salary\n2.YARANEH\n3.Pocket Money\n4.University grant\n>>Please enter your choice:");
+    scanf("%d",&income_Type);
 
-            temp = start;
-            float Total = 0 ;
-            while(temp != NULL)
+    temp = start;
+    float Total = 0 ;
+    while(temp != NULL)
+    {
+        if(temp->money_Type == income_Type)
+        {
+            if(temp->year == B_year)
             {
-                if(temp->money_Type == income_Type)
+                if(temp->month > B_month)
                 {
-                    if(temp->year == B_year)
-                    {
-                        if(temp->month > B_month)
-                        {
-                            Total += temp->money_Amount ;
-                        }
-                        else if(B_month == temp->month)
-                        {
-                            if(temp->day >= B_day)
-                            {
-                                Total += temp->money_Amount ;
-                            }
-                        }
-                    }
-                    else if(temp->year == E_year)
-                    {
-                        if(temp->month < E_month)
-                        {
-                            Total += temp->money_Amount ;
-                        }
-                        else if(temp->month == E_month)
-                        {
-                            if(temp->day <= E_day)
-                            {
-                                Total += temp->money_Amount ;
-                            }
-                        }
-                    }
-                    else if(temp->year > B_year && temp->year < E_year)
+                    Total += temp->money_Amount ;
+                }
+                else if(B_month == temp->month)
+                {
+                    if(temp->day >= B_day)
                     {
                         Total += temp->money_Amount ;
                     }
                 }
-                temp = temp->Link ;
             }
-            system("cls");
-            printf("The total income in the interval of that type is:%f\n",Total);
+            else if(temp->year == E_year)
+            {
+                if(temp->month < E_month)
+                {
+                    Total += temp->money_Amount ;
+                }
+                else if(temp->month == E_month)
+                {
+                    if(temp->day <= E_day)
+                    {
+                        Total += temp->money_Amount ;
+                    }
+                }
+            }
+            else if(temp->year > B_year && temp->year < E_year)
+            {
+                Total += temp->money_Amount ;
+            }
+        }
+        temp = temp->Link ;
+    }
+    system("cls");
+    printf("The total income in the interval of that type is:%f\n",Total);
 }
 
 void Specific_Timed_Expense(char User[41])
 {
     FILE *user_Data_File ;
     char user_Data_File_Name[46];
-    sprintf(user_Data_File_Name, "%s.txt",User);
+    sprintf(user_Data_File_Name, "%s.bin",User);
 
     struct IE
     {
@@ -2398,7 +2491,7 @@ void Specific_Timed_Expense(char User[41])
     start = malloc(sizeof(struct IE)) ;
     end = malloc(sizeof(struct IE)) ;
 
-    user_Data_File = fopen(user_Data_File_Name , "r") ;
+    user_Data_File = fopen(user_Data_File_Name , "rb") ;
 
     fscanf(user_Data_File, "%d",&start->money_Type);
     fgets(start->description , 40 , user_Data_File);
@@ -2434,72 +2527,90 @@ void Specific_Timed_Expense(char User[41])
 
     }while(1);
 
+    int loop_counter ;
+    int date_Check_Value ;
     int B_year ,B_month ,B_day ,expense_Type ;
-            printf("Please enter the beginning of the interval(YYYY/MM/DD):");
-            scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
-            fflush(stdin);
+    printf("Please enter the beginning of the interval(YYYY/MM/DD):");
+    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+    {
+        scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
+        fflush(stdin);
+        date_Check_Value = date_Check(B_year, B_month, B_day);
+        if(date_Check_Value == 1)
+        {
+            loop_counter--;
+        }
+    }
 
-            int E_year ,E_month ,E_day ;
-            printf("Please enter the end of the interval(YYYY/MM/DD):");
-            scanf("%d%*c%d%*c%d",&E_year ,&E_month ,&E_day);
-            fflush(stdin);
+    int E_year ,E_month ,E_day ;
+    printf("Please enter the end of the interval(YYYY/MM/DD):");
+    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+    {
+        scanf("%d%*c%d%*c%d",&E_year ,&E_month ,&E_day);
+        fflush(stdin);
+        date_Check_Value = date_Check(E_year, E_month, E_day);
+        if(date_Check_Value == 1)
+        {
+            loop_counter--;
+        }
+    }
 
-            system("cls");
-            printf("Please specify the expense type:\n");
-            printf("1.Wearings\n2.Transportation\n3.Tuition fees\n4.Entertainment\n5.Mobile and Internet bill\n6.Medical expenses\n7.Charity donation");
-            printf("\n\n>>Please enter your choice:");
-            scanf("%d",&expense_Type);
+    system("cls");
+    printf("Please specify the expense type:\n");
+    printf("1.Wearings\n2.Transportation\n3.Tuition fees\n4.Entertainment\n5.Mobile and Internet bill\n6.Medical expenses\n7.Charity donation");
+    printf("\n\n>>Please enter your choice:");
+    scanf("%d",&expense_Type);
 
-            temp = start;
-            float Total = 0 ;
-            while(temp != NULL)
+    temp = start;
+    float Total = 0 ;
+    while(temp != NULL)
+    {
+        if(temp->money_Type == -expense_Type)
+        {
+            if(temp->year == B_year)
             {
-                if(temp->money_Type == -expense_Type)
+                if(temp->month > B_month)
                 {
-                    if(temp->year == B_year)
-                    {
-                        if(temp->month > B_month)
-                        {
-                            Total += temp->money_Amount ;
-                        }
-                        else if(B_month == temp->month)
-                        {
-                            if(temp->day >= B_day)
-                            {
-                                Total += temp->money_Amount ;
-                            }
-                        }
-                    }
-                    else if(temp->year == E_year)
-                    {
-                        if(temp->month < E_month)
-                        {
-                            Total += temp->money_Amount ;
-                        }
-                        else if(temp->month == E_month)
-                        {
-                            if(temp->day <= E_day)
-                            {
-                                Total += temp->money_Amount ;
-                            }
-                        }
-                    }
-                    else if(temp->year > B_year && temp->year < E_year)
+                    Total += temp->money_Amount ;
+                }
+                else if(B_month == temp->month)
+                {
+                    if(temp->day >= B_day)
                     {
                         Total += temp->money_Amount ;
                     }
                 }
-                temp = temp->Link ;
             }
-            system("cls");
-            printf("The total expense in the interval of that type is:%f\n",-Total);
+            else if(temp->year == E_year)
+            {
+                if(temp->month < E_month)
+                {
+                    Total += temp->money_Amount ;
+                }
+                else if(temp->month == E_month)
+                {
+                    if(temp->day <= E_day)
+                    {
+                        Total += temp->money_Amount ;
+                    }
+                }
+            }
+            else if(temp->year > B_year && temp->year < E_year)
+            {
+                Total += temp->money_Amount ;
+            }
+        }
+        temp = temp->Link ;
+    }
+    system("cls");
+    printf("The total expense in the interval of that type is:%f\n",-Total);
 }
 
 void Revenue_Share(char User[41])
 {
     FILE *user_Data_File ;
     char user_Data_File_Name[46];
-    sprintf(user_Data_File_Name, "%s.txt",User);
+    sprintf(user_Data_File_Name, "%s.bin",User);
 
     struct IE
     {
@@ -2516,7 +2627,7 @@ void Revenue_Share(char User[41])
     start = malloc(sizeof(struct IE)) ;
     end = malloc(sizeof(struct IE)) ;
 
-    user_Data_File = fopen(user_Data_File_Name , "r") ;
+    user_Data_File = fopen(user_Data_File_Name , "rb") ;
 
     fscanf(user_Data_File, "%d",&start->money_Type);
     fgets(start->description , 40 , user_Data_File);
@@ -2552,106 +2663,124 @@ void Revenue_Share(char User[41])
 
     }while(1);
 
-    int B_year ,B_month ,B_day ;
-            printf("Please enter the beginning of the interval(YYYY/MM/DD):");
-            scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
-            fflush(stdin);
+    int loop_counter ;
+    int date_Check_Value ;
+    int B_year ,B_month ,B_day ,expense_Type ;
+    printf("Please enter the beginning of the interval(YYYY/MM/DD):");
+    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+    {
+        scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
+        fflush(stdin);
+        date_Check_Value = date_Check(B_year, B_month, B_day);
+        if(date_Check_Value == 1)
+        {
+            loop_counter--;
+        }
+    }
 
-            int E_year ,E_month ,E_day ;
-            printf("Please enter the end of the interval(YYYY/MM/DD):");
-            scanf("%d%*c%d%*c%d",&E_year ,&E_month ,&E_day);
-            fflush(stdin);
+    int E_year ,E_month ,E_day ;
+    printf("Please enter the end of the interval(YYYY/MM/DD):");
+    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+    {
+        scanf("%d%*c%d%*c%d",&E_year ,&E_month ,&E_day);
+        fflush(stdin);
+        date_Check_Value = date_Check(E_year, E_month, E_day);
+        if(date_Check_Value == 1)
+        {
+            loop_counter--;
+        }
+    }
 
-            temp = start;
-            float Total = 0 ;
-            while(temp != NULL)
+    temp = start;
+    float Total = 0 ;
+    while(temp != NULL)
+    {
+        if(temp->money_Type > 0)
+        {
+            if(temp->year == B_year)
             {
-                if(temp->money_Type > 0)
+                if(temp->month > B_month)
                 {
-                    if(temp->year == B_year)
-                    {
-                        if(temp->month > B_month)
-                        {
-                            Total += temp->money_Amount ;
-                        }
-                        else if(B_month == temp->month)
-                        {
-                            if(temp->day >= B_day)
-                            {
-                                Total += temp->money_Amount ;
-                            }
-                        }
-                    }
-                    else if(temp->year == E_year)
-                    {
-                        if(temp->month < E_month)
-                        {
-                            Total += temp->money_Amount ;
-                        }
-                        else if(temp->month == E_month)
-                        {
-                            if(temp->day <= E_day)
-                            {
-                                Total += temp->money_Amount ;
-                            }
-                        }
-                    }
-                    else if(temp->year > B_year && temp->year < E_year)
+                    Total += temp->money_Amount ;
+                }
+                else if(B_month == temp->month)
+                {
+                    if(temp->day >= B_day)
                     {
                         Total += temp->money_Amount ;
                     }
                 }
-                temp = temp->Link ;
             }
-            float total_Salary ;
-            temp = start ;
-            while(temp != NULL)
+            else if(temp->year == E_year)
             {
-                if(temp->money_Type == 1)
+                if(temp->month < E_month)
                 {
-                    total_Salary += temp->money_Amount ;
+                    Total += temp->money_Amount ;
                 }
-                temp = temp->Link ;
+                else if(temp->month == E_month)
+                {
+                    if(temp->day <= E_day)
+                    {
+                        Total += temp->money_Amount ;
+                    }
+                }
             }
-            float total_Yaraneh ;
-            temp = start ;
-            while(temp != NULL)
+            else if(temp->year > B_year && temp->year < E_year)
             {
-                if(temp->money_Type == 2)
-                {
-                    total_Yaraneh += temp->money_Amount ;
-                }
-                temp = temp->Link ;
+                Total += temp->money_Amount ;
             }
-            float total_Pocket_Money ;
-            temp = start ;
-            while(temp != NULL)
-            {
-                if(temp->money_Type == 3)
-                {
-                    total_Pocket_Money += temp->money_Amount ;
-                }
-                temp = temp->Link ;
-            }
-            float total_Grant ;
-            temp = start ;
-            while(temp != NULL)
-            {
-                if(temp->money_Type == 4)
-                {
-                    total_Grant += temp->money_Amount ;
-                }
-                temp = temp->Link ;
-            }
-            system("cls");
-            printf("The revenues share is:\n1.Programming salary:%f %%\t2.YARANEH:%f %%\n3.Pocket money:%f %%\t4.University grant:%f %%\n\n",((total_Salary/Total)*100) ,((total_Yaraneh/Total)*100) ,((total_Pocket_Money/Total)*100) ,((total_Grant/Total)*100));
+        }
+        temp = temp->Link ;
+    }
+    float total_Salary ;
+    temp = start ;
+    while(temp != NULL)
+    {
+        if(temp->money_Type == 1)
+        {
+            total_Salary += temp->money_Amount ;
+        }
+        temp = temp->Link ;
+    }
+    float total_Yaraneh ;
+    temp = start ;
+    while(temp != NULL)
+    {
+        if(temp->money_Type == 2)
+        {
+            total_Yaraneh += temp->money_Amount ;
+        }
+        temp = temp->Link ;
+    }
+    float total_Pocket_Money ;
+    temp = start ;
+    while(temp != NULL)
+    {
+        if(temp->money_Type == 3)
+        {
+            total_Pocket_Money += temp->money_Amount ;
+        }
+        temp = temp->Link ;
+    }
+    float total_Grant ;
+    temp = start ;
+    while(temp != NULL)
+    {
+        if(temp->money_Type == 4)
+        {
+            total_Grant += temp->money_Amount ;
+        }
+        temp = temp->Link ;
+    }
+    system("cls");
+    printf("The revenues share is:\n1.Programming salary:%f %%\t2.YARANEH:%f %%\n3.Pocket money:%f %%\t4.University grant:%f %%\n\n",((total_Salary/Total)*100) ,((total_Yaraneh/Total)*100) ,((total_Pocket_Money/Total)*100) ,((total_Grant/Total)*100));
 }
 
 void Cost_Share(char User[41])
 {
     FILE *user_Data_File ;
     char user_Data_File_Name[46];
-    sprintf(user_Data_File_Name, "%s.txt",User);
+    sprintf(user_Data_File_Name, "%s.bin",User);
 
     struct IE
     {
@@ -2668,7 +2797,7 @@ void Cost_Share(char User[41])
     start = malloc(sizeof(struct IE)) ;
     end = malloc(sizeof(struct IE)) ;
 
-    user_Data_File = fopen(user_Data_File_Name , "r") ;
+    user_Data_File = fopen(user_Data_File_Name , "rb") ;
 
     fscanf(user_Data_File, "%d",&start->money_Type);
     fgets(start->description , 40 , user_Data_File);
@@ -2704,137 +2833,155 @@ void Cost_Share(char User[41])
 
     }while(1);
 
-    int B_year ,B_month ,B_day ;
-            printf("Please enter the beginning of the interval(YYYY/MM/DD):");
-            scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
-            fflush(stdin);
+    int loop_counter ;
+    int date_Check_Value ;
+    int B_year ,B_month ,B_day ,expense_Type ;
+    printf("Please enter the beginning of the interval(YYYY/MM/DD):");
+    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+    {
+        scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
+        fflush(stdin);
+        date_Check_Value = date_Check(B_year, B_month, B_day);
+        if(date_Check_Value == 1)
+        {
+            loop_counter--;
+        }
+    }
 
-            int E_year ,E_month ,E_day ;
-            printf("Please enter the end of the interval(YYYY/MM/DD):");
-            scanf("%d%*c%d%*c%d",&E_year ,&E_month ,&E_day);
-            fflush(stdin);
+    int E_year ,E_month ,E_day ;
+    printf("Please enter the end of the interval(YYYY/MM/DD):");
+    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+    {
+        scanf("%d%*c%d%*c%d",&E_year ,&E_month ,&E_day);
+        fflush(stdin);
+        date_Check_Value = date_Check(E_year, E_month, E_day);
+        if(date_Check_Value == 1)
+        {
+            loop_counter--;
+        }
+    }
 
-            temp = start;
-            float Total = 0 ;
-            while(temp != NULL)
+    temp = start;
+    float Total = 0 ;
+    while(temp != NULL)
+    {
+        if(temp->money_Type < 0)
+        {
+            if(temp->year == B_year)
             {
-                if(temp->money_Type < 0)
+                if(temp->month > B_month)
                 {
-                    if(temp->year == B_year)
-                    {
-                        if(temp->month > B_month)
-                        {
-                            Total += -temp->money_Amount ;
-                        }
-                        else if(B_month == temp->month)
-                        {
-                            if(temp->day >= B_day)
-                            {
-                                Total += -temp->money_Amount ;
-                            }
-                        }
-                    }
-                    else if(temp->year == E_year)
-                    {
-                        if(temp->month < E_month)
-                        {
-                            Total += -temp->money_Amount ;
-                        }
-                        else if(temp->month == E_month)
-                        {
-                            if(temp->day <= E_day)
-                            {
-                                Total += -temp->money_Amount ;
-                            }
-                        }
-                    }
-                    else if(temp->year > B_year && temp->year < E_year)
+                    Total += -temp->money_Amount ;
+                }
+                else if(B_month == temp->month)
+                {
+                    if(temp->day >= B_day)
                     {
                         Total += -temp->money_Amount ;
                     }
                 }
-                temp = temp->Link ;
             }
-            float total_Wearing ;
-            temp = start ;
-            while(temp != NULL)
+            else if(temp->year == E_year)
             {
-                if(temp->money_Type == -1)
+                if(temp->month < E_month)
                 {
-                    total_Wearing += -temp->money_Amount ;
+                    Total += -temp->money_Amount ;
                 }
-                temp = temp->Link ;
+                else if(temp->month == E_month)
+                {
+                    if(temp->day <= E_day)
+                    {
+                        Total += -temp->money_Amount ;
+                    }
+                }
             }
-            float total_Transport ;
-            temp = start ;
-            while(temp != NULL)
+            else if(temp->year > B_year && temp->year < E_year)
             {
-                if(temp->money_Type == -2)
-                {
-                    total_Transport += -temp->money_Amount ;
-                }
-                temp = temp->Link ;
+                Total += -temp->money_Amount ;
             }
-            float total_Tuition ;
-            temp = start ;
-            while(temp != NULL)
-            {
-                if(temp->money_Type == -3)
-                {
-                    total_Tuition += -temp->money_Amount ;
-                }
-                temp = temp->Link ;
-            }
-            float total_Entertainment ;
-            temp = start ;
-            while(temp != NULL)
-            {
-                if(temp->money_Type == -4)
-                {
-                    total_Entertainment += -temp->money_Amount ;
-                }
-                temp = temp->Link ;
-            }
-            float total_Mobile_Bill ;
-            temp = start ;
-            while(temp != NULL)
-            {
-                if(temp->money_Type == -5)
-                {
-                    total_Mobile_Bill += -temp->money_Amount ;
-                }
-                temp = temp->Link ;
-            }
-            float total_Medical ;
-            temp = start ;
-            while(temp != NULL)
-            {
-                if(temp->money_Type == -6)
-                {
-                    total_Medical += -temp->money_Amount ;
-                }
-                temp = temp->Link ;
-            }
-            float total_Charity ;
-            temp = start ;
-            while(temp != NULL)
-            {
-                if(temp->money_Type == -7)
-                {
-                    total_Charity += -temp->money_Amount ;
-                }
-                temp = temp->Link ;
-            }
-            system("cls");
-            printf("The revenues share is:\n1.WEarings:%f %%\t\t\t\t2.Transportations:%f %%\n\n3.Tuition fees:%f %%\t\t\t4.Entertainment:%f %%",((total_Wearing/Total)*100) ,((total_Transport/Total)*100) ,((total_Tuition/Total)*100) ,((total_Entertainment/Total)*100));
-            printf("\n\n5.Mobile and Internet bill:%f %%\t\t6.Medical expenses:%f %%\n\n\t\t\t7.Charity:%f %%\n\n",((total_Mobile_Bill/Total)*100) ,((total_Medical/Total)*100) ,((total_Charity/Total)*100));
+        }
+        temp = temp->Link ;
+    }
+    float total_Wearing ;
+    temp = start ;
+    while(temp != NULL)
+    {
+        if(temp->money_Type == -1)
+        {
+            total_Wearing += -temp->money_Amount ;
+        }
+        temp = temp->Link ;
+    }
+    float total_Transport ;
+    temp = start ;
+    while(temp != NULL)
+    {
+        if(temp->money_Type == -2)
+        {
+            total_Transport += -temp->money_Amount ;
+        }
+        temp = temp->Link ;
+    }
+    float total_Tuition ;
+    temp = start ;
+    while(temp != NULL)
+    {
+        if(temp->money_Type == -3)
+        {
+            total_Tuition += -temp->money_Amount ;
+        }
+        temp = temp->Link ;
+    }
+    float total_Entertainment ;
+    temp = start ;
+    while(temp != NULL)
+    {
+        if(temp->money_Type == -4)
+        {
+            total_Entertainment += -temp->money_Amount ;
+        }
+        temp = temp->Link ;
+    }
+    float total_Mobile_Bill ;
+    temp = start ;
+    while(temp != NULL)
+    {
+        if(temp->money_Type == -5)
+        {
+            total_Mobile_Bill += -temp->money_Amount ;
+        }
+        temp = temp->Link ;
+    }
+    float total_Medical ;
+    temp = start ;
+    while(temp != NULL)
+    {
+        if(temp->money_Type == -6)
+        {
+            total_Medical += -temp->money_Amount ;
+        }
+        temp = temp->Link ;
+    }
+    float total_Charity ;
+    temp = start ;
+    while(temp != NULL)
+    {
+        if(temp->money_Type == -7)
+        {
+            total_Charity += -temp->money_Amount ;
+        }
+        temp = temp->Link ;
+    }
+    system("cls");
+    printf("The revenues share is:\n1.WEarings:%f %%\t\t\t\t2.Transportations:%f %%\n\n3.Tuition fees:%f %%\t\t\t4.Entertainment:%f %%",((total_Wearing/Total)*100) ,((total_Transport/Total)*100) ,((total_Tuition/Total)*100) ,((total_Entertainment/Total)*100));
+    printf("\n\n5.Mobile and Internet bill:%f %%\t\t6.Medical expenses:%f %%\n\n\t\t\t7.Charity:%f %%\n\n",((total_Mobile_Bill/Total)*100) ,((total_Medical/Total)*100) ,((total_Charity/Total)*100));
 }
 
 void Timed_Income_Detail(char User[41])
 {
     FILE *user_Data_File ;
     char user_Data_File_Name[46];
-    sprintf(user_Data_File_Name, "%s.txt",User);
+    sprintf(user_Data_File_Name, "%s.bin",User);
 
     struct IE
     {
@@ -2851,7 +2998,7 @@ void Timed_Income_Detail(char User[41])
     start = malloc(sizeof(struct IE)) ;
     end = malloc(sizeof(struct IE)) ;
 
-    user_Data_File = fopen(user_Data_File_Name , "r") ;
+    user_Data_File = fopen(user_Data_File_Name , "rb") ;
 
     fscanf(user_Data_File, "%d",&start->money_Type);
     fgets(start->description , 40 , user_Data_File);
@@ -2887,124 +3034,68 @@ void Timed_Income_Detail(char User[41])
 
     }while(1);
 
-    int B_year ,B_month ,B_day ;
-            printf("Please enter the beginning of the interval(YYYY/MM/DD):");
-            scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
-            fflush(stdin);
+    int loop_counter ;
+    int date_Check_Value ;
+    int B_year ,B_month ,B_day ,expense_Type ;
+    printf("Please enter the beginning of the interval(YYYY/MM/DD):");
+    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+    {
+        scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
+        fflush(stdin);
+        date_Check_Value = date_Check(B_year, B_month, B_day);
+        if(date_Check_Value == 1)
+        {
+            loop_counter--;
+        }
+    }
 
-            int E_year ,E_month ,E_day ;
-            printf("Please enter the end of the interval(YYYY/MM/DD):");
-            scanf("%d%*c%d%*c%d",&E_year ,&E_month ,&E_day);
-            fflush(stdin);
+    int E_year ,E_month ,E_day ;
+    printf("Please enter the end of the interval(YYYY/MM/DD):");
+    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+    {
+        scanf("%d%*c%d%*c%d",&E_year ,&E_month ,&E_day);
+        fflush(stdin);
+        date_Check_Value = date_Check(E_year, E_month, E_day);
+        if(date_Check_Value == 1)
+        {
+            loop_counter--;
+        }
+    }
 
-            system("cls");
+    system("cls");
 
-            temp = start;
-            while(temp != NULL)
+    temp = start;
+    while(temp != NULL)
+    {
+        if(temp->money_Type > 0)
+        {
+            if(temp->year == B_year)
             {
-                if(temp->money_Type > 0)
+                if(temp->month > B_month)
                 {
-                    if(temp->year == B_year)
+                    if(temp->money_Type == 1)
                     {
-                        if(temp->month > B_month)
-                        {
-                            if(temp->money_Type == 1)
-                            {
-                                printf("Programming Salary\n");
-                            }
-                            else if(temp->money_Type == 2)
-                            {
-                                printf("YARANRH\n");
-                            }
-                            else if(temp->money_Type == 3)
-                            {
-                                printf("Pocket money\n");
-                            }
-                            else if(temp->money_Type == 4)
-                            {
-                                printf("University Grant\n");
-                            }
-                            printf("Description: %s",temp->description);
-                            printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
-                            printf("Money amount:%f RIAL\n\n",temp->money_Amount);
-                        }
-                        else if(B_month == temp->month)
-                        {
-                            if(temp->day >= B_day)
-                            {
-                            if(temp->money_Type == 1)
-                            {
-                                printf("Programming Salary\n");
-                            }
-                            else if(temp->money_Type == 2)
-                            {
-                                printf("YARANRH\n");
-                            }
-                            else if(temp->money_Type == 3)
-                            {
-                                printf("Pocket money\n");
-                            }
-                            else if(temp->money_Type == 4)
-                            {
-                                printf("University Grant\n");
-                            }
-                            printf("Description: %s",temp->description);
-                            printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
-                            printf("Money amount:%f RIAL\n\n",temp->money_Amount);
-                            }
-                        }
+                        printf("Programming Salary\n");
                     }
-                    else if(temp->year == E_year)
+                    else if(temp->money_Type == 2)
                     {
-                        if(temp->month < E_month)
-                        {
-                            if(temp->money_Type == 1)
-                            {
-                                printf("Programming Salary\n");
-                            }
-                            else if(temp->money_Type == 2)
-                            {
-                                printf("YARANRH\n");
-                            }
-                            else if(temp->money_Type == 3)
-                            {
-                                printf("Pocket money\n");
-                            }
-                            else if(temp->money_Type == 4)
-                            {
-                                printf("University Grant\n");
-                            }
-                            printf("Description: %s",temp->description);
-                            printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
-                            printf("Money amount:%f RIAL\n\n",temp->money_Amount);
-                        }
-                        else if(temp->month == E_month)
-                        {
-                            if(temp->day <= E_day)
-                            {
-                                if(temp->money_Type == 1)
-                                {
-                                    printf("Programming Salary\n");
-                                }
-                                else if(temp->money_Type == 2)
-                                {
-                                    printf("YARANRH\n");
-                                }
-                                else if(temp->money_Type == 3)
-                                {
-                                    printf("Pocket money\n");
-                                }
-                                else if(temp->money_Type == 4)
-                                {
-                                    printf("University Grant\n");
-                                }
-                                printf("Description: %s",temp->description);
-                                printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
-                                printf("Money amount:%f RIAL\n\n",temp->money_Amount);
-                            }
-                        }
+                        printf("YARANRH\n");
                     }
-                    else if(temp->year > B_year && temp->year < E_year)
+                    else if(temp->money_Type == 3)
+                    {
+                        printf("Pocket money\n");
+                    }
+                    else if(temp->money_Type == 4)
+                    {
+                        printf("University Grant\n");
+                    }
+                    printf("Description: %s",temp->description);
+                    printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
+                    printf("Money amount:%f RIAL\n\n",temp->money_Amount);
+                }
+                else if(B_month == temp->month)
+                {
+                    if(temp->day >= B_day)
                     {
                         if(temp->money_Type == 1)
                         {
@@ -3027,15 +3118,89 @@ void Timed_Income_Detail(char User[41])
                         printf("Money amount:%f RIAL\n\n",temp->money_Amount);
                     }
                 }
-                temp = temp->Link ;
             }
+            else if(temp->year == E_year)
+            {
+                if(temp->month < E_month)
+                {
+                    if(temp->money_Type == 1)
+                    {
+                        printf("Programming Salary\n");
+                    }
+                    else if(temp->money_Type == 2)
+                    {
+                        printf("YARANRH\n");
+                    }
+                    else if(temp->money_Type == 3)
+                    {
+                        printf("Pocket money\n");
+                    }
+                    else if(temp->money_Type == 4)
+                    {
+                        printf("University Grant\n");
+                    }
+                    printf("Description: %s",temp->description);
+                    printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
+                    printf("Money amount:%f RIAL\n\n",temp->money_Amount);
+                }
+                else if(temp->month == E_month)
+                {
+                    if(temp->day <= E_day)
+                    {
+                        if(temp->money_Type == 1)
+                        {
+                            printf("Programming Salary\n");
+                        }
+                        else if(temp->money_Type == 2)
+                        {
+                            printf("YARANRH\n");
+                        }
+                        else if(temp->money_Type == 3)
+                        {
+                            printf("Pocket money\n");
+                        }
+                        else if(temp->money_Type == 4)
+                        {
+                            printf("University Grant\n");
+                        }
+                        printf("Description: %s",temp->description);
+                        printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
+                        printf("Money amount:%f RIAL\n\n",temp->money_Amount);
+                    }
+                }
+            }
+            else if(temp->year > B_year && temp->year < E_year)
+            {
+                if(temp->money_Type == 1)
+                {
+                    printf("Programming Salary\n");
+                }
+                else if(temp->money_Type == 2)
+                {
+                    printf("YARANRH\n");
+                }
+                else if(temp->money_Type == 3)
+                {
+                    printf("Pocket money\n");
+                }
+                else if(temp->money_Type == 4)
+                {
+                    printf("University Grant\n");
+                }
+                printf("Description: %s",temp->description);
+                printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
+                printf("Money amount:%f RIAL\n\n",temp->money_Amount);
+            }
+        }
+        temp = temp->Link ;
+    }
 }
 
 void Timed_Expense_Detail(char User[41])
 {
     FILE *user_Data_File ;
     char user_Data_File_Name[46];
-    sprintf(user_Data_File_Name, "%s.txt",User);
+    sprintf(user_Data_File_Name, "%s.bin",User);
 
     struct IE
     {
@@ -3052,7 +3217,7 @@ void Timed_Expense_Detail(char User[41])
     start = malloc(sizeof(struct IE)) ;
     end = malloc(sizeof(struct IE)) ;
 
-    user_Data_File = fopen(user_Data_File_Name , "r") ;
+    user_Data_File = fopen(user_Data_File_Name , "rb") ;
 
     fscanf(user_Data_File, "%d",&start->money_Type);
     fgets(start->description , 40 , user_Data_File);
@@ -3088,215 +3253,233 @@ void Timed_Expense_Detail(char User[41])
 
     }while(1);
 
-    int B_year ,B_month ,B_day ;
-            printf("Please enter the beginning of the interval(YYYY/MM/DD):");
-            scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
-            fflush(stdin);
+    int loop_counter ;
+    int date_Check_Value ;
+    int B_year ,B_month ,B_day ,expense_Type ;
+    printf("Please enter the beginning of the interval(YYYY/MM/DD):");
+    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+    {
+        scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
+        fflush(stdin);
+        date_Check_Value = date_Check(B_year, B_month, B_day);
+        if(date_Check_Value == 1)
+        {
+            loop_counter--;
+        }
+    }
 
-            int E_year ,E_month ,E_day ;
-            printf("Please enter the end of the interval(YYYY/MM/DD):");
-            scanf("%d%*c%d%*c%d",&E_year ,&E_month ,&E_day);
-            fflush(stdin);
+    int E_year ,E_month ,E_day ;
+    printf("Please enter the end of the interval(YYYY/MM/DD):");
+    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+    {
+        scanf("%d%*c%d%*c%d",&E_year ,&E_month ,&E_day);
+        fflush(stdin);
+        date_Check_Value = date_Check(E_year, E_month, E_day);
+        if(date_Check_Value == 1)
+        {
+            loop_counter--;
+        }
+    }
 
-            system("cls");
+    system("cls");
 
-            temp = start;
-            while(temp != NULL)
+    temp = start;
+    while(temp != NULL)
+    {
+        if(temp->money_Type < 0)
+        {
+            if(temp->year == B_year)
             {
-                if(temp->money_Type < 0)
+                if(temp->month > B_month)
                 {
-                    if(temp->year == B_year)
+                    if(temp->money_Type == -1)
                     {
-                        if(temp->month > B_month)
-                        {
-                            if(temp->money_Type == -1)
-                            {
-                                printf("Wearings\n");
-                            }
-                            else if(temp->money_Type == -2)
-                            {
-                                printf("Transportation\n");
-                            }
-                            else if(temp->money_Type == -3)
-                            {
-                                printf("Tuition fees\n");
-                            }
-                            else if(temp->money_Type == -4)
-                            {
-                                printf("Entertainment\n");
-                            }
-                            else if(temp->money_Type == -5)
-                            {
-                                printf("Mobile and Internet bill\n");
-                            }
-                            else if(temp->money_Type == -6)
-                            {
-                                printf("Medical expenses\n");
-                            }
-                            else if(temp->money_Type == -7)
-                            {
-                                printf("Charity donation\n");
-                            }
-                            printf("Description: %s",temp->description);
-                            printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
-                            printf("Money amount:%f RIAL\n\n",-temp->money_Amount);
-                        }
-                        else if(B_month == temp->month)
-                        {
-                            if(temp->day >= B_day)
-                            {
-                                if(temp->money_Type == -1)
-                                {
-                                    printf("Wearings\n");
-                                }
-                                else if(temp->money_Type == -2)
-                                {
-                                    printf("Transportation\n");
-                                }
-                                    else if(temp->money_Type == -3)
-                                {
-                                    printf("Tuition fees\n");
-                                }
-                                else if(temp->money_Type == -4)
-                                {
-                                    printf("Entertainment\n");
-                                }
-                                else if(temp->money_Type == -5)
-                                {
-                                    printf("Mobile and Internet bill\n");
-                                }
-                                else if(temp->money_Type == -6)
-                                {
-                                    printf("Medical expenses\n");
-                                }
-                                else if(temp->money_Type == -7)
-                                {
-                                    printf("Charity donation\n");
-                                }
-                                printf("Description: %s",temp->description);
-                                printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
-                                printf("Money amount:%f RIAL\n\n",-temp->money_Amount);
-                            }
-                        }
+                        printf("Wearings\n");
                     }
-                    else if(temp->year == E_year)
+                    else if(temp->money_Type == -2)
                     {
-                        if(temp->month < E_month)
-                        {
-                            if(temp->money_Type == -1)
-                            {
-                                printf("Wearings\n");
-                            }
-                            else if(temp->money_Type == -2)
-                            {
-                                printf("Transportation\n");
-                            }
-                            else if(temp->money_Type == -3)
-                            {
-                                printf("Tuition fees\n");
-                            }
-                            else if(temp->money_Type == -4)
-                            {
-                                printf("Entertainment\n");
-                            }
-                            else if(temp->money_Type == -5)
-                            {
-                                printf("Mobile and Internet bill\n");
-                            }
-                            else if(temp->money_Type == -6)
-                            {
-                                printf("Medical expenses\n");
-                            }
-                            else if(temp->money_Type == -7)
-                            {
-                                printf("Charity donation\n");
-                            }
-                            printf("Description: %s",temp->description);
-                            printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
-                            printf("Money amount:%f RIAL\n\n",-temp->money_Amount);
-                        }
-                        else if(temp->month == E_month)
-                        {
-                            if(temp->day <= E_day)
-                            {
-                                if(temp->money_Type == -1)
-                                {
-                                    printf("Wearings\n");
-                                }
-                                else if(temp->money_Type == -2)
-                                {
-                                    printf("Transportation\n");
-                                }
-                                else if(temp->money_Type == -3)
-                                {
-                                    printf("Tuition fees\n");
-                                }
-                                else if(temp->money_Type == -4)
-                                {
-                                    printf("Entertainment\n");
-                                }
-                                else if(temp->money_Type == -5)
-                                {
-                                    printf("Mobile and Internet bill\n");
-                                }
-                                else if(temp->money_Type == -6)
-                                {
-                                    printf("Medical expenses\n");
-                                }
-                                else if(temp->money_Type == -7)
-                                {
-                                    printf("Charity donation\n");
-                                }
-                                printf("Description: %s",temp->description);
-                                printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
-                                printf("Money amount:%f RIAL\n\n",-temp->money_Amount);
-                            }
-                        }
+                        printf("Transportation\n");
                     }
-                    else if(temp->year > B_year && temp->year < E_year)
+                    else if(temp->money_Type == -3)
                     {
-                            if(temp->money_Type == -1)
-                            {
-                                printf("Wearings\n");
-                            }
-                            else if(temp->money_Type == -2)
-                            {
-                                printf("Transportation\n");
-                            }
-                            else if(temp->money_Type == -3)
-                            {
-                                printf("Tuition fees\n");
-                            }
-                            else if(temp->money_Type == -4)
-                            {
-                                printf("Entertainment\n");
-                            }
-                            else if(temp->money_Type == -5)
-                            {
-                                printf("Mobile and Internet bill\n");
-                            }
-                            else if(temp->money_Type == -6)
-                            {
-                                printf("Medical expenses\n");
-                            }
-                            else if(temp->money_Type == -7)
-                            {
-                                printf("Charity donation\n");
-                            }
-                            printf("Description: %s",temp->description);
-                            printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
-                            printf("Money amount:%f RIAL\n\n",-temp->money_Amount);
+                        printf("Tuition fees\n");
+                    }
+                    else if(temp->money_Type == -4)
+                    {
+                        printf("Entertainment\n");
+                    }
+                    else if(temp->money_Type == -5)
+                    {
+                        printf("Mobile and Internet bill\n");
+                    }
+                    else if(temp->money_Type == -6)
+                    {
+                        printf("Medical expenses\n");
+                    }
+                    else if(temp->money_Type == -7)
+                    {
+                        printf("Charity donation\n");
+                    }
+                    printf("Description: %s",temp->description);
+                    printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
+                    printf("Money amount:%f RIAL\n\n",-temp->money_Amount);
+                }
+                else if(B_month == temp->month)
+                {
+                    if(temp->day >= B_day)
+                    {
+                        if(temp->money_Type == -1)
+                        {
+                            printf("Wearings\n");
+                        }
+                        else if(temp->money_Type == -2)
+                        {
+                            printf("Transportation\n");
+                        }
+                        else if(temp->money_Type == -3)
+                        {
+                            printf("Tuition fees\n");
+                        }
+                        else if(temp->money_Type == -4)
+                        {
+                            printf("Entertainment\n");
+                        }
+                        else if(temp->money_Type == -5)
+                        {
+                            printf("Mobile and Internet bill\n");
+                        }
+                        else if(temp->money_Type == -6)
+                        {
+                            printf("Medical expenses\n");
+                        }
+                        else if(temp->money_Type == -7)
+                        {
+                            printf("Charity donation\n");
+                        }
+                        printf("Description: %s",temp->description);
+                        printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
+                        printf("Money amount:%f RIAL\n\n",-temp->money_Amount);
                     }
                 }
-                temp = temp->Link ;
             }
+            else if(temp->year == E_year)
+            {
+                if(temp->month < E_month)
+                {
+                    if(temp->money_Type == -1)
+                    {
+                        printf("Wearings\n");
+                    }
+                    else if(temp->money_Type == -2)
+                    {
+                        printf("Transportation\n");
+                    }
+                    else if(temp->money_Type == -3)
+                    {
+                        printf("Tuition fees\n");
+                    }
+                    else if(temp->money_Type == -4)
+                    {
+                        printf("Entertainment\n");
+                    }
+                    else if(temp->money_Type == -5)
+                    {
+                        printf("Mobile and Internet bill\n");
+                    }
+                    else if(temp->money_Type == -6)
+                    {
+                        printf("Medical expenses\n");
+                    }
+                    else if(temp->money_Type == -7)
+                    {
+                        printf("Charity donation\n");
+                    }
+                    printf("Description: %s",temp->description);
+                    printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
+                    printf("Money amount:%f RIAL\n\n",-temp->money_Amount);
+                }
+                else if(temp->month == E_month)
+                {
+                    if(temp->day <= E_day)
+                    {
+                        if(temp->money_Type == -1)
+                        {
+                            printf("Wearings\n");
+                        }
+                        else if(temp->money_Type == -2)
+                        {
+                            printf("Transportation\n");
+                        }
+                        else if(temp->money_Type == -3)
+                        {
+                            printf("Tuition fees\n");
+                        }
+                        else if(temp->money_Type == -4)
+                        {
+                            printf("Entertainment\n");
+                        }
+                        else if(temp->money_Type == -5)
+                        {
+                            printf("Mobile and Internet bill\n");
+                        }
+                        else if(temp->money_Type == -6)
+                        {
+                            printf("Medical expenses\n");
+                        }
+                        else if(temp->money_Type == -7)
+                        {
+                            printf("Charity donation\n");
+                        }
+                        printf("Description: %s",temp->description);
+                        printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
+                        printf("Money amount:%f RIAL\n\n",-temp->money_Amount);
+                    }
+                }
+            }
+            else if(temp->year > B_year && temp->year < E_year)
+            {
+                    if(temp->money_Type == -1)
+                    {
+                        printf("Wearings\n");
+                    }
+                    else if(temp->money_Type == -2)
+                    {
+                        printf("Transportation\n");
+                    }
+                    else if(temp->money_Type == -3)
+                    {
+                        printf("Tuition fees\n");
+                    }
+                    else if(temp->money_Type == -4)
+                    {
+                        printf("Entertainment\n");
+                    }
+                    else if(temp->money_Type == -5)
+                    {
+                        printf("Mobile and Internet bill\n");
+                    }
+                    else if(temp->money_Type == -6)
+                    {
+                        printf("Medical expenses\n");
+                    }
+                    else if(temp->money_Type == -7)
+                    {
+                        printf("Charity donation\n");
+                    }
+                    printf("Description: %s",temp->description);
+                    printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
+                    printf("Money amount:%f RIAL\n\n",-temp->money_Amount);
+            }
+        }
+        temp = temp->Link ;
+    }
 }
 
 void Largest_Revenue(char User[41])
 {
     FILE *user_Data_File ;
     char user_Data_File_Name[46];
-    sprintf(user_Data_File_Name, "%s.txt",User);
+    sprintf(user_Data_File_Name, "%s.bin",User);
 
     struct IE
     {
@@ -3313,7 +3496,7 @@ void Largest_Revenue(char User[41])
     start = malloc(sizeof(struct IE)) ;
     end = malloc(sizeof(struct IE)) ;
 
-    user_Data_File = fopen(user_Data_File_Name , "r") ;
+    user_Data_File = fopen(user_Data_File_Name , "rb") ;
 
     fscanf(user_Data_File, "%d",&start->money_Type);
     fgets(start->description , 40 , user_Data_File);
@@ -3349,63 +3532,52 @@ void Largest_Revenue(char User[41])
 
     }while(1);
 
-    int B_year ,B_month ,B_day ;
-            printf("Please enter the beginning of the interval(YYYY/MM/DD):");
-            scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
-            fflush(stdin);
+    int loop_counter ;
+    int date_Check_Value ;
+    int B_year ,B_month ,B_day ,expense_Type ;
+    printf("Please enter the beginning of the interval(YYYY/MM/DD):");
+    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+    {
+        scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
+        fflush(stdin);
+        date_Check_Value = date_Check(B_year, B_month, B_day);
+        if(date_Check_Value == 1)
+        {
+            loop_counter--;
+        }
+    }
 
-            int E_year ,E_month ,E_day ;
-            printf("Please enter the end of the interval(YYYY/MM/DD):");
-            scanf("%d%*c%d%*c%d",&E_year ,&E_month ,&E_day);
-            fflush(stdin);
+    int E_year ,E_month ,E_day ;
+    printf("Please enter the end of the interval(YYYY/MM/DD):");
+    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+    {
+        scanf("%d%*c%d%*c%d",&E_year ,&E_month ,&E_day);
+        fflush(stdin);
+        date_Check_Value = date_Check(E_year, E_month, E_day);
+        if(date_Check_Value == 1)
+        {
+            loop_counter--;
+        }
+    }
 
-            temp = start;
-            float Maximum = 0 ;
-            while(temp != NULL)
+    temp = start;
+    float Maximum = 0 ;
+    while(temp != NULL)
+    {
+        if(temp->money_Type > 0)
+        {
+            if(temp->year == B_year)
             {
-                if(temp->money_Type > 0)
+                if(temp->month > B_month)
                 {
-                    if(temp->year == B_year)
+                    if(temp->money_Amount > Maximum)
                     {
-                        if(temp->month > B_month)
-                        {
-                            if(temp->money_Amount > Maximum)
-                            {
-                                Maximum = temp->money_Amount ;
-                            }
-                        }
-                        else if(B_month == temp->month)
-                        {
-                            if(temp->day >= B_day)
-                            {
-                                if(temp->money_Amount > Maximum)
-                                {
-                                    Maximum = temp->money_Amount ;
-                                }
-                            }
-                        }
+                        Maximum = temp->money_Amount ;
                     }
-                    else if(temp->year == E_year)
-                    {
-                        if(temp->month < E_month)
-                        {
-                            if(temp->money_Amount > Maximum)
-                            {
-                                Maximum = temp->money_Amount ;
-                            }
-                        }
-                        else if(temp->month == E_month)
-                        {
-                            if(temp->day <= E_day)
-                            {
-                                if(temp->money_Amount > Maximum)
-                                {
-                                    Maximum = temp->money_Amount ;
-                                }
-                            }
-                        }
-                    }
-                    else if(temp->year > B_year && temp->year < E_year)
+                }
+                else if(B_month == temp->month)
+                {
+                    if(temp->day >= B_day)
                     {
                         if(temp->money_Amount > Maximum)
                         {
@@ -3413,17 +3585,46 @@ void Largest_Revenue(char User[41])
                         }
                     }
                 }
-                temp = temp->Link ;
             }
-            system("cls");
-            printf("The Maximum amount of the incomes in the interval is: %f RIAL\n\n",Maximum);
+            else if(temp->year == E_year)
+            {
+                if(temp->month < E_month)
+                {
+                    if(temp->money_Amount > Maximum)
+                    {
+                        Maximum = temp->money_Amount ;
+                    }
+                }
+                else if(temp->month == E_month)
+                {
+                    if(temp->day <= E_day)
+                    {
+                        if(temp->money_Amount > Maximum)
+                        {
+                            Maximum = temp->money_Amount ;
+                        }
+                    }
+                }
+            }
+            else if(temp->year > B_year && temp->year < E_year)
+            {
+                if(temp->money_Amount > Maximum)
+                {
+                    Maximum = temp->money_Amount ;
+                }
+            }
+        }
+        temp = temp->Link ;
+    }
+    system("cls");
+    printf("The Maximum amount of the incomes in the interval is: %f RIAL\n\n",Maximum);
 }
 
 void Largest_Cost(char User[41])
 {
     FILE *user_Data_File ;
     char user_Data_File_Name[46];
-    sprintf(user_Data_File_Name, "%s.txt",User);
+    sprintf(user_Data_File_Name, "%s.bin",User);
 
     struct IE
     {
@@ -3440,7 +3641,7 @@ void Largest_Cost(char User[41])
     start = malloc(sizeof(struct IE)) ;
     end = malloc(sizeof(struct IE)) ;
 
-    user_Data_File = fopen(user_Data_File_Name , "r") ;
+    user_Data_File = fopen(user_Data_File_Name , "rb") ;
 
     fscanf(user_Data_File, "%d",&start->money_Type);
     fgets(start->description , 40 , user_Data_File);
@@ -3476,63 +3677,52 @@ void Largest_Cost(char User[41])
 
     }while(1);
 
-    int B_year ,B_month ,B_day ;
-            printf("Please enter the beginning of the interval(YYYY/MM/DD):");
-            scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
-            fflush(stdin);
+    int loop_counter ;
+    int date_Check_Value ;
+    int B_year ,B_month ,B_day ,expense_Type ;
+    printf("Please enter the beginning of the interval(YYYY/MM/DD):");
+    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+    {
+        scanf("%d%*c%d%*c%d",&B_year ,&B_month ,&B_day );
+        fflush(stdin);
+        date_Check_Value = date_Check(B_year, B_month, B_day);
+        if(date_Check_Value == 1)
+        {
+            loop_counter--;
+        }
+    }
 
-            int E_year ,E_month ,E_day ;
-            printf("Please enter the end of the interval(YYYY/MM/DD):");
-            scanf("%d%*c%d%*c%d",&E_year ,&E_month ,&E_day);
-            fflush(stdin);
+    int E_year ,E_month ,E_day ;
+    printf("Please enter the end of the interval(YYYY/MM/DD):");
+    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+    {
+        scanf("%d%*c%d%*c%d",&E_year ,&E_month ,&E_day);
+        fflush(stdin);
+        date_Check_Value = date_Check(E_year, E_month, E_day);
+        if(date_Check_Value == 1)
+        {
+            loop_counter--;
+        }
+    }
 
-            temp = start;
-            float Maximum = 0 ;
-            while(temp != NULL)
+    temp = start;
+    float Maximum = 0 ;
+    while(temp != NULL)
+    {
+        if(temp->money_Type < 0)
+        {
+            if(temp->year == B_year)
             {
-                if(temp->money_Type < 0)
+                if(temp->month > B_month)
                 {
-                    if(temp->year == B_year)
+                    if(-temp->money_Amount > Maximum)
                     {
-                        if(temp->month > B_month)
-                        {
-                            if(-temp->money_Amount > Maximum)
-                            {
-                                Maximum = temp->money_Amount ;
-                            }
-                        }
-                        else if(B_month == temp->month)
-                        {
-                            if(temp->day >= B_day)
-                            {
-                                if(-temp->money_Amount > Maximum)
-                                {
-                                    Maximum = temp->money_Amount ;
-                                }
-                            }
-                        }
+                        Maximum = temp->money_Amount ;
                     }
-                    else if(temp->year == E_year)
-                    {
-                        if(temp->month < E_month)
-                        {
-                            if(-temp->money_Amount > Maximum)
-                            {
-                                Maximum = temp->money_Amount ;
-                            }
-                        }
-                        else if(temp->month == E_month)
-                        {
-                            if(temp->day <= E_day)
-                            {
-                                if(-temp->money_Amount > Maximum)
-                                {
-                                    Maximum = temp->money_Amount ;
-                                }
-                            }
-                        }
-                    }
-                    else if(temp->year > B_year && temp->year < E_year)
+                }
+                else if(B_month == temp->month)
+                {
+                    if(temp->day >= B_day)
                     {
                         if(-temp->money_Amount > Maximum)
                         {
@@ -3540,10 +3730,39 @@ void Largest_Cost(char User[41])
                         }
                     }
                 }
-                temp = temp->Link ;
             }
-            system("cls");
-            printf("The Maximum amount of the expenses in the interval is: %f RIAL\n\n",-Maximum);
+            else if(temp->year == E_year)
+            {
+                if(temp->month < E_month)
+                {
+                    if(-temp->money_Amount > Maximum)
+                    {
+                        Maximum = temp->money_Amount ;
+                    }
+                }
+                else if(temp->month == E_month)
+                {
+                    if(temp->day <= E_day)
+                    {
+                        if(-temp->money_Amount > Maximum)
+                        {
+                            Maximum = temp->money_Amount ;
+                        }
+                    }
+                }
+            }
+            else if(temp->year > B_year && temp->year < E_year)
+            {
+                if(-temp->money_Amount > Maximum)
+                {
+                    Maximum = temp->money_Amount ;
+                }
+            }
+        }
+        temp = temp->Link ;
+    }
+    system("cls");
+    printf("The Maximum amount of the expenses in the interval is: %f RIAL\n\n",-Maximum);
 }
 
 void Search_income_descriptions(char User[41])
@@ -3552,7 +3771,7 @@ void Search_income_descriptions(char User[41])
 
     FILE *user_Data_File ;
     char user_Data_File_Name[46];
-    sprintf(user_Data_File_Name, "%s.txt",User);
+    sprintf(user_Data_File_Name, "%s.bin",User);
 
     struct IE
     {
@@ -3569,7 +3788,7 @@ void Search_income_descriptions(char User[41])
     start = malloc(sizeof(struct IE)) ;
     end = malloc(sizeof(struct IE)) ;
 
-    user_Data_File = fopen(user_Data_File_Name , "r") ;
+    user_Data_File = fopen(user_Data_File_Name , "rb") ;
 
     fscanf(user_Data_File, "%d",&start->money_Type);
     fgets(start->description , 40 , user_Data_File);
@@ -3667,7 +3886,7 @@ void Search_expense_descriptions(char User[41])
 
     FILE *user_Data_File ;
     char user_Data_File_Name[46];
-    sprintf(user_Data_File_Name, "%s.txt",User);
+    sprintf(user_Data_File_Name, "%s.bin",User);
 
     struct IE
     {
@@ -3684,7 +3903,7 @@ void Search_expense_descriptions(char User[41])
     start = malloc(sizeof(struct IE)) ;
     end = malloc(sizeof(struct IE)) ;
 
-    user_Data_File = fopen(user_Data_File_Name , "r") ;
+    user_Data_File = fopen(user_Data_File_Name , "rb") ;
 
     fscanf(user_Data_File, "%d",&start->money_Type);
     fgets(start->description , 40 , user_Data_File);
