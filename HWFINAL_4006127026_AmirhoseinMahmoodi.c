@@ -5,75 +5,86 @@
 #include<stdlib.h>
 #include<windows.h>
 
-int  mainmenu();
-int  log_in();
 int  Hold;
+int  log_in(void);
+int  mainmenu(void);
 int  user_count;
-int  User_menu(char username[41] , char password[41]);
+int  User_Profile(void);
+int  account_Recovery(void);
+int  Income(char User[41]);
+int  Expense(char User[41]);
 int  NID_check(char NID[11]);
-int  PhoneNumber_check(char phoneNumber[10]);
-int  User_Profile();
-int  user_settings(char User[41] , char password[41]);
 int  statistics(char User[41]);
 int  email_Check(char Email[41]);
-int  password_Complexity_check(char password[41]);
 int  non_Space_Check(char object[41]);
+int  PhoneNumber_check(char phoneNumber[10]);
 int  username_Validity_Check(char username[41]);
 int  date_Check(int year , int month , int day);
-void intro();
-void user_choice(int user_decision);
-void sign_up();
-void Hold_func();
-void password_equallity_check(char defined_password[41], char password_cheker[41]);
-void Graphic_profile_initialize();
-void Income(char User[41]);
-void Expense(char User[41]);
-void Account_Balance(char User[41]);
-void Specific_Year_Income(char User[41]);
-void Specific_Year_Expense(char User[41]);
-void Timed_Income(char User[41]);
-void Timed_Expense(char User[41]);
-void Specific_Timed_Income(char User[41]);
-void Specific_Timed_Expense(char User[41]);
-void Revenue_Share(char User[41]);
+int  password_Complexity_check(char password[41]);
+int  User_menu(char username[41] , char password[41]);
+int  user_settings(char User[41] , char password[41]);
+void intro(void);
+void sign_up(void);
+void Hold_func(void);
 void Cost_Share(char User[41]);
+void Timed_Income(char User[41]);
+void Largest_Cost(char User[41]);
+void Timed_Expense(char User[41]);
+void Revenue_Share(char User[41]);
+void user_choice(int user_decision);
+void Account_Balance(char User[41]);
+void Largest_Revenue(char User[41]);
+void Graphic_profile_initialize(void);
 void Timed_Income_Detail(char User[41]);
 void Timed_Expense_Detail(char User[41]);
-void Largest_Revenue(char User[41]);
-void Largest_Cost(char User[41]);
+void Specific_Year_Income(char User[41]);
+void Specific_Year_Expense(char User[41]);
+void Specific_Timed_Income(char User[41]);
+void Specific_Timed_Expense(char User[41]);
 void Search_income_descriptions(char User[41]);
 void Search_expense_descriptions(char User[41]);
+void password_equallity_check(char defined_password[41], char password_cheker[41]);
 
 void main()
 {
-    int Hold;
-    int user_decision;
-    int loop_counter , log_in_value;
+    int Hold          ;
+    int loop_counter  ;
+    int log_in_value  ;
+    int user_decision ;
+    int recovery_Value;
     intro();
     for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
     {
-        Hold_func();
-        user_decision = mainmenu();
+        Hold_func();        //Runs programs security system //
+        user_decision = mainmenu(); // Prints the main menu options and takes their decision //
         if(user_decision == 1)
         {
-            log_in_value = log_in();
-            if(log_in_value == 5)
-            {
-                system("cls");
-                loop_counter--;
-            }
+            log_in_value = log_in();  //Runs the log in function    //
+            if(log_in_value == 5)     //                            //
+            {                         //Restarts                    //
+                system("cls");        //        the                 //
+                loop_counter--;       //            Main mneu       //
+            }                         //                   function //
         }
-
-        if (user_decision == 2)
+        else if(user_decision == 2)
         {
-                sign_up();
-                loop_counter--;
-        }
+                sign_up();            //Runs the sign up function//
+                loop_counter--;           // Restarts Man menu function //
+        }                             //Runs the sign up function//
+        else if(user_decision == 3)
+        {
+            recovery_Value = account_Recovery() ;   //Runs account recovery function //
+            if(recovery_Value == 5)                     //Restarts                        //
+            {                                           //         the                    //
+                system("cls");                          //             Main               //
+                loop_counter--;                         //                  menu          //
+            }                                           //                       function //
+        }                                           //Runs account recovery function //
     }
 
 }
 
-void intro()
+void intro()                                        //The introduction function//
 {
     int desing_count;
 
@@ -83,7 +94,7 @@ void intro()
     {
         printf("%c",0xCD);
     }
-    printf("%c\n%cThis is an accounting program made by Amirhosein Mahmoodi , student at IKIU%c\n%c",0xBB,0xBA,0xBA,0xC8);
+    printf("%c\n%cThis is an accounting program made by Amirhosein Mahmoodi , student at IKIU%c\n%c",0xBB,0xBA,0xBA,0xC8); // Lines 87 to 108 prints some informations about the program  //
 
     for(desing_count=0 ; desing_count < 75 ; desing_count++)
     {
@@ -96,7 +107,7 @@ void intro()
     Sleep(5000);
 }
 
-int mainmenu()
+int mainmenu()                                                  //Lines 110 to 133 is for mainmenu function//
 {
     int loop_counter ;
 
@@ -105,44 +116,50 @@ int mainmenu()
     for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
     {
         printf("choose what you want to do with this program.\n");
-        printf("1)log in\n2)sign up\n3)EXIT\n");
+        printf("1)log in\n2)sign up\n3)Recover account\n4)EXIT");
         printf("\n\nPlease enter your choice:");
         scanf("%d",&main_menu_value);
         fflush(stdin);
 
-        if(main_menu_value != 1 && main_menu_value != 2 && main_menu_value != 3)
+        if(main_menu_value != 1 && main_menu_value != 2 && main_menu_value != 3 && main_menu_value != 4)
         {
             system("cls");
-            printf("Pleae just enter numbers 1 to 3.\n");
+            printf("Pleae just enter numbers 1 to 4.\n");
             loop_counter--;
         }
     }
 
-    return main_menu_value ;
+    return main_menu_value ;                            //Returns the users choice to main() function//
 }
 
-void Hold_func()
+void Hold_func()                                        //Lines 135 to 163 is for Hold_fuc the programs security system//
 {
     int loop_counter ;
+    int loop_counter2 ;
     FILE *Holder;
-    Holder = fopen("Hold.bin", "rb");
+    Holder = fopen("Hold.bin", "rb");                   //Opening a file named Hold to scan the current amount of Hold(int)//
     fscanf(Holder, "%d",&Hold);
     fclose(Holder);
-    if(Hold == 1)
+    if(Hold == 1)                                       //if the amount of Hold(int) becomes 1 the program will be locked down for 5 minutes//
     {
-        for(loop_counter = 0 ; loop_counter < 300000 ; loop_counter++)
+        int minute = 5 ;
+        for(loop_counter2 = 4 ; loop_counter2 > 0 ; loop_counter2--)
         {
-            Sleep(1000);
-            system("cls");
-            printf("you have entered wrong password 5 times so the program will be banned for 5 minutes\nATTENTION - Do not restart the program ");
-            printf("otherwise the timer will be reset.");
-            printf("%d:%d",(300000-loop_counter)/60000,(300000-loop_counter)%60);
+            for(loop_counter = 59 ; loop_counter >= 0 ; loop_counter--)
+            {
+                Sleep(1000);
+                system("cls");
+                printf("you have entered wrong password 5 times so the program will be banned for 5 minutes\nATTENTION - Do not restart the program ");
+                printf("otherwise the timer will be reset.");
+                printf("%d:%d",loop_counter2,loop_counter);
+            }
         }
-        fopen("Hold.bin", "wb");
+        fopen("Hold.bin", "wb");                        //After 5 minutes the amount of Hold(int) will become 0 and printed in the file(Hld.bin)//
         Hold = 0 ;
         fprintf(Holder, "%d",Hold);
         fclose(Holder);
     }
+    system("cls");
 }
 
 void sign_up()
@@ -200,7 +217,6 @@ void sign_up()
             temp = malloc(sizeof(struct username));
             end->Link = temp ;
             fscanf(user_opener , "%*s%*s%*s%*s%*s%*s%s", temp->username);
-            printf("\n%s",temp->username);
             temp->Link = NULL ;
             end = temp ;
         }
@@ -245,7 +261,7 @@ void sign_up()
                 }
                 else
                 {
-                    temp=temp->Link ;
+                    temp = temp->Link ;
                 }
             }
         }
@@ -336,9 +352,9 @@ void sign_up()
         {
             if(pass_Char == 8)
             {
-                loop_counter--;
                 if(pass_Counter != 0)
                 {
+                    loop_counter--;
                     pass_Counter--;
                 }
                 system("cls");
@@ -393,8 +409,11 @@ void sign_up()
     {
         if(pass_Check_Char == 8)
         {
-            loop_counter--;
-            pass_Check_Counter--;
+            if( pass_Check_Counter != 0)
+            {
+                loop_counter--;
+                pass_Check_Counter--;
+            }
             system("cls");
             printf("Enter your password again:");
             for (loop_counter1 = 0 ; loop_counter1 < pass_Check_Counter ; loop_counter1++)
@@ -419,7 +438,27 @@ void sign_up()
 
     password_equallity_check(NewUser.password,NewUser.pass_check);
     user_opener = fopen("Users.bin", "ab");
-    fprintf(user_opener, "%s\n%s\n%s\n%s\n%s\n%s\n%s\n",NewUser.username,NewUser.Name,NewUser.surname,NewUser.NID,NewUser.PhoneNumber,NewUser.Email,NewUser.password);
+    fprintf(user_opener, "%s\n%s\n%s\n%s\n%s\n%s\n",NewUser.username,NewUser.Name,NewUser.surname,NewUser.NID,NewUser.PhoneNumber,NewUser.Email);
+    int ascii ;
+    int pass_Char_Length_Number ;
+    int pass_Length ;
+    pass_Length = strlen(NewUser.password);
+    fprintf(user_opener, "%d ",pass_Length);
+    for(loop_counter = 0 ; loop_counter < pass_Length ; loop_counter++)
+    {
+        ascii = NewUser.password[loop_counter] ;
+        if(NewUser.password[loop_counter] >= 33 && NewUser.password[loop_counter] <= 99)
+        {
+            pass_Char_Length_Number = 50 ;
+        }
+        else if(NewUser.password[loop_counter] >= 100 && NewUser.password[loop_counter] <= 126)
+        {
+            pass_Char_Length_Number = 51 ;
+        }
+
+        fprintf(user_opener, "%d%d",pass_Char_Length_Number,ascii);
+    }
+    fprintf(user_opener, "\n");
     user_counter = fopen("usercount.bin", "wb");
     fprintf(user_counter,"%d",user_count+1);
     fclose(user_counter);
@@ -432,6 +471,7 @@ int log_in()
     struct user{
         char username[41] ;
         char password[41] ;
+        int  pass_Length ;
         struct user *Link ;
     }user_identifier;
 
@@ -448,29 +488,75 @@ int log_in()
     fclose(user_counter);
 
     user_opener = fopen("users.bin", "rb");
-    if(user_opener == NULL)
+    if(user_opener == NULL || users_number == 0)
     {
         printf("No users yet.");
         Sleep(2000);
         return 5;
     }
     fscanf(user_opener, "%s",start->username);
-    fscanf(user_opener, "%*s%*s%*s%*s%*s%s",start->password);
+    fscanf(user_opener, "%*s%*s%*s%*s%*s");
+    int ascii ;
+    int  pass_Char_Length_Number;
+    fscanf(user_opener, "%d",&start->pass_Length);
+    for(loop_counter = 0 ; loop_counter < start->pass_Length ; loop_counter++)
+    {
+        fscanf(user_opener, "%2d",&pass_Char_Length_Number);
+        if(pass_Char_Length_Number == 50)
+        {
+            fscanf(user_opener, "%2d",&ascii);
+        }
+        else if(pass_Char_Length_Number == 51)
+        {
+            fscanf(user_opener, "%3d",&ascii);
+        }
+        start->password[loop_counter] = ascii ;
+    }
+    start->password[loop_counter] = '\0' ;
     start->Link = NULL;
     if(users_number > 1)
     {
         start->Link = end;
         fscanf(user_opener, "%s",end->username);
-        fscanf(user_opener, "%*s%*s%*s%*s%*s%s",end->password);
+        fscanf(user_opener, "%*s%*s%*s%*s%*s");
+        fscanf(user_opener, "%d",&end->pass_Length);
+        for(loop_counter = 0 ; loop_counter < end->pass_Length ; loop_counter++)
+        {
+            fscanf(user_opener, "%2d",&pass_Char_Length_Number);
+            if(pass_Char_Length_Number == 50)
+            {
+                fscanf(user_opener, "%2d",&ascii);
+            }
+            else if(pass_Char_Length_Number == 51)
+            {
+                fscanf(user_opener, "%3d",&ascii);
+            }
+            end->password[loop_counter] = ascii ;
+        }
+        end->password[loop_counter] = '\0' ;
         end->Link = NULL;
     }
+    int loop_counter2 ;
     for(loop_counter = 0 ; loop_counter < users_number - 2 ; loop_counter++)
     {
-        printf("111");
         temp = malloc(sizeof(struct user));
         fscanf(user_opener, "%s",temp->username);
-        fscanf(user_opener, "%*s%*s%*s%*s%*s%s",temp->password);
-        printf("\n%s",temp->username);
+        fscanf(user_opener, "%*s%*s%*s%*s%*s");
+        fscanf(user_opener, "%d",&temp->pass_Length);
+        for(loop_counter2 = 0 ; loop_counter2 < temp->pass_Length ; loop_counter2++)
+        {
+            fscanf(user_opener, "%2d",&pass_Char_Length_Number);
+            if(pass_Char_Length_Number == 50)
+            {
+                fscanf(user_opener, "%2d",&ascii);
+            }
+            else if(pass_Char_Length_Number == 51)
+            {
+                fscanf(user_opener, "%3d",&ascii);
+            }
+            temp->password[loop_counter2] = ascii ;
+        }
+        temp->password[loop_counter2] = '\0' ;
         end->Link = temp;
         end = temp;
         end->Link = NULL;
@@ -510,7 +596,8 @@ int log_in()
     system("cls");
     printf("Please enter your password:\n");
     char pass_Char ;
-    int  pass_Counter = 0 , loop_counter2 = 0 , loop_counter1;
+    int  pass_Counter = 0 , loop_counter1;
+    loop_counter2 = 0 ;
     for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
     {
         pass_Counter = 0 ;
@@ -519,9 +606,9 @@ int log_in()
         {
             if(pass_Char == 8)
             {
-                loop_counter2--;
                 if(pass_Counter != 0)
                 {
+                    loop_counter2--;
                     pass_Counter--;
                 }
                 system("cls");
@@ -584,21 +671,389 @@ int log_in()
 
 }
 
+int account_Recovery()
+{
+    system("cls");
+    struct user{
+        int  pass_Length     ;
+        char PhoneNumber[10] ;
+        char pass_check[41]  ;
+        char password[41]    ;
+        char username[41]    ;
+        char surname[41]     ;
+        char Email[41]       ;
+        char Name[41]        ;
+        char NID[11]         ;
+        struct user *Link    ;
+    }user_identifier;
+
+    struct user *start , *end , *temp ;
+    int loop_counter , wrong_Password_Input = 0 , users_number ;
+    int non_Space_Check_Value ;
+    FILE *user_opener , *Holder , *user_counter ;
+    start = malloc(sizeof(struct user));
+    end = malloc(sizeof(struct user));
+
+    user_counter = fopen("usercount.bin", "rb");
+
+    fscanf(user_counter, "%d", &users_number);
+    fclose(user_counter);
+
+    user_opener = fopen("users.bin", "rb");
+    if(user_opener == NULL || users_number == 0)
+    {
+        printf("No users yet.");
+        Sleep(2000);
+        return 5;
+    }
+    fscanf(user_opener, "%s%s%s%s%s%s",start->username ,start->Name ,start->surname ,start->NID ,start->PhoneNumber ,start->Email);
+    int ascii ;
+    int  pass_Char_Length_Number;
+    fscanf(user_opener, "%d",&start->pass_Length);
+    for(loop_counter = 0 ; loop_counter < start->pass_Length ; loop_counter++)
+    {
+        fscanf(user_opener, "%2d",&pass_Char_Length_Number);
+        if(pass_Char_Length_Number == 50)
+        {
+            fscanf(user_opener, "%2d",&ascii);
+        }
+        else if(pass_Char_Length_Number == 51)
+        {
+            fscanf(user_opener, "%3d",&ascii);
+        }
+        start->password[loop_counter] = ascii ;
+    }
+    start->password[loop_counter] = '\0' ;
+    start->Link = NULL;
+    if(users_number > 1)
+    {
+        start->Link = end;
+        fscanf(user_opener, "%s%s%s%s%s%s",end->username ,end->Name ,end->surname ,end->NID ,end->PhoneNumber ,end->Email);
+        fscanf(user_opener, "%d",&end->pass_Length);
+        for(loop_counter = 0 ; loop_counter < end->pass_Length ; loop_counter++)
+        {
+            fscanf(user_opener, "%2d",&pass_Char_Length_Number);
+            if(pass_Char_Length_Number == 50)
+            {
+                fscanf(user_opener, "%2d",&ascii);
+            }
+            else if(pass_Char_Length_Number == 51)
+            {
+                fscanf(user_opener, "%3d",&ascii);
+            }
+            end->password[loop_counter] = ascii ;
+        }
+        end->password[loop_counter] = '\0' ;
+        end->Link = NULL;
+    }
+    int loop_counter2 ;
+    for(loop_counter = 0 ; loop_counter < users_number - 2 ; loop_counter++)
+    {
+        temp = malloc(sizeof(struct user));
+        fscanf(user_opener, "%s%s%s%s%s%s",temp->username ,temp->Name ,temp->surname ,temp->NID ,temp->PhoneNumber ,temp->Email);
+        fscanf(user_opener, "%d",&temp->pass_Length);
+        for(loop_counter2 = 0 ; loop_counter2 < temp->pass_Length ; loop_counter2++)
+        {
+            fscanf(user_opener, "%2d",&pass_Char_Length_Number);
+            if(pass_Char_Length_Number == 50)
+            {
+                fscanf(user_opener, "%2d",&ascii);
+            }
+            else if(pass_Char_Length_Number == 51)
+            {
+                fscanf(user_opener, "%3d",&ascii);
+            }
+            temp->password[loop_counter2] = ascii ;
+        }
+        temp->password[loop_counter2] = '\0' ;
+        end->Link = temp;
+        end = temp;
+        end->Link = NULL;
+    }
+
+    printf("Please enter your username:\n");
+    fflush(stdin);
+
+    int wrong_username_input = 0 ;
+
+    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+    {
+        temp = start;
+        gets(user_identifier.username);
+        fflush(stdin);
+        do
+        {
+            if(strcmp(user_identifier.username,temp->username) == 0)
+            {
+                printf("correct");
+                break;
+            }
+            else
+            {
+                wrong_username_input++ ;
+            }
+            temp=temp->Link;
+        }while(temp != NULL);
+        if(wrong_username_input == users_number )
+        {
+            printf("There is not such username.\nTry reentering your username:");
+            loop_counter-- ;
+            wrong_username_input = 0 ;
+        }
+    }
+
+    if(strcmp(user_identifier.username,temp->username) == 0)
+    {
+        Sleep(1000);
+        system("cls");
+        printf("Please enter your name:\n");
+        for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+        {
+            gets(user_identifier.Name);
+            fflush(stdin);
+            non_Space_Check_Value = non_Space_Check(user_identifier.Name);
+            if(non_Space_Check_Value == 1)
+            {
+                loop_counter--;
+            }
+        }
+
+        if(strcmp(user_identifier.Name,temp->Name) == 0)
+        {
+            system("cls");
+            printf("Please enter your surname:\n");
+            for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+            {
+                gets(user_identifier.surname);
+                fflush(stdin);
+                non_Space_Check_Value = non_Space_Check(user_identifier.surname);
+                if(non_Space_Check_Value == 1)
+                {
+                    loop_counter--;
+                }
+            }
+            if(strcmp(user_identifier.surname,temp->surname) == 0)
+            {
+                system("cls");
+                printf("Please enter your national ID:\n");
+                for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+                {
+                    gets(user_identifier.NID);
+                    fflush(stdin);
+                    non_Space_Check_Value = non_Space_Check(user_identifier.NID);
+                    if(non_Space_Check_Value == 1)
+                    {
+                        loop_counter--;
+                    }
+                }
+                if(strcmp(user_identifier.NID,temp->NID) == 0)
+                {
+                    system("cls");
+                    printf("Please enter your Email:\n");
+                    gets(user_identifier.Email);
+                    fflush(stdin);
+                    non_Space_Check_Value = non_Space_Check(user_identifier.Email);
+                    if(non_Space_Check_Value == 1)
+                    {
+                        loop_counter--;
+                    }
+                    if(strcmp(user_identifier.Email,temp->Email) != 0)
+                    {
+                        printf("No users found with this information.");
+                        Sleep(3000);
+                        return 5 ;
+                    }
+                }
+                else
+                {
+                    printf("No users found with this information.");
+                    Sleep(3000);
+                    return 5 ;
+                }
+            }
+            else
+            {
+                printf("No users found with this information.");
+                Sleep(3000);
+                return 5 ;
+            }
+        }
+        else
+        {
+            printf("No users found with this information.");
+            Sleep(3000);
+            return 5 ;
+        }
+    }
+    else
+    {
+        printf("No users found with this information.");
+        Sleep(3000);
+        return 5 ;
+    }
+
+    system("cls");
+    char pass_Char ;
+    int   pass_Counter = 0 , loop_counter1 = 0;
+    int coplexity_Value ;
+    for(loop_counter2 = 0 ; loop_counter2 < 1 ; loop_counter2++)
+    {
+        printf("Enter your new password up to 40 characters\nTry to set a ");
+        printf("complicated password using numbers , capital and small letters , and special characters(At least 8 characters):");
+        loop_counter = 0 ;
+        while ((pass_Char = _getch()) != 13 )
+        {
+            if(pass_Char == 8)
+            {
+                if(pass_Counter != 0)
+                {
+                    loop_counter--;
+                    pass_Counter--;
+                }
+                system("cls");
+                printf("Enter your new password up to 40 characters\nTry to set a ");
+                printf("complicated password using numbers , capital and small letters , and special characters(At least 8 characters):");
+                for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
+                {
+                    printf("*");
+                }
+            }
+            else
+            {
+                pass_Counter++;
+                user_identifier.password[loop_counter] = pass_Char ;
+                system("cls");
+                printf("Enter your new password up to 40 characters\nTry to set a ");
+                printf("complicated password using numbers , capital and small letters , and special characters(At least 8 characters):");
+                for (loop_counter1 = 0 ; loop_counter1 < pass_Counter ; loop_counter1++)
+                {
+                    printf("*");
+                }
+                loop_counter++;
+            }
+        }
+        user_identifier.password[loop_counter] = '\0';
+        fflush(stdin);
+
+        non_Space_Check_Value = non_Space_Check(user_identifier.password);
+        if(non_Space_Check_Value == 1)
+        {
+            loop_counter2--;
+            pass_Counter = 0 ;
+            continue ;
+        }
+        else
+        {
+            coplexity_Value = password_Complexity_check(user_identifier.password);
+            if(coplexity_Value == 1)
+            {
+                loop_counter2--;
+                pass_Counter = 0 ;
+                continue ;
+            }
+        }
+    }
+
+    system("cls");
+    printf("Enter your password again:");
+    char pass_Check_Char ;
+    int pass_Check_Counter = 0 ;
+    loop_counter1 = 0 ;
+    loop_counter = 0 ;
+    while ((pass_Check_Char = _getch()) != 13 )
+    {
+        if(pass_Check_Char == 8)
+        {
+            if( pass_Check_Counter != 0)
+            {
+                loop_counter--;
+                pass_Check_Counter--;
+            }
+            system("cls");
+            printf("Enter your password again:");
+            for (loop_counter1 = 0 ; loop_counter1 < pass_Check_Counter ; loop_counter1++)
+            {
+                printf("*");
+            }
+        }
+        else
+        {
+            pass_Check_Counter++;
+            user_identifier.pass_check[loop_counter] = pass_Check_Char ;
+            system("cls");
+            printf("Enter your password again:");
+            for (loop_counter1 = 0 ; loop_counter1 < pass_Check_Counter ; loop_counter1++)
+            {
+                printf("*");
+            }
+            loop_counter++;
+        }
+    }
+    user_identifier.pass_check[loop_counter] = '\0';
+
+    strcpy(temp->password,user_identifier.pass_check);
+    int pass_Length ;
+    password_equallity_check(user_identifier.password,user_identifier.pass_check);
+    user_opener = fopen("users.bin", "wb");
+    temp = start ;
+
+    do
+    {
+        pass_Length = strlen(temp->password);
+        fprintf(user_opener , "%s\n%s\n%s\n%s\n%s\n%s\n",temp->username ,temp->Name ,temp->surname ,temp->NID ,temp->PhoneNumber ,temp->Email);
+        fprintf(user_opener, "%d ",pass_Length);
+        for(loop_counter = 0 ; loop_counter < pass_Length ; loop_counter++)
+        {
+            ascii = temp->password[loop_counter] ;
+            if(user_identifier.password[loop_counter] >= 33 && temp->password[loop_counter] <= 99)
+            {
+                pass_Char_Length_Number = 50 ;
+            }
+            else if(temp->password[loop_counter] >= 100 && temp->password[loop_counter] <= 126)
+            {
+                pass_Char_Length_Number = 51 ;
+            }
+
+            fprintf(user_opener, "%d%d",pass_Char_Length_Number,ascii);
+        }
+        fprintf(user_opener, "\n");
+        temp=temp->Link ;
+    }while(temp != NULL);
+
+
+    fclose(user_opener);
+    system("cls");
+    printf("ALL DONE!");
+    Sleep(1000);
+    system("cls");
+    return 5 ;
+}
+
 int User_menu(char username[41] , char password[41])
 {
+    int income_Value ;
+    int expense_Value ;
     int User_choice , loop_counter ,stat_Value;
     for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
     {
         User_choice = User_Profile();
         if(User_choice == 1)
         {
-            Income(username) ;
-            loop_counter--;
+            income_Value = Income(username) ;
+            if(income_Value == 1)
+            {
+                loop_counter--;
+                continue ;
+            }
         }
         else if(User_choice == 2)
         {
-            Expense(username);
-            loop_counter--;
+            expense_Value = Expense(username);
+            if(expense_Value == 1)
+            {
+                loop_counter--;
+                continue ;
+            }
         }
         else if(User_choice == 3)
         {
@@ -709,9 +1164,9 @@ void password_equallity_check(char defined_password[41], char password_cheker[41
             {
                 if(pass_Char == 8)
                 {
-                    loop_counter--;
                     if(pass_Counter != 0)
                     {
+                        loop_counter--;
                         pass_Counter--;
                     }
                     system("cls");
@@ -815,10 +1270,29 @@ int date_Check(int year , int month , int day)
         printf("\nWrong input.Month must be between 1 and 12.\nTry again:");
         return 1 ;
     }
-    else if(day > 30 || day < 1)
+    else if(month > 0 && month < 7)
     {
-        printf("\nWrong input.Day must be between 1 and 31");
-        return 1 ;
+        if(day > 31 || day < 1)
+        {
+            printf("\nWrong input.Day of this month must be between 1 and 31");
+            return 1 ;
+        }
+    }
+    else if(month > 6 && month <12)
+    {
+        if(day > 30 || day < 1)
+        {
+            printf("\nWrong input.Day of this month must be between 1 and 30");
+            return 1 ;
+        }
+    }
+    else if(month == 12)
+    {
+        if(day > 29 || day < 1)
+        {
+            printf("Wrong input.Day of this month must be between 1 and 29");
+            return 1 ;
+        }
     }
     return 0 ;
 }
@@ -871,7 +1345,7 @@ int PhoneNumber_check(char phoneNumber[10])
     }
 }
 
-void Income(char User[41])
+int Income(char User[41])
 {
     system("cls");
     FILE *user_Data_File ;
@@ -883,15 +1357,20 @@ void Income(char User[41])
     for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
     {
         printf("You are entering your income information...\n\nPlease specify your income type\n");
-        printf("1.Progrramming Salary\n2.YARANEH\n3.Pocket Money\n4.University grant\n>>Please enter your choice:");
+        printf("1.Progrramming Salary\n2.YARANEH\n3.Pocket Money\n4.University grant\n5.Back to Main menu\n>>Please enter your choice:");
         scanf("%d",&income_type);
         fflush(stdin);
-        if(income_type != 1 && income_type != 2 && income_type != 3 && income_type != 4)
+        if(income_type != 1 && income_type != 2 && income_type != 3 && income_type != 4 && income_type != 5)
         {
             system("cls");
-            printf("Wrong input.try again.\n\n");
+            printf("Please just enter numbers 1 to 5.\n");
             loop_counter--;
         }
+    }
+    if(income_type == 5)
+    {
+        system("cls");
+        return 1 ;
     }
     float amount ;
     printf("Please enter the amount of your income in RIAL:");
@@ -915,9 +1394,10 @@ void Income(char User[41])
     gets(description);
     fprintf(user_Data_File, "%d\n%s\n%d/%d/%d\n%f\n" ,income_type ,description ,year ,month ,day ,amount );
     fclose(user_Data_File);
+    return 1 ;
 }
 
-void Expense(char User[41])
+int Expense(char User[41])
 {
     system("cls");
     FILE *user_Data_File ;
@@ -930,16 +1410,21 @@ void Expense(char User[41])
     {
         printf("You are entering your expense information\nPlease specify your expense type:");
         printf("Please specify your expense type\n");
-        printf("1.Wearings\n2.Transportation\n3.Tuition fees\n4.Entertainment\n5.Mobile and Internet bill\n6.Medical expenses\n7.Charity donation");
-        printf("\n\n>>Please enter your choice:");
+        printf("1.Wearings\n2.Transportation\n3.Tuition fees\n4.Entertainment\n5.Mobile and Internet bill\n6.Medical expenses\n7.Charity donation\n8.Back to main menu");
+        printf("\n>>Please enter your choice:");
         scanf("%d",&expense_type);
         fflush(stdin);
-        if(expense_type != 1 && expense_type != 2 && expense_type != 3 && expense_type != 4 && expense_type != 5 && expense_type != 6 && expense_type != 7)
+        if(expense_type != 1 && expense_type != 2 && expense_type != 3 && expense_type != 4 && expense_type != 5 && expense_type != 6 && expense_type != 7 && expense_type != 8)
         {
             system("cls");
-            printf("Wrong input.try again.\n");
+            printf("Please just enter numbers 1 to 8.\n");
             loop_counter--;
         }
+    }
+    if(expense_type == 8)
+    {
+        system("cls");
+        return 1 ;
     }
     printf("Please enter the amount of your expense in RIAL:");
     float amount ;
@@ -963,6 +1448,7 @@ void Expense(char User[41])
     gets(description);
     fprintf(user_Data_File, "%d\n%s\n%d/%d/%d\n%f\n\n" ,-expense_type ,description ,year ,month ,day ,-amount );
     fclose(user_Data_File);
+    return 1 ;
 }
 
 int user_settings(char User[41] , char password[41])
@@ -978,32 +1464,37 @@ int user_settings(char User[41] , char password[41])
     for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
     {
         printf("Please choose what you want to change about your profile\n");
-        printf("1.Username\n2.Name & Surname\n3.NID\n4.PhoneNumber\n5.Email\n6.Password\n7.All infos\n8.Exit\n");
+        printf("1.Username\n2.Name & Surname\n3.NID\n4.PhoneNumber\n5.Email\n6.Password\n7.All info\n8.Delete account\n9.Back to Main menu\n");
         printf("Please enter your choice:");
         scanf("%d",&user_desicion);
-        if(user_desicion != 1 && user_desicion != 2 && user_desicion != 3 && user_desicion != 4 && user_desicion != 5 && user_desicion != 6 && user_desicion != 7 && user_desicion != 8)
+        if(user_desicion != 1 && user_desicion != 2 && user_desicion != 3 && user_desicion != 4 && user_desicion != 5 && user_desicion != 6 && user_desicion != 7 && user_desicion != 8 && user_desicion != 9)
         {
             system("cls");
-            printf("Please just enter numbers 1 to 8.\n");
+            printf("Please just enter numbers 1 to 9.\n");
             loop_counter--;
         }
     }
 
     struct user
     {
-        char username[41] ;
-        char password[41] ;
-        char name[41] ;
-        char surname[41] ;
-        char NID[11] ;
         char phonenumber[10] ;
-        char Email[41] ;
-        struct user *Link ;
+        int  pass_Length     ;
+        char username[41]    ;
+        char password[41]    ;
+        char surname[41]     ;
+        char Email[41]       ;
+        char name[41]        ;
+        char NID[11]         ;
+        struct user *Link    ;
     };
     char user_Current_Pass_Check[41] ;
     char user_New_Pass_Check[41] ;
-    struct user *start , *end , *temp , *temp2;
-    int wrong = 0 , users_number ;
+    struct user *start , *end , *temp , *temp1 , *temp2 ;
+    int wrong = 0 ;
+    int users_number ;
+    int ascii ;
+    int pass_Length ;
+    int pass_Char_Length_Number ;
     FILE *user_opener , *Holder , *user_counter ;
 
     user_counter = fopen("usercount.bin", "rb");
@@ -1020,8 +1511,22 @@ int user_settings(char User[41] , char password[41])
     fscanf(user_opener, "%10s" , start->NID);
     fscanf(user_opener, "%9s"  , start->phonenumber);
     fscanf(user_opener, "%40s" , start->Email);
-    fscanf(user_opener, "%40s" , start->password);
-    start->Link = NULL ;
+    fscanf(user_opener, "%d",&start->pass_Length);
+    for(loop_counter = 0 ; loop_counter < start->pass_Length ; loop_counter++)
+    {
+        fscanf(user_opener, "%2d",&pass_Char_Length_Number);
+        if(pass_Char_Length_Number == 50)
+        {
+            fscanf(user_opener, "%2d",&ascii);
+        }
+        else if(pass_Char_Length_Number == 51)
+        {
+            fscanf(user_opener, "%3d",&ascii);
+        }
+        start->password[loop_counter] = ascii ;
+    }
+    start->password[loop_counter] = '\0' ;
+    start->Link = NULL;
 
     if(users_number > 1)
     {
@@ -1033,7 +1538,21 @@ int user_settings(char User[41] , char password[41])
         fscanf(user_opener, "%10s" , end->NID);
         fscanf(user_opener, "%9s"  , end->phonenumber);
         fscanf(user_opener, "%40s" , end->Email);
-        fscanf(user_opener, "%40s" , end->password);
+        fscanf(user_opener, "%d",&end->pass_Length);
+        for(loop_counter = 0 ; loop_counter < end->pass_Length ; loop_counter++)
+        {
+            fscanf(user_opener, "%2d",&pass_Char_Length_Number);
+            if(pass_Char_Length_Number == 50)
+            {
+                fscanf(user_opener, "%2d",&ascii);
+            }
+            else if(pass_Char_Length_Number == 51)
+            {
+                fscanf(user_opener, "%3d",&ascii);
+            }
+            end->password[loop_counter] = ascii ;
+        }
+        end->password[loop_counter] = '\0' ;
         end->Link = NULL;
 
         for(loop_counter = 0 ; loop_counter < users_number - 2 ; loop_counter++)
@@ -1046,7 +1565,21 @@ int user_settings(char User[41] , char password[41])
             fscanf(user_opener, "%10s" , temp->NID);
             fscanf(user_opener, "%9s"  , temp->phonenumber);
             fscanf(user_opener, "%40s" , temp->Email);
-            fscanf(user_opener, "%40s" , temp->password);
+            fscanf(user_opener, "%d",&temp->pass_Length);
+            for(loop_counter = 0 ; loop_counter < temp->pass_Length ; loop_counter++)
+            {
+                fscanf(user_opener, "%2d",&pass_Char_Length_Number);
+                if(pass_Char_Length_Number == 50)
+                {
+                    fscanf(user_opener, "%2d",&ascii);
+                }
+                else if(pass_Char_Length_Number == 51)
+                {
+                    fscanf(user_opener, "%3d",&ascii);
+                }
+                temp->password[loop_counter] = ascii ;
+            }
+            temp->password[loop_counter] = '\0' ;
             end = temp ;
             end->Link = NULL ;
         }
@@ -1114,9 +1647,8 @@ int user_settings(char User[41] , char password[41])
         }while(temp != NULL);
 
         char user_New_Data_File_Name[46] ;
-        int rename_value ;
         sprintf(user_New_Data_File_Name, "%s.bin",temp->username);
-        rename_value = rename(user_Data_File_Name,user_New_Data_File_Name);
+        rename(user_Data_File_Name,user_New_Data_File_Name);
     }
     else if(user_desicion == 2)
     {
@@ -1266,9 +1798,9 @@ int user_settings(char User[41] , char password[41])
             {
                 if(pass_Char == 8)
                 {
-                    loop_counter2--;
                     if(pass_Counter != 0)
                     {
+                        loop_counter2--;
                         pass_Counter--;
                     }
                     system("cls");
@@ -1344,9 +1876,9 @@ int user_settings(char User[41] , char password[41])
                     {
                         if(pass_Char == 8)
                         {
-                            loop_counter2--;
                             if(pass_Counter != 0)
                             {
+                                loop_counter2--;
                                 pass_Counter--;
                             }
                             system("cls");
@@ -1398,9 +1930,9 @@ int user_settings(char User[41] , char password[41])
                 {
                     if(pass_Char == 8)
                     {
-                        loop_counter2--;
                         if(pass_Counter != 0)
                         {
+                            loop_counter2--;
                             pass_Counter--;
                         }
                         system("cls");
@@ -1572,9 +2104,9 @@ int user_settings(char User[41] , char password[41])
             {
                 if(pass_Char == 8)
                 {
-                    loop_counter2--;
                     if(pass_Counter != 0)
                     {
+                        loop_counter2--;
                         pass_Counter--;
                     }
                     system("cls");
@@ -1648,9 +2180,9 @@ int user_settings(char User[41] , char password[41])
             {
                 if(pass_Char == 8)
                 {
-                    loop_counter2--;
                     if(pass_Counter != 0)
                     {
+                        loop_counter2--;
                         pass_Counter--;
                     }
                     system("cls");
@@ -1697,9 +2229,9 @@ int user_settings(char User[41] , char password[41])
         {
             if(pass_Char == 8)
             {
-                loop_counter2--;
                 if(pass_Counter != 0)
                 {
+                    loop_counter2--;
                     pass_Counter--;
                 }
                 system("cls");
@@ -1725,20 +2257,136 @@ int user_settings(char User[41] , char password[41])
         user_New_Pass_Check[loop_counter2] = '\0';
         fflush(stdin);
         sprintf(user_New_Data_File_Name, "%s.bin",temp->username);
-        rename_value = rename(user_Data_File_Name,user_New_Data_File_Name);
+        rename(user_Data_File_Name,user_New_Data_File_Name);
     }
     else if(user_desicion == 8)
+    {
+        temp = start ;
+        do
+        {
+            if(strcmp(temp->username,User) == 0)
+            {
+                break ;
+            }
+            else
+            {
+                temp=temp->Link;
+            }
+        }while(temp != NULL);
+
+        char current_Password[41] ;
+        system("cls");
+        printf("To delete your account and all your data permanently enter your password:\n");
+        int pass_Counter = 0 ;
+        int loop_counter2 = 0 ;
+        char pass_Char ;
+        while ((pass_Char = _getch()) != 13 )
+        {
+            if(pass_Char == 8)
+            {
+                if(pass_Counter != 0)
+                {
+                    loop_counter2--;
+                    pass_Counter--;
+                }
+                system("cls");
+                printf("To delete your account and all your data permanently enter your password:\n");
+                for (loop_counter = 0 ; loop_counter < pass_Counter ; loop_counter++)
+                {
+                        printf("*");
+                }
+            }
+            else
+            {
+                pass_Counter++;
+                current_Password[loop_counter2] = pass_Char ;
+                system("cls");
+                printf("To delete your account and all your data permanently enter your password:\n");
+                for (loop_counter = 0 ; loop_counter < pass_Counter ; loop_counter++)
+                {
+                    printf("*");
+                }
+                loop_counter2++;
+            }
+        }
+        current_Password[loop_counter2] = '\0';
+        if(strcmp(current_Password,temp->password)  != 0)
+        {
+            printf("Wrong password.you can not delete this account.");
+            Sleep(4000);
+            return 1 ;
+        }
+        fflush(stdin);
+
+        temp1 = start ;
+        int check = 0 ;
+        for(loop_counter = 0 ; loop_counter < users_number ; loop_counter++)
+        {
+            if(temp1->Link == temp)
+            {
+                check = 1 ;
+                Sleep(2000);
+                temp1->Link = temp->Link ;
+                user_counter = fopen("usercount.bin", "rb");
+                fscanf(user_counter , "%d",&users_number);
+                fclose(user_counter);
+                user_counter = fopen("usercount.bin", "wb");
+                fprintf(user_counter, "%d",users_number-1);
+                fclose(user_counter);
+                break;
+            }
+            else
+            {
+                temp1=temp1->Link ;
+            }
+        }
+        if(check == 0)
+        {
+            start = temp->Link ;
+            user_counter = fopen("usercount.bin", "rb");
+            fscanf(user_counter , "%d",&users_number);
+            fclose(user_counter);
+            user_counter = fopen("usercount.bin", "wb");
+            fprintf(user_counter, "%d",users_number-1);
+            fclose(user_counter);
+        }
+
+        char user_Data_File_Name[46] ;
+        sprintf(user_Data_File_Name, "%s.bin",temp->username);
+        remove(user_Data_File_Name);
+    }
+    else if(user_desicion == 9)
     {
         return 1 ;
     }
 
     user_opener = fopen("users.bin", "wb");
     temp = start ;
-    do
+    if(temp != NULL)
     {
-        fprintf(user_opener , "%s\n%s\n%s\n%s\n%s\n%s\n%s\n",temp->username ,temp->name ,temp->surname ,temp->NID ,temp->phonenumber ,temp->Email , temp->password);
-        temp=temp->Link ;
-    }while(temp != NULL);
+        do
+        {
+            pass_Length = strlen(temp->password);
+            fprintf(user_opener , "%s\n%s\n%s\n%s\n%s\n%s\n",temp->username ,temp->name ,temp->surname ,temp->NID ,temp->phonenumber ,temp->Email);
+            fprintf(user_opener, "%d ",pass_Length);
+            for(loop_counter = 0 ; loop_counter < pass_Length ; loop_counter++)
+            {
+                ascii = temp->password[loop_counter] ;
+                if(temp->password[loop_counter] >= 33 && temp->password[loop_counter] <= 99)
+                {
+                    pass_Char_Length_Number = 50 ;
+                }
+                else if(temp->password[loop_counter] >= 100 && temp->password[loop_counter] <= 126)
+                {
+                    pass_Char_Length_Number = 51 ;
+                }
+
+                fprintf(user_opener, "%d%d",pass_Char_Length_Number,ascii);
+            }
+            fprintf(user_opener, "\n");
+            temp=temp->Link ;
+        }while(temp != NULL);
+    }
 
     fclose(user_opener);
     system("cls");
@@ -1759,7 +2407,7 @@ int statistics(char User[41])
         printf("1.Current account balance\t\t\t2.Specific year incomes\n\n3.Specific year expenses\t\t\t4.Incomes in a time interval\n\n");
         printf("5.Expenses in a time interval\t\t\t6.Specific income in a time interval\n\n7.Specific expense in a time interval\t\t8.Revenue share\n\n");
         printf("9.Cost share\t\t\t\t\t10.Details of income in a time interval\t\t\n\n11.Details of expense in a time interval\t12.Largest revenue figure\t\t\t\n\n");
-        printf("13.Largest cost figure\t\t\t\t14.Search income descriptions for a word\n\n15.Search expense descriptions for a word\n\n16.EXIT\n\nPlease enter your choice:");
+        printf("13.Largest cost figure\t\t\t\t14.Search income descriptions for a word\n\n15.Search expense descriptions for a word\n\n16.Back to Main menu\n\nPlease enter your choice:");
         scanf("%d",&user_Choice);
         fflush(stdin);
 
@@ -2055,24 +2703,24 @@ void Specific_Year_Expense(char User[41])
     }while(1);
 
     int specific_Year ;
-            float Total ;
-            printf("Please enter the specific year:");
-            scanf("%d",&specific_Year);
-            fflush(stdin);
-            temp = start ;
-            while(temp != NULL)
+    float Total ;
+    printf("Please enter the specific year:");
+    scanf("%d",&specific_Year);
+    fflush(stdin);
+    temp = start ;
+    while(temp != NULL)
+    {
+        if(temp->money_Type < 0)
+        {
+            if(temp->year == specific_Year)
             {
-                if(temp->money_Type < 0)
-                {
-                    if(temp->year == specific_Year)
-                    {
-                        Total += temp->money_Amount ;
-                    }
-                }
-                temp = temp->Link ;
+                Total += temp->money_Amount ;
             }
-            system("cls");
-            printf("Your total expense of year %d is:%f\n",specific_Year ,Total); ;
+        }
+        temp = temp->Link ;
+    }
+    system("cls");
+    printf("Your total expense of year %d is:%f\n",specific_Year ,-Total); ;
 }
 
 void Timed_Income(char User[41])
@@ -3075,19 +3723,19 @@ void Timed_Income_Detail(char User[41])
                 {
                     if(temp->money_Type == 1)
                     {
-                        printf("Programming Salary\n");
+                        printf("Income type:Programming Salary\n");
                     }
                     else if(temp->money_Type == 2)
                     {
-                        printf("YARANRH\n");
+                        printf("Income type:YARANRH\n");
                     }
                     else if(temp->money_Type == 3)
                     {
-                        printf("Pocket money\n");
+                        printf("Income type:Pocket money\n");
                     }
                     else if(temp->money_Type == 4)
                     {
-                        printf("University Grant\n");
+                        printf("Income type:University Grant\n");
                     }
                     printf("Description: %s",temp->description);
                     printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
@@ -3099,19 +3747,19 @@ void Timed_Income_Detail(char User[41])
                     {
                         if(temp->money_Type == 1)
                         {
-                            printf("Programming Salary\n");
+                            printf("Income type:Programming Salary\n");
                         }
                         else if(temp->money_Type == 2)
                         {
-                            printf("YARANRH\n");
+                            printf("Income type:YARANRH\n");
                         }
                         else if(temp->money_Type == 3)
                         {
-                            printf("Pocket money\n");
+                            printf("Income type:Pocket money\n");
                         }
                         else if(temp->money_Type == 4)
                         {
-                            printf("University Grant\n");
+                            printf("Income type:University Grant\n");
                         }
                         printf("Description: %s",temp->description);
                         printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
@@ -3125,19 +3773,19 @@ void Timed_Income_Detail(char User[41])
                 {
                     if(temp->money_Type == 1)
                     {
-                        printf("Programming Salary\n");
+                        printf("Income type:Programming Salary\n");
                     }
                     else if(temp->money_Type == 2)
                     {
-                        printf("YARANRH\n");
+                        printf("Income type:YARANRH\n");
                     }
                     else if(temp->money_Type == 3)
                     {
-                        printf("Pocket money\n");
+                        printf("Income type:Pocket money\n");
                     }
                     else if(temp->money_Type == 4)
                     {
-                        printf("University Grant\n");
+                        printf("Income type:University Grant\n");
                     }
                     printf("Description: %s",temp->description);
                     printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
@@ -3149,19 +3797,19 @@ void Timed_Income_Detail(char User[41])
                     {
                         if(temp->money_Type == 1)
                         {
-                            printf("Programming Salary\n");
+                            printf("Income type:Programming Salary\n");
                         }
                         else if(temp->money_Type == 2)
                         {
-                            printf("YARANRH\n");
+                            printf("Income type:YARANRH\n");
                         }
                         else if(temp->money_Type == 3)
                         {
-                            printf("Pocket money\n");
+                            printf("Income type:Pocket money\n");
                         }
                         else if(temp->money_Type == 4)
                         {
-                            printf("University Grant\n");
+                            printf("Income type:University Grant\n");
                         }
                         printf("Description: %s",temp->description);
                         printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
@@ -3173,19 +3821,19 @@ void Timed_Income_Detail(char User[41])
             {
                 if(temp->money_Type == 1)
                 {
-                    printf("Programming Salary\n");
+                    printf("Income type:Programming Salary\n");
                 }
                 else if(temp->money_Type == 2)
                 {
-                    printf("YARANRH\n");
+                    printf("Income type:YARANRH\n");
                 }
                 else if(temp->money_Type == 3)
                 {
-                    printf("Pocket money\n");
+                    printf("Income type:Pocket money\n");
                 }
                 else if(temp->money_Type == 4)
                 {
-                    printf("University Grant\n");
+                    printf("Income type:University Grant\n");
                 }
                 printf("Description: %s",temp->description);
                 printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
@@ -3294,31 +3942,31 @@ void Timed_Expense_Detail(char User[41])
                 {
                     if(temp->money_Type == -1)
                     {
-                        printf("Wearings\n");
+                        printf("Expense type:Wearings\n");
                     }
                     else if(temp->money_Type == -2)
                     {
-                        printf("Transportation\n");
+                        printf("Expense type:Transportation\n");
                     }
                     else if(temp->money_Type == -3)
                     {
-                        printf("Tuition fees\n");
+                        printf("Expense type:Tuition fees\n");
                     }
                     else if(temp->money_Type == -4)
                     {
-                        printf("Entertainment\n");
+                        printf("Expense type:Entertainment\n");
                     }
                     else if(temp->money_Type == -5)
                     {
-                        printf("Mobile and Internet bill\n");
+                        printf("Expense type:Mobile and Internet bill\n");
                     }
                     else if(temp->money_Type == -6)
                     {
-                        printf("Medical expenses\n");
+                        printf("Expense type:Medical expenses\n");
                     }
                     else if(temp->money_Type == -7)
                     {
-                        printf("Charity donation\n");
+                        printf("Expense type:Charity donation\n");
                     }
                     printf("Description: %s",temp->description);
                     printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
@@ -3330,31 +3978,31 @@ void Timed_Expense_Detail(char User[41])
                     {
                         if(temp->money_Type == -1)
                         {
-                            printf("Wearings\n");
+                            printf("Expense type:Wearings\n");
                         }
                         else if(temp->money_Type == -2)
                         {
-                            printf("Transportation\n");
+                            printf("Expense type:Transportation\n");
                         }
                         else if(temp->money_Type == -3)
                         {
-                            printf("Tuition fees\n");
+                            printf("Expense type:Tuition fees\n");
                         }
                         else if(temp->money_Type == -4)
                         {
-                            printf("Entertainment\n");
+                            printf("Expense type:Entertainment\n");
                         }
                         else if(temp->money_Type == -5)
                         {
-                            printf("Mobile and Internet bill\n");
+                            printf("Expense type:Mobile and Internet bill\n");
                         }
                         else if(temp->money_Type == -6)
                         {
-                            printf("Medical expenses\n");
+                            printf("Expense type:Medical expenses\n");
                         }
                         else if(temp->money_Type == -7)
                         {
-                            printf("Charity donation\n");
+                            printf("Expense type:Charity donation\n");
                         }
                         printf("Description: %s",temp->description);
                         printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
@@ -3368,31 +4016,31 @@ void Timed_Expense_Detail(char User[41])
                 {
                     if(temp->money_Type == -1)
                     {
-                        printf("Wearings\n");
+                        printf("Expense type:Wearings\n");
                     }
                     else if(temp->money_Type == -2)
                     {
-                        printf("Transportation\n");
+                        printf("Expense type:Transportation\n");
                     }
                     else if(temp->money_Type == -3)
                     {
-                        printf("Tuition fees\n");
+                        printf("Expense type:Tuition fees\n");
                     }
                     else if(temp->money_Type == -4)
                     {
-                        printf("Entertainment\n");
+                        printf("Expense type:Entertainment\n");
                     }
                     else if(temp->money_Type == -5)
                     {
-                        printf("Mobile and Internet bill\n");
+                        printf("Expense type:Mobile and Internet bill\n");
                     }
                     else if(temp->money_Type == -6)
                     {
-                        printf("Medical expenses\n");
+                        printf("Expense type:Medical expenses\n");
                     }
                     else if(temp->money_Type == -7)
                     {
-                        printf("Charity donation\n");
+                        printf("Expense type:Charity donation\n");
                     }
                     printf("Description: %s",temp->description);
                     printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
@@ -3404,31 +4052,31 @@ void Timed_Expense_Detail(char User[41])
                     {
                         if(temp->money_Type == -1)
                         {
-                            printf("Wearings\n");
+                            printf("Expense type:Wearings\n");
                         }
                         else if(temp->money_Type == -2)
                         {
-                            printf("Transportation\n");
+                            printf("Expense type:Transportation\n");
                         }
                         else if(temp->money_Type == -3)
                         {
-                            printf("Tuition fees\n");
+                            printf("Expense type:Tuition fees\n");
                         }
                         else if(temp->money_Type == -4)
                         {
-                            printf("Entertainment\n");
+                            printf("Expense type:Entertainment\n");
                         }
                         else if(temp->money_Type == -5)
                         {
-                            printf("Mobile and Internet bill\n");
+                            printf("Expense type:Mobile and Internet bill\n");
                         }
                         else if(temp->money_Type == -6)
                         {
-                            printf("Medical expenses\n");
+                            printf("Expense type:Medical expenses\n");
                         }
                         else if(temp->money_Type == -7)
                         {
-                            printf("Charity donation\n");
+                            printf("Expense type:Charity donation\n");
                         }
                         printf("Description: %s",temp->description);
                         printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
@@ -3440,31 +4088,31 @@ void Timed_Expense_Detail(char User[41])
             {
                     if(temp->money_Type == -1)
                     {
-                        printf("Wearings\n");
+                        printf("Expense type:Wearings\n");
                     }
                     else if(temp->money_Type == -2)
                     {
-                        printf("Transportation\n");
+                        printf("Expense type:Transportation\n");
                     }
                     else if(temp->money_Type == -3)
                     {
-                        printf("Tuition fees\n");
+                        printf("Expense type:Tuition fees\n");
                     }
                     else if(temp->money_Type == -4)
                     {
-                        printf("Entertainment\n");
+                        printf("Expense type:Entertainment\n");
                     }
                     else if(temp->money_Type == -5)
                     {
-                        printf("Mobile and Internet bill\n");
+                        printf("Expense type:Mobile and Internet bill\n");
                     }
                     else if(temp->money_Type == -6)
                     {
-                        printf("Medical expenses\n");
+                        printf("Expense type:Medical expenses\n");
                     }
                     else if(temp->money_Type == -7)
                     {
-                        printf("Charity donation\n");
+                        printf("Expense type:Charity donation\n");
                     }
                     printf("Description: %s",temp->description);
                     printf("Date:%d/%d/%d\n",temp->year ,temp->month ,temp->day);
