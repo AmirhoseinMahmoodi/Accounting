@@ -6,20 +6,21 @@
 #include<windows.h>
 
 int  Hold;
+int  user_count;
 int  log_in(void);
 int  mainmenu(void);
-int  user_count;
 int  User_Profile(void);
-int  account_Recovery(void);
 int  Income(char User[41]);
 int  Expense(char User[41]);
+int  account_Recovery(void);
 int  NID_check(char NID[11]);
 int  statistics(char User[41]);
-int  email_Check(char Email[41]);
+int  is_Digit(char object[41]);
 int  non_Space_Check(char object[41]);
+int  email_Validity_Check(char Email[41]);
 int  PhoneNumber_check(char phoneNumber[10]);
-int  username_Validity_Check(char username[41]);
 int  date_Check(int year , int month , int day);
+int  username_Validity_Check(char username[41]);
 int  password_Complexity_check(char password[41]);
 int  User_menu(char username[41] , char password[41]);
 int  user_settings(char User[41] , char password[41]);
@@ -137,12 +138,13 @@ void Hold_func()                                        //Lines 135 to 163 is fo
     int loop_counter ;
     int loop_counter2 ;
     FILE *Holder;
-    Holder = fopen("Hold.bin", "rb");                   //Opening a file named Hold to scan the current amount of Hold(int)//
+    Holder = fopen("Hold.txt", "r");                   //Opening a file named Hold to scan the current amount of Hold(int)//
     fscanf(Holder, "%d",&Hold);
     fclose(Holder);
     if(Hold == 1)                                       //if the amount of Hold(int) becomes 1 the program will be locked down for 5 minutes//
     {
         int minute = 5 ;
+        printf("\a");
         for(loop_counter2 = 4 ; loop_counter2 > 0 ; loop_counter2--)
         {
             for(loop_counter = 59 ; loop_counter >= 0 ; loop_counter--)
@@ -154,10 +156,11 @@ void Hold_func()                                        //Lines 135 to 163 is fo
                 printf("%d:%d",loop_counter2,loop_counter);
             }
         }
-        fopen("Hold.bin", "wb");                        //After 5 minutes the amount of Hold(int) will become 0 and printed in the file(Hld.bin)//
+        fopen("Hold.txt", "w");                        //After 5 minutes the amount of Hold(int) will become 0 and printed in the file(Hld.txt)//
         Hold = 0 ;
         fprintf(Holder, "%d",Hold);
         fclose(Holder);
+        printf("\a");
     }
     system("cls");
 }
@@ -184,11 +187,11 @@ void sign_up()
 
     FILE *user_opener , *user_counter ;
 
-    user_counter = fopen("usercount.bin", "rb");
+    user_counter = fopen("usercount.txt", "r");
     fscanf(user_counter, "%d",&user_count);
     fclose(user_counter);
 
-    user_opener = fopen("Users.bin", "rb");
+    user_opener = fopen("Users.txt", "r");
 
     if(user_counter != NULL)
     {
@@ -200,7 +203,7 @@ void sign_up()
         {
             end = malloc(sizeof(struct username));
             start->Link = end ;
-            fscanf(user_opener , "%*s%*s%*s%*s%*s%*s%s", end->username);
+            fscanf(user_opener , "%*s%*s%*s%*s%*s%*s%*s%s", end->username);
             end->Link = NULL ;
         }
     }
@@ -216,7 +219,7 @@ void sign_up()
         {
             temp = malloc(sizeof(struct username));
             end->Link = temp ;
-            fscanf(user_opener , "%*s%*s%*s%*s%*s%*s%s", temp->username);
+            fscanf(user_opener , "%*s%*s%*s%*s%*s%*s%*s%s", temp->username);
             temp->Link = NULL ;
             end = temp ;
         }
@@ -281,6 +284,7 @@ void sign_up()
 
     fflush(stdin);
     printf("please enter your name:\n");
+    int is_Digit_Value ;
     for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
     {
         gets(NewUser.Name);
@@ -289,6 +293,14 @@ void sign_up()
         if(non_Space_Check_Value == 1)
         {
             loop_counter--;
+        }
+        else
+        {
+            is_Digit_Value = is_Digit(NewUser.Name);
+            if(is_Digit_Value == 1)
+            {
+                loop_counter--;
+            }
         }
     }
     printf("surname?\n");
@@ -300,6 +312,14 @@ void sign_up()
         if(non_Space_Check_Value == 1)
         {
             loop_counter--;
+        }
+        else
+        {
+            is_Digit_Value = is_Digit(NewUser.surname);
+            if(is_Digit_Value == 1)
+            {
+                loop_counter--;
+            }
         }
     }
     printf("Please enter your national ID code:\n");
@@ -326,6 +346,7 @@ void sign_up()
             loop_counter--;
         }
     }
+    int email_Validity_Check_Value ;
     printf("Please enter your Email:\n");
     for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
     {
@@ -335,6 +356,14 @@ void sign_up()
         if(non_Space_Check_Value == 1)
         {
             loop_counter--;
+        }
+        else
+        {
+            email_Validity_Check_Value = email_Validity_Check(NewUser.Email);
+            if(email_Validity_Check_Value == 1)
+            {
+                loop_counter--;
+            }
         }
     }
     system("cls");
@@ -437,7 +466,7 @@ void sign_up()
     NewUser.pass_check[loop_counter] = '\0';
 
     password_equallity_check(NewUser.password,NewUser.pass_check);
-    user_opener = fopen("Users.bin", "ab");
+    user_opener = fopen("Users.txt", "a");
     fprintf(user_opener, "%s\n%s\n%s\n%s\n%s\n%s\n",NewUser.username,NewUser.Name,NewUser.surname,NewUser.NID,NewUser.PhoneNumber,NewUser.Email);
     int ascii ;
     int pass_Char_Length_Number ;
@@ -459,7 +488,7 @@ void sign_up()
         fprintf(user_opener, "%d%d",pass_Char_Length_Number,ascii);
     }
     fprintf(user_opener, "\n");
-    user_counter = fopen("usercount.bin", "wb");
+    user_counter = fopen("usercount.txt", "w");
     fprintf(user_counter,"%d",user_count+1);
     fclose(user_counter);
     fclose(user_opener);
@@ -482,12 +511,12 @@ int log_in()
     end = malloc(sizeof(struct user));
 
 
-    user_counter = fopen("usercount.bin", "rb");
+    user_counter = fopen("usercount.txt", "r");
 
     fscanf(user_counter, "%d", &users_number);
     fclose(user_counter);
 
-    user_opener = fopen("users.bin", "rb");
+    user_opener = fopen("users.txt", "r");
     if(user_opener == NULL || users_number == 0)
     {
         printf("No users yet.");
@@ -638,7 +667,7 @@ int log_in()
             if( wrong_Password_Input == 4 )
             {
                 printf("\a");
-                Holder = fopen("Hold.bin", "wb");
+                Holder = fopen("Hold.txt", "w");
                 Hold = 1;
                 fprintf(Holder, "%d",Hold);
                 printf("you have entered wrong password 5 times so the program will be banned for 5 minutes\nATTENTION - Do not restart the program ");
@@ -646,7 +675,7 @@ int log_in()
                 fclose(Holder);
                 Hold_func();
                 Hold = 0;
-                Holder = fopen("Hold.bin", "wb");
+                Holder = fopen("Hold.txt", "w");
                 fprintf(Holder, "%d",Hold);
                 fclose(Holder);
                 wrong_Password_Input = 0;
@@ -694,12 +723,12 @@ int account_Recovery()
     start = malloc(sizeof(struct user));
     end = malloc(sizeof(struct user));
 
-    user_counter = fopen("usercount.bin", "rb");
+    user_counter = fopen("usercount.txt", "r");
 
     fscanf(user_counter, "%d", &users_number);
     fclose(user_counter);
 
-    user_opener = fopen("users.bin", "rb");
+    user_opener = fopen("users.txt", "r");
     if(user_opener == NULL || users_number == 0)
     {
         printf("No users yet.");
@@ -994,7 +1023,7 @@ int account_Recovery()
     strcpy(temp->password,user_identifier.pass_check);
     int pass_Length ;
     password_equallity_check(user_identifier.password,user_identifier.pass_check);
-    user_opener = fopen("users.bin", "wb");
+    user_opener = fopen("users.txt", "w");
     temp = start ;
 
     do
@@ -1127,14 +1156,165 @@ int username_Validity_Check(char username[41])
     return 0 ;
 }
 
+int email_Validity_Check(char Email[41])
+{
+    int loop_counter = 0 ;
+    int sign_Number = 0 ;
+    int sign_Place ;
+    int dot_Number = 0 ;
+    int dot_Place ;
+    int same_Mail_Digit = 0 ;
+    int string_Len ;
+    char Emails[2][6] ;
+    strcpy(Emails[0],"gmail");
+    strcpy(Emails[1], "yahoo");
+    char after_Dot[4] ;
+    strcpy(after_Dot, "com");
+    if(Email[0] > 64 && Email[0] < 123)
+    {
+        if(Email[0] > 90 && Email[0] < 97)
+        {
+            printf("Wrong input.\nTry again:");
+            return 1 ;
+        }
+        else
+        {
+            while(Email[loop_counter] != '\0')
+            {
+                if(Email[loop_counter] == 64)
+                {
+                    sign_Number++;
+                    break ;
+                }
+                loop_counter++;
+            }
+            if(sign_Number != 1)
+            {
+                printf("Wrong input.\nTry again:");
+                return 1 ;
+            }
+            else
+            {
+                sign_Place = loop_counter ;
+                loop_counter = 0 ;
+                while(Email[loop_counter] != '\0')
+                {
+                    if(Email[loop_counter] == 46)
+                    {
+                        dot_Number++;
+                        dot_Place = loop_counter ;
+                    }
+                    loop_counter++;
+                }
+                if(dot_Number == 0)
+                {
+                    printf("Wrong input.\nTry again:");
+                    return 1 ;
+                }
+                else
+                {
+                    if(dot_Place <= sign_Place)
+                    {
+                        printf("Wrong input.\nTry again:");
+                        return 1 ;
+                    }
+                    else
+                    {
+                        same_Mail_Digit = 0 ;
+                        int loop_counter2 ;
+                        int loop_counter3 ;
+                        for(loop_counter = 0 ; loop_counter < 2 ; loop_counter++)
+                        {
+                            loop_counter3 = sign_Place+1 ;
+                            for(loop_counter2 = 0 ; loop_counter2 < 6 ; loop_counter2++)
+                            {
+                                if(same_Mail_Digit == 5)
+                                {
+                                    same_Mail_Digit = 0 ;
+                                    loop_counter2 = dot_Place+1 ;
+                                    if(Email[loop_counter2] == '\0')
+                                    {
+                                        printf("Wrong input.\nTry again:");
+                                        return 1 ;
+                                    }
+                                    for(loop_counter = 0 ; loop_counter < 4 ; loop_counter++)
+                                    {
+                                        if(same_Mail_Digit == 3)
+                                        {
+                                            return 0 ;
+                                        }
+                                        if(Email[loop_counter2] == after_Dot[loop_counter])
+                                        {
+                                            same_Mail_Digit++;
+                                        }
+                                        else
+                                        {
+                                            printf("Wrong input.\nTry again:");
+                                            return 1 ;
+                                        }
+                                        loop_counter2++;
+                                    }
+                                }
+                                if(Email[loop_counter3] == Emails[loop_counter][loop_counter2])
+                                {
+                                    same_Mail_Digit++;
+                                }
+                                else
+                                {
+                                    same_Mail_Digit = 0 ;
+                                    break ;
+                                }
+                                loop_counter3++;
+                            }
+                        }
+                        if(same_Mail_Digit != 5)
+                        {
+                            printf("Wrong input.\nTry again:");
+                            return 1 ;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    else
+    {
+        printf("Wrong input.\nTry again:");
+        return 1 ;
+    }
+}
+
 int non_Space_Check(char object[41])
 {
-    int loop_counter ;
+    int loop_counter = 0 ;
     while(object[loop_counter] != '\0')
     {
         if(object[loop_counter] == 32)
         {
             printf("Wrong.input.please use no spaces.\ntry again:\n");
+            return 1 ;
+        }
+        loop_counter++;
+    }
+    return 0 ;
+}
+
+int  is_Digit(char object[41])
+{
+    int loop_counter = 0 ;
+    while(object[loop_counter] != '\0')
+    {
+        if(object[loop_counter] > 64 && object[loop_counter] < 123)
+        {
+            if(object[loop_counter] > 90 && object[loop_counter] < 97)
+            {
+                printf("Wrong input.please just use words.");
+                return 1 ;
+            }
+        }
+        else
+        {
+            printf("Wrong input.please just use words.");
             return 1 ;
         }
         loop_counter++;
@@ -1274,7 +1454,7 @@ int date_Check(int year , int month , int day)
     {
         if(day > 31 || day < 1)
         {
-            printf("\nWrong input.Day of this month must be between 1 and 31");
+            printf("\nWrong input.Day of this month must be between 1 and 31.\nTry again:");
             return 1 ;
         }
     }
@@ -1282,7 +1462,7 @@ int date_Check(int year , int month , int day)
     {
         if(day > 30 || day < 1)
         {
-            printf("\nWrong input.Day of this month must be between 1 and 30");
+            printf("\nWrong input.Day of this month must be between 1 and 30.\nTry again:");
             return 1 ;
         }
     }
@@ -1290,7 +1470,7 @@ int date_Check(int year , int month , int day)
     {
         if(day > 29 || day < 1)
         {
-            printf("Wrong input.Day of this month must be between 1 and 29");
+            printf("Wrong input.Day of this month must be between 1 and 29.\nTry again:");
             return 1 ;
         }
     }
@@ -1299,15 +1479,13 @@ int date_Check(int year , int month , int day)
 
 int NID_check(char NID[11])
 {
-    int loop_counter , wrong_input = 0 ;
-    for(loop_counter = 0 ; loop_counter < 11 ; loop_counter++)
+    int loop_counter ;
+    int wrong_input = 0 ;
+    for(loop_counter = 0 ; loop_counter < 10 ; loop_counter++)
     {
         if(NID[loop_counter] < 48 || NID[loop_counter] > 57)
         {
-            if(NID[loop_counter] != '\0' || NID[loop_counter] == ' ')
-            {
-                wrong_input++;
-            }
+            wrong_input++;
         }
     }
     if(wrong_input > 0)
@@ -1317,21 +1495,18 @@ int NID_check(char NID[11])
     }
     else
     {
-        return 0;
+        return 0  ;
     }
 }
 
 int PhoneNumber_check(char phoneNumber[10])
 {
     int loop_counter , wrong_input = 0 ;
-    for(loop_counter = 0 ; loop_counter < 10 ; loop_counter++)
+    for(loop_counter = 0 ; loop_counter < 9 ; loop_counter++)
     {
-        if(phoneNumber[loop_counter] < 48 || phoneNumber[loop_counter] > 57)
+        if(phoneNumber[loop_counter] < 48 || phoneNumber[loop_counter] > 57 || phoneNumber[loop_counter] == 32)
         {
-            if(phoneNumber[loop_counter] != '\0' || phoneNumber[loop_counter] == ' ')
-            {
-                wrong_input++;
-            }
+            wrong_input++;
         }
     }
     if(wrong_input > 0)
@@ -1352,8 +1527,8 @@ int Income(char User[41])
     char user_File_Name[46];
     int loop_counter ;
     int income_type ;
-    sprintf(user_File_Name, "%s.bin",User);
-    user_Data_File = fopen(user_File_Name, "ab");
+    sprintf(user_File_Name, "%s.txt",User);
+    user_Data_File = fopen(user_File_Name, "a");
     for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
     {
         printf("You are entering your income information...\n\nPlease specify your income type\n");
@@ -1374,8 +1549,16 @@ int Income(char User[41])
     }
     float amount ;
     printf("Please enter the amount of your income in RIAL:");
-    scanf("%f",&amount);
-    fflush(stdin);
+    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+    {
+        scanf("%f",&amount);
+        fflush(stdin);
+        if(amount <= 0)
+        {
+            printf("Wrong input.\nThe amount of income must be bigger than 0.\nTry again:");
+            loop_counter--;
+        }
+    }
     printf("Please enter the date of income(YYYY/MM/DD):");
     int year , month , day ;
     int date_Check_Value ;
@@ -1404,8 +1587,8 @@ int Expense(char User[41])
     char user_File_Name[46];
     int loop_counter ;
     int expense_type ;
-    sprintf(user_File_Name, "%s.bin",User);
-    user_Data_File = fopen(user_File_Name, "ab");
+    sprintf(user_File_Name, "%s.txt",User);
+    user_Data_File = fopen(user_File_Name, "a");
     for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
     {
         printf("You are entering your expense information\nPlease specify your expense type:");
@@ -1426,10 +1609,18 @@ int Expense(char User[41])
         system("cls");
         return 1 ;
     }
-    printf("Please enter the amount of your expense in RIAL:");
     float amount ;
-    scanf("%f",&amount);
-    fflush(stdin);
+    printf("Please enter the amount of your expense in RIAL:");
+    for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
+    {
+        scanf("%f",&amount);
+        fflush(stdin);
+        if(amount <= 0)
+        {
+            printf("Wrong input.\nThe amount of expense must be bigger than 0.\nTry again:");
+            loop_counter--;
+        }
+    }
     printf("Please enter the date of income(YYYY/MM/DD):");
     int year , month , day ;
     int date_Check_Value ;
@@ -1457,7 +1648,7 @@ int user_settings(char User[41] , char password[41])
     int complexity_Value ;
     FILE *user_Data_File ;
     char user_Data_File_Name[46];
-    sprintf(user_Data_File_Name, "%s.bin",User);
+    sprintf(user_Data_File_Name, "%s.txt",User);
     system("cls");
     int user_desicion ;
     int loop_counter ;
@@ -1497,11 +1688,11 @@ int user_settings(char User[41] , char password[41])
     int pass_Char_Length_Number ;
     FILE *user_opener , *Holder , *user_counter ;
 
-    user_counter = fopen("usercount.bin", "rb");
+    user_counter = fopen("usercount.txt", "r");
     fscanf(user_counter, "%d", &users_number);
     fclose(user_counter);
 
-    user_opener = fopen("users.bin", "rb");
+    user_opener = fopen("users.txt", "r");
 
     fflush(stdin);
     start = malloc(sizeof(struct user));
@@ -1647,7 +1838,7 @@ int user_settings(char User[41] , char password[41])
         }while(temp != NULL);
 
         char user_New_Data_File_Name[46] ;
-        sprintf(user_New_Data_File_Name, "%s.bin",temp->username);
+        sprintf(user_New_Data_File_Name, "%s.txt",temp->username);
         rename(user_Data_File_Name,user_New_Data_File_Name);
     }
     else if(user_desicion == 2)
@@ -1666,6 +1857,7 @@ int user_settings(char User[41] , char password[41])
         }while(temp != NULL);
 
         printf("Please enter your name:");
+        int is_Digit_Value ;
         for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
         {
             gets(temp->name);
@@ -1674,6 +1866,14 @@ int user_settings(char User[41] , char password[41])
             if(non_Space_Check_Value == 1)
             {
                 loop_counter--;
+            }
+            else
+            {
+                is_Digit_Value = is_Digit(temp->name);
+                if(is_Digit_Value == 1)
+                {
+                    loop_counter--;
+                }
             }
         }
         printf("surname?");
@@ -1685,6 +1885,14 @@ int user_settings(char User[41] , char password[41])
             if(non_Space_Check_Value == 1)
             {
                 loop_counter--;
+            }
+            else
+            {
+                is_Digit_Value = is_Digit(temp->surname) ;
+                if(is_Digit_Value == 1)
+                {
+                    loop_counter--;
+                }
             }
         }
 
@@ -1765,6 +1973,15 @@ int user_settings(char User[41] , char password[41])
             {
                 loop_counter--;
             }
+            else
+            {
+                int email_Validity_Check_Value ;
+                email_Validity_Check_Value = email_Validity_Check(temp->Email);
+                if(email_Validity_Check_Value == 1)
+                {
+                    loop_counter--;
+                }
+            }
         }
     }
     else if(user_desicion == 6)
@@ -1842,7 +2059,7 @@ int user_settings(char User[41] , char password[41])
             {
                 if(wrong_Pass_Input == 4)
                 {
-                    Holder = fopen("Hold.bin", "wb");
+                    Holder = fopen("Hold.txt", "w");
                     Hold = 1;
                     fprintf(Holder, "%d",Hold);
                     printf("you have entered wrong password 5 times so the program will be banned for 5 minutes\nATTENTION - Do not restart the program ");
@@ -1850,7 +2067,7 @@ int user_settings(char User[41] , char password[41])
                     fclose(Holder);
                     Hold_func();
                     Hold = 0;
-                    Holder = fopen("Hold.bin", "wb");
+                    Holder = fopen("Hold.txt", "w");
                     fprintf(Holder, "%d",Hold);
                     fclose(Holder);
                     wrong_Pass_Input = 0 ;
@@ -2028,6 +2245,7 @@ int user_settings(char User[41] , char password[41])
 
 
         printf("Please enter your new name:");
+        int is_Digit_Value ;
         for(loop_counter = 0 ; loop_counter < 1 ; loop_counter++)
         {
             gets(temp->name);
@@ -2036,6 +2254,14 @@ int user_settings(char User[41] , char password[41])
             if(non_Space_Check_Value == 1)
             {
                 loop_counter--;
+            }
+            else
+            {
+                is_Digit_Value = is_Digit(temp->name);
+                if(is_Digit_Value == 1)
+                {
+                    loop_counter--;
+                }
             }
         }
 
@@ -2048,6 +2274,14 @@ int user_settings(char User[41] , char password[41])
             if(non_Space_Check_Value == 1)
             {
                 loop_counter--;
+            }
+            else
+            {
+                is_Digit_Value = is_Digit(temp->surname);
+                if(is_Digit_Value == 1)
+                {
+                    loop_counter--;
+                }
             }
         }
 
@@ -2089,6 +2323,15 @@ int user_settings(char User[41] , char password[41])
             if(non_Space_Check_Value == 1)
             {
                 loop_counter--;
+            }
+            else
+            {
+                int email_Validity_Check_Value ;
+                email_Validity_Check_Value = email_Validity_Check(temp->Email);
+                if(email_Validity_Check_Value == 1)
+                {
+                    loop_counter--;
+                }
             }
         }
 
@@ -2150,7 +2393,7 @@ int user_settings(char User[41] , char password[41])
             {
                 if(wrong_Pass_Input == 4)
                 {
-                    Holder = fopen("Hold.bin", "wb");
+                    Holder = fopen("Hold.txt", "w");
                     Hold = 1;
                     fprintf(Holder, "%d",Hold);
                     printf("you have entered wrong password 5 times so the program will be banned for 5 minutes\nATTENTION - Do not restart the program ");
@@ -2158,7 +2401,7 @@ int user_settings(char User[41] , char password[41])
                     fclose(Holder);
                     Hold_func();
                     Hold = 0;
-                    Holder = fopen("Hold.bin", "wb");
+                    Holder = fopen("Hold.txt", "w");
                     fprintf(Holder, "%d",Hold);
                     fclose(Holder);
                     wrong_Pass_Input = 0 ;
@@ -2256,7 +2499,7 @@ int user_settings(char User[41] , char password[41])
         }
         user_New_Pass_Check[loop_counter2] = '\0';
         fflush(stdin);
-        sprintf(user_New_Data_File_Name, "%s.bin",temp->username);
+        sprintf(user_New_Data_File_Name, "%s.txt",temp->username);
         rename(user_Data_File_Name,user_New_Data_File_Name);
     }
     else if(user_desicion == 8)
@@ -2327,10 +2570,10 @@ int user_settings(char User[41] , char password[41])
                 check = 1 ;
                 Sleep(2000);
                 temp1->Link = temp->Link ;
-                user_counter = fopen("usercount.bin", "rb");
+                user_counter = fopen("usercount.txt", "r");
                 fscanf(user_counter , "%d",&users_number);
                 fclose(user_counter);
-                user_counter = fopen("usercount.bin", "wb");
+                user_counter = fopen("usercount.txt", "w");
                 fprintf(user_counter, "%d",users_number-1);
                 fclose(user_counter);
                 break;
@@ -2343,16 +2586,16 @@ int user_settings(char User[41] , char password[41])
         if(check == 0)
         {
             start = temp->Link ;
-            user_counter = fopen("usercount.bin", "rb");
+            user_counter = fopen("usercount.txt", "r");
             fscanf(user_counter , "%d",&users_number);
             fclose(user_counter);
-            user_counter = fopen("usercount.bin", "wb");
+            user_counter = fopen("usercount.txt", "w");
             fprintf(user_counter, "%d",users_number-1);
             fclose(user_counter);
         }
 
         char user_Data_File_Name[46] ;
-        sprintf(user_Data_File_Name, "%s.bin",temp->username);
+        sprintf(user_Data_File_Name, "%s.txt",temp->username);
         remove(user_Data_File_Name);
     }
     else if(user_desicion == 9)
@@ -2360,7 +2603,7 @@ int user_settings(char User[41] , char password[41])
         return 1 ;
     }
 
-    user_opener = fopen("users.bin", "wb");
+    user_opener = fopen("users.txt", "w");
     temp = start ;
     if(temp != NULL)
     {
@@ -2503,7 +2746,7 @@ void Account_Balance(char User[41])
 {
     FILE *user_Data_File ;
     char user_Data_File_Name[46];
-    sprintf(user_Data_File_Name, "%s.bin",User);
+    sprintf(user_Data_File_Name, "%s.txt",User);
 
     struct IE
     {
@@ -2520,7 +2763,7 @@ void Account_Balance(char User[41])
     start = malloc(sizeof(struct IE)) ;
     end = malloc(sizeof(struct IE)) ;
 
-    user_Data_File = fopen(user_Data_File_Name , "rb") ;
+    user_Data_File = fopen(user_Data_File_Name , "r") ;
 
     fscanf(user_Data_File, "%d",&start->money_Type);
     fgets(start->description , 40 , user_Data_File);
@@ -2571,7 +2814,7 @@ void Specific_Year_Income(char User[41])
 {
     FILE *user_Data_File ;
     char user_Data_File_Name[46];
-    sprintf(user_Data_File_Name, "%s.bin",User);
+    sprintf(user_Data_File_Name, "%s.txt",User);
 
     struct IE
     {
@@ -2588,7 +2831,7 @@ void Specific_Year_Income(char User[41])
     start = malloc(sizeof(struct IE)) ;
     end = malloc(sizeof(struct IE)) ;
 
-    user_Data_File = fopen(user_Data_File_Name , "rb") ;
+    user_Data_File = fopen(user_Data_File_Name , "r") ;
 
     fscanf(user_Data_File, "%d",&start->money_Type);
     fgets(start->description , 40 , user_Data_File);
@@ -2649,7 +2892,7 @@ void Specific_Year_Expense(char User[41])
 {
     FILE *user_Data_File ;
     char user_Data_File_Name[46];
-    sprintf(user_Data_File_Name, "%s.bin",User);
+    sprintf(user_Data_File_Name, "%s.txt",User);
 
     struct IE
     {
@@ -2666,7 +2909,7 @@ void Specific_Year_Expense(char User[41])
     start = malloc(sizeof(struct IE)) ;
     end = malloc(sizeof(struct IE)) ;
 
-    user_Data_File = fopen(user_Data_File_Name , "rb") ;
+    user_Data_File = fopen(user_Data_File_Name , "r") ;
 
     fscanf(user_Data_File, "%d",&start->money_Type);
     fgets(start->description , 40 , user_Data_File);
@@ -2727,7 +2970,7 @@ void Timed_Income(char User[41])
 {
     FILE *user_Data_File ;
     char user_Data_File_Name[46];
-    sprintf(user_Data_File_Name, "%s.bin",User);
+    sprintf(user_Data_File_Name, "%s.txt",User);
 
     struct IE
     {
@@ -2744,7 +2987,7 @@ void Timed_Income(char User[41])
     start = malloc(sizeof(struct IE)) ;
     end = malloc(sizeof(struct IE)) ;
 
-    user_Data_File = fopen(user_Data_File_Name , "rb") ;
+    user_Data_File = fopen(user_Data_File_Name , "r") ;
 
     fscanf(user_Data_File, "%d",&start->money_Type);
     fgets(start->description , 40 , user_Data_File);
@@ -2857,7 +3100,7 @@ void Timed_Expense(char User[41])
 {
     FILE *user_Data_File ;
     char user_Data_File_Name[46];
-    sprintf(user_Data_File_Name, "%s.bin",User);
+    sprintf(user_Data_File_Name, "%s.txt",User);
 
     struct IE
     {
@@ -2874,7 +3117,7 @@ void Timed_Expense(char User[41])
     start = malloc(sizeof(struct IE)) ;
     end = malloc(sizeof(struct IE)) ;
 
-    user_Data_File = fopen(user_Data_File_Name , "rb") ;
+    user_Data_File = fopen(user_Data_File_Name , "r") ;
 
     fscanf(user_Data_File, "%d",&start->money_Type);
     fgets(start->description , 40 , user_Data_File);
@@ -2987,7 +3230,7 @@ void Specific_Timed_Income(char User[41])
 {
     FILE *user_Data_File ;
     char user_Data_File_Name[46];
-    sprintf(user_Data_File_Name, "%s.bin",User);
+    sprintf(user_Data_File_Name, "%s.txt",User);
 
     struct IE
     {
@@ -3004,7 +3247,7 @@ void Specific_Timed_Income(char User[41])
     start = malloc(sizeof(struct IE)) ;
     end = malloc(sizeof(struct IE)) ;
 
-    user_Data_File = fopen(user_Data_File_Name , "rb") ;
+    user_Data_File = fopen(user_Data_File_Name , "r") ;
 
     fscanf(user_Data_File, "%d",&start->money_Type);
     fgets(start->description , 40 , user_Data_File);
@@ -3122,7 +3365,7 @@ void Specific_Timed_Expense(char User[41])
 {
     FILE *user_Data_File ;
     char user_Data_File_Name[46];
-    sprintf(user_Data_File_Name, "%s.bin",User);
+    sprintf(user_Data_File_Name, "%s.txt",User);
 
     struct IE
     {
@@ -3139,7 +3382,7 @@ void Specific_Timed_Expense(char User[41])
     start = malloc(sizeof(struct IE)) ;
     end = malloc(sizeof(struct IE)) ;
 
-    user_Data_File = fopen(user_Data_File_Name , "rb") ;
+    user_Data_File = fopen(user_Data_File_Name , "r") ;
 
     fscanf(user_Data_File, "%d",&start->money_Type);
     fgets(start->description , 40 , user_Data_File);
@@ -3258,7 +3501,7 @@ void Revenue_Share(char User[41])
 {
     FILE *user_Data_File ;
     char user_Data_File_Name[46];
-    sprintf(user_Data_File_Name, "%s.bin",User);
+    sprintf(user_Data_File_Name, "%s.txt",User);
 
     struct IE
     {
@@ -3275,7 +3518,7 @@ void Revenue_Share(char User[41])
     start = malloc(sizeof(struct IE)) ;
     end = malloc(sizeof(struct IE)) ;
 
-    user_Data_File = fopen(user_Data_File_Name , "rb") ;
+    user_Data_File = fopen(user_Data_File_Name , "r") ;
 
     fscanf(user_Data_File, "%d",&start->money_Type);
     fgets(start->description , 40 , user_Data_File);
@@ -3380,7 +3623,7 @@ void Revenue_Share(char User[41])
         }
         temp = temp->Link ;
     }
-    float total_Salary ;
+    float total_Salary = 0;
     temp = start ;
     while(temp != NULL)
     {
@@ -3390,7 +3633,7 @@ void Revenue_Share(char User[41])
         }
         temp = temp->Link ;
     }
-    float total_Yaraneh ;
+    float total_Yaraneh = 0;
     temp = start ;
     while(temp != NULL)
     {
@@ -3400,7 +3643,7 @@ void Revenue_Share(char User[41])
         }
         temp = temp->Link ;
     }
-    float total_Pocket_Money ;
+    float total_Pocket_Money = 0 ;
     temp = start ;
     while(temp != NULL)
     {
@@ -3410,7 +3653,7 @@ void Revenue_Share(char User[41])
         }
         temp = temp->Link ;
     }
-    float total_Grant ;
+    float total_Grant = 0 ;
     temp = start ;
     while(temp != NULL)
     {
@@ -3421,14 +3664,15 @@ void Revenue_Share(char User[41])
         temp = temp->Link ;
     }
     system("cls");
-    printf("The revenues share is:\n1.Programming salary:%f %%\t2.YARANEH:%f %%\n3.Pocket money:%f %%\t4.University grant:%f %%\n\n",((total_Salary/Total)*100) ,((total_Yaraneh/Total)*100) ,((total_Pocket_Money/Total)*100) ,((total_Grant/Total)*100));
+    printf("%f\n",total_Grant);
+    printf("The revenues share is:\n1.Programming salary:%f %%\t2.YARANEH:%f %%\n3.Pocket money:%f %%\t\t4.University grant:%f %%\n\n",((total_Salary/Total)*100) ,((total_Yaraneh/Total)*100) ,((total_Pocket_Money/Total)*100) ,((total_Grant/Total)*100));
 }
 
 void Cost_Share(char User[41])
 {
     FILE *user_Data_File ;
     char user_Data_File_Name[46];
-    sprintf(user_Data_File_Name, "%s.bin",User);
+    sprintf(user_Data_File_Name, "%s.txt",User);
 
     struct IE
     {
@@ -3445,7 +3689,7 @@ void Cost_Share(char User[41])
     start = malloc(sizeof(struct IE)) ;
     end = malloc(sizeof(struct IE)) ;
 
-    user_Data_File = fopen(user_Data_File_Name , "rb") ;
+    user_Data_File = fopen(user_Data_File_Name , "r") ;
 
     fscanf(user_Data_File, "%d",&start->money_Type);
     fgets(start->description , 40 , user_Data_File);
@@ -3550,7 +3794,7 @@ void Cost_Share(char User[41])
         }
         temp = temp->Link ;
     }
-    float total_Wearing ;
+    float total_Wearing = 0 ;
     temp = start ;
     while(temp != NULL)
     {
@@ -3560,7 +3804,7 @@ void Cost_Share(char User[41])
         }
         temp = temp->Link ;
     }
-    float total_Transport ;
+    float total_Transport = 0 ;
     temp = start ;
     while(temp != NULL)
     {
@@ -3570,7 +3814,7 @@ void Cost_Share(char User[41])
         }
         temp = temp->Link ;
     }
-    float total_Tuition ;
+    float total_Tuition = 0 ;
     temp = start ;
     while(temp != NULL)
     {
@@ -3580,7 +3824,7 @@ void Cost_Share(char User[41])
         }
         temp = temp->Link ;
     }
-    float total_Entertainment ;
+    float total_Entertainment = 0 ;
     temp = start ;
     while(temp != NULL)
     {
@@ -3590,7 +3834,7 @@ void Cost_Share(char User[41])
         }
         temp = temp->Link ;
     }
-    float total_Mobile_Bill ;
+    float total_Mobile_Bill = 0 ;
     temp = start ;
     while(temp != NULL)
     {
@@ -3600,7 +3844,7 @@ void Cost_Share(char User[41])
         }
         temp = temp->Link ;
     }
-    float total_Medical ;
+    float total_Medical = 0 ;
     temp = start ;
     while(temp != NULL)
     {
@@ -3610,7 +3854,7 @@ void Cost_Share(char User[41])
         }
         temp = temp->Link ;
     }
-    float total_Charity ;
+    float total_Charity = 0 ;
     temp = start ;
     while(temp != NULL)
     {
@@ -3629,7 +3873,7 @@ void Timed_Income_Detail(char User[41])
 {
     FILE *user_Data_File ;
     char user_Data_File_Name[46];
-    sprintf(user_Data_File_Name, "%s.bin",User);
+    sprintf(user_Data_File_Name, "%s.txt",User);
 
     struct IE
     {
@@ -3646,7 +3890,7 @@ void Timed_Income_Detail(char User[41])
     start = malloc(sizeof(struct IE)) ;
     end = malloc(sizeof(struct IE)) ;
 
-    user_Data_File = fopen(user_Data_File_Name , "rb") ;
+    user_Data_File = fopen(user_Data_File_Name , "r") ;
 
     fscanf(user_Data_File, "%d",&start->money_Type);
     fgets(start->description , 40 , user_Data_File);
@@ -3848,7 +4092,7 @@ void Timed_Expense_Detail(char User[41])
 {
     FILE *user_Data_File ;
     char user_Data_File_Name[46];
-    sprintf(user_Data_File_Name, "%s.bin",User);
+    sprintf(user_Data_File_Name, "%s.txt",User);
 
     struct IE
     {
@@ -3865,7 +4109,7 @@ void Timed_Expense_Detail(char User[41])
     start = malloc(sizeof(struct IE)) ;
     end = malloc(sizeof(struct IE)) ;
 
-    user_Data_File = fopen(user_Data_File_Name , "rb") ;
+    user_Data_File = fopen(user_Data_File_Name , "r") ;
 
     fscanf(user_Data_File, "%d",&start->money_Type);
     fgets(start->description , 40 , user_Data_File);
@@ -4127,7 +4371,7 @@ void Largest_Revenue(char User[41])
 {
     FILE *user_Data_File ;
     char user_Data_File_Name[46];
-    sprintf(user_Data_File_Name, "%s.bin",User);
+    sprintf(user_Data_File_Name, "%s.txt",User);
 
     struct IE
     {
@@ -4144,7 +4388,7 @@ void Largest_Revenue(char User[41])
     start = malloc(sizeof(struct IE)) ;
     end = malloc(sizeof(struct IE)) ;
 
-    user_Data_File = fopen(user_Data_File_Name , "rb") ;
+    user_Data_File = fopen(user_Data_File_Name , "r") ;
 
     fscanf(user_Data_File, "%d",&start->money_Type);
     fgets(start->description , 40 , user_Data_File);
@@ -4272,7 +4516,7 @@ void Largest_Cost(char User[41])
 {
     FILE *user_Data_File ;
     char user_Data_File_Name[46];
-    sprintf(user_Data_File_Name, "%s.bin",User);
+    sprintf(user_Data_File_Name, "%s.txt",User);
 
     struct IE
     {
@@ -4289,7 +4533,7 @@ void Largest_Cost(char User[41])
     start = malloc(sizeof(struct IE)) ;
     end = malloc(sizeof(struct IE)) ;
 
-    user_Data_File = fopen(user_Data_File_Name , "rb") ;
+    user_Data_File = fopen(user_Data_File_Name , "r") ;
 
     fscanf(user_Data_File, "%d",&start->money_Type);
     fgets(start->description , 40 , user_Data_File);
@@ -4419,7 +4663,7 @@ void Search_income_descriptions(char User[41])
 
     FILE *user_Data_File ;
     char user_Data_File_Name[46];
-    sprintf(user_Data_File_Name, "%s.bin",User);
+    sprintf(user_Data_File_Name, "%s.txt",User);
 
     struct IE
     {
@@ -4436,7 +4680,7 @@ void Search_income_descriptions(char User[41])
     start = malloc(sizeof(struct IE)) ;
     end = malloc(sizeof(struct IE)) ;
 
-    user_Data_File = fopen(user_Data_File_Name , "rb") ;
+    user_Data_File = fopen(user_Data_File_Name , "r") ;
 
     fscanf(user_Data_File, "%d",&start->money_Type);
     fgets(start->description , 40 , user_Data_File);
@@ -4534,7 +4778,7 @@ void Search_expense_descriptions(char User[41])
 
     FILE *user_Data_File ;
     char user_Data_File_Name[46];
-    sprintf(user_Data_File_Name, "%s.bin",User);
+    sprintf(user_Data_File_Name, "%s.txt",User);
 
     struct IE
     {
@@ -4551,7 +4795,7 @@ void Search_expense_descriptions(char User[41])
     start = malloc(sizeof(struct IE)) ;
     end = malloc(sizeof(struct IE)) ;
 
-    user_Data_File = fopen(user_Data_File_Name , "rb") ;
+    user_Data_File = fopen(user_Data_File_Name , "r") ;
 
     fscanf(user_Data_File, "%d",&start->money_Type);
     fgets(start->description , 40 , user_Data_File);
